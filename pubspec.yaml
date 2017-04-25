@@ -1,0 +1,12 @@
+name: flutter_webview_plugin
+description: A new flutter plugin project.
+author: Hadrien Lejard <hadrien.lejard@gmail.com>
+
+flutter:
+  plugin:
+    androidPackage: com.flutter_webview_plugin
+    pluginClass: FlutterWebviewPlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
