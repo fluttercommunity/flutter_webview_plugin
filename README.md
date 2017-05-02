@@ -1,6 +1,10 @@
 # flutter_webview_plugin
 
-Plugin that allow Flutter to communicate with a native Webview
+
+Plugin that allow Flutter to communicate with a native Webview.
+
+
+***It will launch a new Activity inside the App with the Webview inside. Does not allow to integrate a Webview inside a Flutter Widget***
 
 TODO:
 
