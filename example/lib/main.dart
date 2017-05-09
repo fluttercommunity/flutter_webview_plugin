@@ -49,7 +49,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  TextEditingController _ctrl = new TextEditingController(text: "https://flutter.io");
+  TextEditingController _ctrl =
+      new TextEditingController(text: "https://flutter.io");
   StreamSubscription _onDestroy;
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
 
@@ -59,11 +60,11 @@ class _MyHomePageState extends State<MyHomePage> {
     FlutterWebviewPlugin.init();
     _onDestroy = FlutterWebviewPlugin.onDestroy.listen((_) {
       if (mounted) {
-        _scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("Webview Destroyed")));
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: new Text("Webview Destroyed")));
       }
     });
   }
-
 
   @override
   void dispose() {
@@ -79,7 +80,9 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text('Plugin example app'),
       ),
       body: new Column(children: [
-        new Container(padding: const EdgeInsets.all(24.0), child: new TextField(controller: _ctrl)),
+        new Container(
+            padding: const EdgeInsets.all(24.0),
+            child: new TextField(controller: _ctrl)),
         new RaisedButton(onPressed: _onPressed, child: new Text("Open Webview"))
       ], mainAxisAlignment: MainAxisAlignment.center),
     );
