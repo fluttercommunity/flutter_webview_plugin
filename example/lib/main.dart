@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
 void main() {
@@ -8,6 +7,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -49,6 +49,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  final FlutterWebviewPlugin flutterWebviewPlugin = new FlutterWebviewPlugin();
+
   TextEditingController _ctrl =
       new TextEditingController(text: "https://flutter.io");
   StreamSubscription _onDestroy;
@@ -57,8 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   initState() {
     super.initState();
-    FlutterWebviewPlugin.init();
-    _onDestroy = FlutterWebviewPlugin.onDestroy.listen((_) {
+    _onDestroy = flutterWebviewPlugin.onDestroy.listen((_) {
       if (mounted) {
         _scaffoldKey.currentState
             .showSnackBar(new SnackBar(content: new Text("Webview Destroyed")));
@@ -90,10 +92,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onPressed() {
     try {
-      FlutterWebviewPlugin.launch(_ctrl.text);
+      flutterWebviewPlugin.launch(_ctrl.text);
 
       new Timer(const Duration(seconds: 3), () {
-        FlutterWebviewPlugin.close();
+        flutterWebviewPlugin.close();
       });
     } catch (e) {
       print(e);

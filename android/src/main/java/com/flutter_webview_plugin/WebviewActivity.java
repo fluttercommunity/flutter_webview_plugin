@@ -70,13 +70,13 @@ public class WebviewActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         FlutterWebviewPlugin.channel.invokeMethod("onDestroy", null);
+        super.onDestroy();
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         FlutterWebviewPlugin.channel.invokeMethod("onBackPressed", null);
+        super.onBackPressed();
     }
 }
