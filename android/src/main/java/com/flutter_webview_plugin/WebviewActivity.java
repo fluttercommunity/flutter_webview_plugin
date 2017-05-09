@@ -75,7 +75,7 @@ public class WebviewActivity extends Activity {
     }
 
     @Override
-    protected void onBackPressed() {
+    public void onBackPressed() {
         super.onBackPressed();
         FlutterWebviewPlugin.channel.invokeMethod("onBackPressed", null);
     }
