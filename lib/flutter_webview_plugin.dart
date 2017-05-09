@@ -4,28 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class FlutterWebviewPlugin {
-
   static FlutterWebviewPlugin _instance;
   FlutterWebviewPlugin._() {
     _init();
   }
   factory FlutterWebviewPlugin() => _instance ??= new FlutterWebviewPlugin._();
 
-
   StreamController<Null> _onDestroy = new StreamController.broadcast();
   Stream<Null> get onDestroy => _onDestroy.stream;
 
-  StreamController<Null> _onBackPressed =
-  new StreamController.broadcast();
-
-  Stream<Null> get onBackPressed => _onDestroy.stream;
+  StreamController<Null> _onBackPressed = new StreamController.broadcast();
+  Stream<Null> get onBackPressed => _onBackPressed.stream;
 
   final MethodChannel _channel = const MethodChannel('flutter_webview_plugin');
 
   Future<Null> launch(String url,
-      {bool withJavascript: true,
-        bool clearCache: false,
-        bool clearCookies: false}) =>
+          {bool withJavascript: true,
+          bool clearCache: false,
+          bool clearCookies: false}) =>
       _channel.invokeMethod('launch', {
         "url": url,
         "withJavascript": withJavascript,
