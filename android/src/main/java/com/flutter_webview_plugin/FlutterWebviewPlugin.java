@@ -1,12 +1,14 @@
 package com.flutter_webview_plugin;
 
 import android.content.Intent;
+import android.app.Activity;
+import android.content.Context;
 
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
 
 /**
  * FlutterWebviewPlugin
@@ -15,20 +17,20 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
   private FlutterActivity activity;
   public static MethodChannel channel;
   private final int WEBVIEW_ACTIVITY_CODE = 1;
-  private final String CHANNEL = "flutter_webview_plugin";
+  private static final String CHANNEL_NAME = "flutter_webview_plugin";
 
-  public static FlutterWebviewPlugin register(FlutterActivity activity) {
-    return new FlutterWebviewPlugin(activity);
+  public static void registerWith(PluginRegistry.Registrar registrar) {
+    channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
+    FlutterWebviewPlugin instance = new FlutterWebviewPlugin((FlutterActivity) registrar.activity());
+    channel.setMethodCallHandler(instance);
   }
 
   private FlutterWebviewPlugin(FlutterActivity activity) {
     this.activity = activity;
-    channel = new MethodChannel(activity.getFlutterView(), CHANNEL);
-    channel.setMethodCallHandler(this);
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     switch (call.method) {
       case "launch":
         openUrl(call, result);
@@ -42,7 +44,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
     }
   }
 
-  private void openUrl(MethodCall call, Result result) {
+  private void openUrl(MethodCall call, MethodChannel.Result result) {
     Intent intent = new Intent(activity, WebviewActivity.class);
 
     intent.putExtra(WebviewActivity.URL_KEY, (String) call.argument("url"));
@@ -55,7 +57,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  private void close(MethodCall call, Result result) {
+  private void close(MethodCall call, MethodChannel.Result result) {
     activity.finishActivity(WEBVIEW_ACTIVITY_CODE);
     result.success(null);
   }
