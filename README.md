@@ -9,7 +9,7 @@ Plugin that allow Flutter to communicate with a native Webview.
 TODO:
 
  - [x] Android
- - [ ] IOS
+ - [ ] [IOS](https://github.com/dart-flitter/flutter_webview_plugin/issues/1)
 
 
 ## Getting Started
