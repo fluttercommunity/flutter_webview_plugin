@@ -21,7 +21,7 @@ For help getting started with Flutter, view our online
 ### Dart
 
 ```dart
-FlutterWebviewPlugin flutterWebviewPlugin = new FlutterWebviewPlugin();
+var flutterWebviewPlugin = new FlutterWebviewPlugin();
 ```
 
 ### Android
