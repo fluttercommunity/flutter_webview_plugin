@@ -4,12 +4,12 @@
 Plugin that allow Flutter to communicate with a native Webview.
 
 
-***It will launch a new Activity inside the App with the Webview inside. Does not allow to integrate a Webview inside a Flutter Widget***
+***For Android, it will launch a new Activity inside the App with the Webview inside. Does not allow to integrate a Webview inside a Flutter Widget***
 
-TODO:
+***For IOS, it will launch a new UIViewController inside the App with the UIWebView inside. Does not allow to integrate a Webview inside a Flutter Widget***
 
  - [x] Android
- - [ ] [IOS](https://github.com/dart-flitter/flutter_webview_plugin/issues/1)
+ - [x] IOS
 
 
 ## Getting Started
@@ -32,3 +32,7 @@ Add the Activity to you `AndroidManifest.xml`
 <activity android:name="com.flutter_webview_plugin.WebviewActivity"
                   android:parentActivityName=".MainActivity"/>
 ```
+
+### IOS
+
+No extra configuration is needed

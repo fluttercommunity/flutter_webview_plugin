@@ -51,12 +51,14 @@ class FlutterWebviewPlugin {
   Future<Null> launch(String url,
           {bool withJavascript: true,
           bool clearCache: false,
-          bool clearCookies: false}) =>
+          bool clearCookies: false,
+          bool fullScreen: true}) =>
       _channel.invokeMethod('launch', {
         "url": url,
         "withJavascript": withJavascript,
         "clearCache": clearCache,
-        "clearCookies": clearCookies
+        "clearCookies": clearCookies,
+        "fullScreen": fullScreen
       });
 
   /// Close the Webview
