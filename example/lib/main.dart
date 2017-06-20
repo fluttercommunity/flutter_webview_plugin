@@ -92,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       flutterWebviewPlugin.launch(_ctrl.text);
 
-      new Timer(const Duration(seconds: 3), () {
+      new Timer(const Duration(seconds: 10), () {
         flutterWebviewPlugin.close();
       });
     } catch (e) {
