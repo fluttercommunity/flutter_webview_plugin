@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface WebviewController : UIViewController
-- (instancetype)initWithUrl:(NSString *)url withJavascript:(NSNumber *)withJavascript clearCache:(NSNumber *)clearCache clearCookes:(NSNumber *)clearCookies fullScreen:(NSNumber *)fullScreen;
+- (instancetype)initWithUrl:(NSString *)url withJavascript:(NSNumber *)withJavascript clearCache:(NSNumber *)clearCache clearCookes:(NSNumber *)clearCookies;
 @end
