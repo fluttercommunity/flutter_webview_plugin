@@ -22,6 +22,9 @@ For help getting started with Flutter, view our online
 
 ```dart
 var flutterWebviewPlugin = new FlutterWebviewPlugin();
+
+flutterWebviewPlugin.launch("https://flutter.io");
+await flutterWebviewPlugin.onDestroy.first;
 ```
 
 ### Android
