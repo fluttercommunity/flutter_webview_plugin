@@ -7,7 +7,6 @@ const _kChannel = 'flutter_webview_plugin';
 /// Singleton Class that communicate with a fullscreen Webview Instance
 /// Have to be instanciate after `runApp` called.
 class FlutterWebviewPlugin {
-
   final MethodChannel _channel = const MethodChannel(_kChannel);
   StreamController<Null> _onDestroy = new StreamController.broadcast();
   StreamController<Null> _onBackPressed = new StreamController.broadcast();
