@@ -39,14 +39,20 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     NSNumber *clearCookies = call.arguments[@"clearCookies"];
     NSNumber *fullScreen = call.arguments[@"fullScreen"];
     
-    self.webviewController = [[WebviewController alloc] initWithUrl:url withJavascript:withJavascript clearCache:clearCache clearCookes:clearCookies fullScreen:fullScreen];
+    self.webviewController = [[WebviewController alloc] initWithUrl:url withJavascript:withJavascript clearCache:clearCache clearCookes:clearCookies];
     
-    UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:self.webviewController];
-    [_viewController presentModalViewController:navigation animated:YES];
+    if ([fullScreen boolValue]) {
+        [self.viewController presentViewController:self.webviewController animated:YES completion:nil];
+    } else {
+        UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:self.webviewController];
+        [self.viewController presentModalViewController:navigation animated:YES];
+    }
 }
 
 - (void)closeWebView {
-    [self.webviewController dismissViewControllerAnimated:YES completion:nil];
+    [self.webviewController dismissViewControllerAnimated:YES completion:^{
+        [channel invokeMethod:@"onDestroy" arguments:nil];
+    }];
 }
 
 @end

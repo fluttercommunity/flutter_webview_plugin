@@ -14,19 +14,17 @@
 @property NSNumber *withJavascript;
 @property NSNumber *clearCache;
 @property NSNumber *clearCookies;
-@property NSNumber *fullScreen;
 @end
 
 @implementation WebviewController
 
-- (instancetype)initWithUrl:(NSString *)url withJavascript:(NSNumber *)withJavascript clearCache:(NSNumber *)clearCache clearCookes:(NSNumber *)clearCookies fullScreen:(NSNumber *)fullScreen {
+- (instancetype)initWithUrl:(NSString *)url withJavascript:(NSNumber *)withJavascript clearCache:(NSNumber *)clearCache clearCookes:(NSNumber *)clearCookies {
     self = [super init];
     if (self) {
         self.url = url;
         self.withJavascript = withJavascript;
         self.clearCache = clearCache;
         self.clearCookies = clearCookies;
-        self.fullScreen = fullScreen;
     }
     return self;
 }
@@ -54,21 +52,9 @@
     [self.view addSubview:webView];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    
-    if ([self.fullScreen boolValue]) {
-        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-    }
-}
-
 - (IBAction)backButtonPressed:(id)sender {
     [channel invokeMethod:@"onBackPressed" arguments:nil];
     [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)dealloc {
-    [channel invokeMethod:@"onDestroy" arguments:nil];
 }
 
 @end
