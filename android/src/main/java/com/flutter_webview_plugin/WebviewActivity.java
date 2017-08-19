@@ -76,6 +76,10 @@ public class WebviewActivity extends Activity {
 
     @Override
     public void onBackPressed() {
+        if(webView.canGoBack()){
+            webView.goBack();
+            return;
+        }
         FlutterWebviewPlugin.channel.invokeMethod("onBackPressed", null);
         super.onBackPressed();
     }
