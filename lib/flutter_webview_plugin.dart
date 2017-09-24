@@ -8,8 +8,11 @@ const _kChannel = 'flutter_webview_plugin';
 /// Have to be instanciate after `runApp` called.
 class FlutterWebviewPlugin {
   final MethodChannel _channel = const MethodChannel(_kChannel);
-  StreamController<Null> _onDestroy = new StreamController.broadcast();
-  StreamController<Null> _onBackPressed = new StreamController.broadcast();
+  final StreamController<Null> _onDestroy = new StreamController.broadcast();
+  final StreamController<Null> _onBackPressed =
+      new StreamController.broadcast();
+  final StreamController<String> _onUrlChanged =
+      new StreamController.broadcast();
 
   static FlutterWebviewPlugin _instance;
   FlutterWebviewPlugin._() {
@@ -29,6 +32,9 @@ class FlutterWebviewPlugin {
         break;
       case "onBackPressed":
         _onBackPressed.add(null);
+        break;
+      case "onUrlChanged":
+        _onUrlChanged.add(call.arguments["url"]);
         break;
     }
   }
@@ -63,4 +69,8 @@ class FlutterWebviewPlugin {
   /// Close the Webview
   /// Will trigger the [onDestroy] event
   Future<Null> close() => _channel.invokeMethod("close");
+
+  /// Listening url changed
+  ///
+  Stream<String> get onUrlChanged => _onUrlChanged.stream;
 }

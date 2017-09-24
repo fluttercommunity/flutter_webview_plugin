@@ -1,11 +1,16 @@
 package com.flutter_webview_plugin;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by lejard_h on 23/04/2017.
@@ -41,12 +46,16 @@ public class WebviewActivity extends Activity {
 
     protected void clearCookies() {
         if (getIntent().getBooleanExtra(CLEAR_COOKIES_KEY, false)) {
-            CookieManager.getInstance().removeAllCookies(new ValueCallback<Boolean>() {
-                @Override
-                public void onReceiveValue(Boolean aBoolean) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                CookieManager.getInstance().removeAllCookies(new ValueCallback<Boolean>() {
+                    @Override
+                    public void onReceiveValue(Boolean aBoolean) {
 
-                }
-            });
+                    }
+                });
+            } else {
+                CookieManager.getInstance().removeAllCookie();
+            }
         }
     }
 
@@ -58,7 +67,7 @@ public class WebviewActivity extends Activity {
     }
 
     protected WebViewClient setWebViewClient() {
-        WebViewClient webViewClient = new WebViewClient();
+        WebViewClient webViewClient = new BrowserClient();
         webView.setWebViewClient(webViewClient);
         return webViewClient;
     }
@@ -82,5 +91,20 @@ public class WebviewActivity extends Activity {
         }
         FlutterWebviewPlugin.channel.invokeMethod("onBackPressed", null);
         super.onBackPressed();
+    }
+
+
+    private class BrowserClient extends WebViewClient {
+        private BrowserClient() {
+            super();
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+            Map<String, Object> data = new HashMap<>();
+            data.put("url", url);
+            FlutterWebviewPlugin.channel.invokeMethod("onUrlChanged", data);
+        }
     }
 }

@@ -37,8 +37,14 @@ class _MyHomePageState extends State<MyHomePage> {
   // On destroy stream
   StreamSubscription _onDestroy;
 
-  TextEditingController _ctrl = new TextEditingController(text: "https://flutter.io");
+  // On urlChanged stream
+  StreamSubscription<String> _onUrlChanged;
+
+  TextEditingController _ctrl =
+  new TextEditingController(text: "https://flutter.io");
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+
+  final _history = [];
 
   @override
   initState() {
@@ -48,7 +54,17 @@ class _MyHomePageState extends State<MyHomePage> {
     _onDestroy = flutterWebviewPlugin.onDestroy.listen((_) {
       if (mounted) {
         // Actions like show a info toast.
-        _scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("Webview Destroyed")));
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: new Text("Webview Destroyed")));
+      }
+    });
+
+    // Add a listener to on url changed
+    _onUrlChanged = flutterWebviewPlugin.onUrlChanged.listen((String url) {
+      if (mounted) {
+        setState(() {
+          _history.add(url);
+        });
       }
     });
   }
@@ -57,6 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void dispose() {
     // Every listener should be canceled, the same should be done with this stream.
     _onDestroy?.cancel();
+    _onUrlChanged?.cancel();
 
     super.dispose();
   }
@@ -78,7 +95,8 @@ class _MyHomePageState extends State<MyHomePage> {
           new RaisedButton(
             onPressed: _onPressed,
             child: new Text("Open Webview"),
-          )
+          ),
+          new Text(_history.join(", "))
         ],
       ),
     );
