@@ -61,7 +61,7 @@ public class WebviewActivity extends Activity {
 
     protected void clearCache() {
         if (getIntent().getBooleanExtra(CLEAR_CACHE_KEY, false)) {
-            webView.clearCache(false);
+            webView.clearCache(true);
             webView.clearFormData();
         }
     }
