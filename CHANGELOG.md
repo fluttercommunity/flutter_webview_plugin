@@ -1,3 +1,7 @@
+# 0.0.9
+
+- Android: remove the need to use FlutterActivity as base activity
+
 # 0.0.5
 
 - fix "onDestroy" event for iOS [#4](https://github.com/dart-flitter/flutter_webview_plugin/issues/4)
