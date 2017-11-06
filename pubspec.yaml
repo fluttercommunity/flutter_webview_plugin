@@ -4,7 +4,7 @@ authors:
 - Hadrien Lejard <hadrien.lejard@gmail.com>
 - Toufik Zitouni <toufiksapps@gmail.com>
 homepage: https://github.com/dart-flitter/flutter_webview_plugin
-version: 0.0.8
+version: 0.0.9
 
 flutter:
   plugin:
