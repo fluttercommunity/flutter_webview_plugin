@@ -14,18 +14,18 @@ import io.flutter.plugin.common.PluginRegistry;
  * FlutterWebviewPlugin
  */
 public class FlutterWebviewPlugin implements MethodCallHandler {
-  private FlutterActivity activity;
+  private Activity activity;
   public static MethodChannel channel;
   private final int WEBVIEW_ACTIVITY_CODE = 1;
   private static final String CHANNEL_NAME = "flutter_webview_plugin";
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-    FlutterWebviewPlugin instance = new FlutterWebviewPlugin((FlutterActivity) registrar.activity());
+    FlutterWebviewPlugin instance = new FlutterWebviewPlugin((Activity) registrar.activity());
     channel.setMethodCallHandler(instance);
   }
 
-  private FlutterWebviewPlugin(FlutterActivity activity) {
+  private FlutterWebviewPlugin(Activity activity) {
     this.activity = activity;
   }
 
@@ -62,4 +62,3 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
     result.success(null);
   }
 }
-
