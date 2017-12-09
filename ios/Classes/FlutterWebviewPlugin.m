@@ -6,6 +6,7 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
 // UIWebViewDelegate
 @interface FlutterWebviewPlugin() <UIWebViewDelegate, FlutterStreamHandler> {
     FlutterEventSink _eventSink;
+    BOOL _enableAppScheme;
 }
 @end
 
@@ -57,6 +58,7 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
     NSNumber *clearCookies = call.arguments[@"clearCookies"];
     NSNumber *hidden = call.arguments[@"hidden"];
     NSDictionary *rect = call.arguments[@"rect"];
+    _enableAppScheme = call.arguments[@"enableAppScheme"];
     
     //
     if ([clearCache boolValue]) {
@@ -112,8 +114,16 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
 #pragma mark -- WebView Delegate
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     [self sendStateEvent:[NSString stringWithFormat:@"shouldStart %@", request.URL]];
-    return YES;
+    
+    if (_enableAppScheme)
+        return YES;
+
+    // disable some scheme
+    return [request.URL.scheme isEqualToString:@"http"] ||
+            [request.URL.scheme isEqualToString:@"https"] ||
+            [request.URL.scheme isEqualToString:@"about"];
 }
+
 -(void)webViewDidStartLoad:(UIWebView *)webView {
     [self sendStateEvent:@"startLoad"];
 }
