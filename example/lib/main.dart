@@ -113,6 +113,12 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           new RaisedButton(
             onPressed: () {
+              flutterWebviewPlugin.launch(_ctrl.text, hidden: true);
+            },
+            child: new Text("Open 'hidden' Webview"),
+          ),
+          new RaisedButton(
+            onPressed: () {
               flutterWebviewPlugin.launch(_ctrl.text, fullScreen: true);
             },
             child: new Text("Open Fullscreen Webview"),
