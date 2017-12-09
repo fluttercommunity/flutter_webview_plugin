@@ -42,8 +42,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   StreamSubscription<String> _onStateChanged;
 
-  TextEditingController _ctrl =
+  TextEditingController _urlCtrl =
       new TextEditingController(text: "https://flutter.io");
+
+  TextEditingController _codeCtrl =
+      new TextEditingController(text: "window.location.href");
+
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
 
   final _history = [];
@@ -100,11 +104,11 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           new Container(
             padding: const EdgeInsets.all(24.0),
-            child: new TextField(controller: _ctrl),
+            child: new TextField(controller: _urlCtrl),
           ),
           new RaisedButton(
             onPressed: () {
-              flutterWebviewPlugin.launch(_ctrl.text,
+              flutterWebviewPlugin.launch(_urlCtrl.text,
                   fullScreen: false,
                   rect: new Rect.fromLTWH(
                       0.0, 0.0, MediaQuery.of(context).size.width, 300.0));
@@ -113,17 +117,33 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           new RaisedButton(
             onPressed: () {
-              flutterWebviewPlugin.launch(_ctrl.text, hidden: true);
+              flutterWebviewPlugin.launch(_urlCtrl.text, hidden: true);
             },
             child: new Text("Open 'hidden' Webview"),
           ),
           new RaisedButton(
             onPressed: () {
-              flutterWebviewPlugin.launch(_ctrl.text, fullScreen: true);
+              flutterWebviewPlugin.launch(_urlCtrl.text, fullScreen: true);
             },
             child: new Text("Open Fullscreen Webview"),
           ),
-          new Text(_history.join(", "))
+          new Container(
+            padding: const EdgeInsets.all(24.0),
+            child: new TextField(controller: _codeCtrl),
+          ),
+          new RaisedButton(
+            onPressed: () {
+              Future<String> future =
+                  flutterWebviewPlugin.evalJavascript(_codeCtrl.text);
+              future.then((String result) {
+                setState(() {
+                  _history.add(result);
+                });
+              });
+            },
+            child: new Text("Open Fullscreen Webview"),
+          ),
+          new Text(_history.join("\n"))
         ],
       ),
     );
