@@ -44,16 +44,11 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
     } else if ([@"close" isEqualToString:call.method]) {
         [self closeWebView];
         result(nil);
+    } else if ([@"eval" isEqualToString:call.method]) {
+        result([self evalJavascript:call]);
     } else {
         result(FlutterMethodNotImplemented);
     }
-}
-
-- (void)launch:(FlutterMethodCall*)call {
-    NSString *url = call.arguments[@"url"];
-    
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    [self.webview loadRequest:request];
 }
 
 - (void)initWebView:(FlutterMethodCall*)call {
@@ -90,6 +85,20 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
         [self.viewController.view addSubview:self.webview];
     
     [self launch:call];
+}
+
+- (void)launch:(FlutterMethodCall*)call {
+    NSString *url = call.arguments[@"url"];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    [self.webview loadRequest:request];
+}
+
+- (NSString *)evalJavascript:(FlutterMethodCall*)call {
+    NSString *code = call.arguments[@"code"];
+    
+    NSString *result = [self.webview stringByEvaluatingJavaScriptFromString:code];
+    return result;
 }
 
 - (void)closeWebView {

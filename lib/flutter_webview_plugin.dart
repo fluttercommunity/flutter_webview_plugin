@@ -28,9 +28,9 @@ class FlutterWebviewPlugin {
   final StreamController<String> _onUrlChanged =
       new StreamController.broadcast();
 
-  FlutterWebviewPlugin() : 
-    _channel = const MethodChannel(_kChannel),
-    _event = const EventChannel(_kEvent) {
+  FlutterWebviewPlugin()
+      : _channel = const MethodChannel(_kChannel),
+        _event = const EventChannel(_kEvent) {
     _channel.setMethodCallHandler(_handleMessages);
   }
 
@@ -88,6 +88,10 @@ class FlutterWebviewPlugin {
       };
     }
     await _channel.invokeMethod('launch', args);
+  }
+
+  Future<Null> evalJavascript(String code) {
+    return _channel.invokeMethod('eval', {"code": code});
   }
 
   /// Close the Webview
