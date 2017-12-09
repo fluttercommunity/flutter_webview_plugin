@@ -40,8 +40,10 @@ class _MyHomePageState extends State<MyHomePage> {
   // On urlChanged stream
   StreamSubscription<String> _onUrlChanged;
 
+  StreamSubscription<String> _onStateChanged;
+
   TextEditingController _ctrl =
-  new TextEditingController(text: "https://flutter.io");
+      new TextEditingController(text: "https://flutter.io");
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
 
   final _history = [];
@@ -49,6 +51,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   initState() {
     super.initState();
+
+    _onStateChanged = flutterWebviewPlugin.stateChanged.listen((String state) {
+      if (mounted) {
+        setState(() {
+          _history.add(state);
+        });
+      }
+    });
 
     // Add a listener to on destroy WebView, so you can make came actions.
     _onDestroy = flutterWebviewPlugin.onDestroy.listen((_) {
@@ -93,21 +103,23 @@ class _MyHomePageState extends State<MyHomePage> {
             child: new TextField(controller: _ctrl),
           ),
           new RaisedButton(
-            onPressed: _onPressed,
+            onPressed: () {
+              flutterWebviewPlugin.launch(_ctrl.text,
+                  fullScreen: false,
+                  rect: new Rect.fromLTWH(
+                      0.0, 0.0, MediaQuery.of(context).size.width, 300.0));
+            },
             child: new Text("Open Webview"),
+          ),
+          new RaisedButton(
+            onPressed: () {
+              flutterWebviewPlugin.launch(_ctrl.text, fullScreen: true);
+            },
+            child: new Text("Open Fullscreen Webview"),
           ),
           new Text(_history.join(", "))
         ],
       ),
     );
-  }
-
-  void _onPressed() {
-    try {
-      // This way you launch WebView with an url as a parameter.
-      flutterWebviewPlugin.launch(_ctrl.text);
-    } catch (e) {
-      print(e);
-    }
   }
 }
