@@ -69,6 +69,7 @@ class FlutterWebviewPlugin {
       bool clearCookies: false,
       bool hidden: false,
       bool fullScreen: true,
+      bool enableAppScheme: true,
       Rect rect: null}) async {
     Map<String, dynamic> args = {
       "url": url,
@@ -76,7 +77,8 @@ class FlutterWebviewPlugin {
       "clearCache": clearCache,
       "hidden": hidden,
       "clearCookies": clearCookies,
-      "fullScreen": fullScreen
+      "fullScreen": fullScreen,
+      "enableAppScheme": enableAppScheme
     };
     if (!fullScreen) assert(rect != null);
     if (rect != null) {
