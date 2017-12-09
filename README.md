@@ -18,7 +18,7 @@ For help getting started with Flutter, view our online [documentation](http://fl
 #### Launch WebView with variable url
 
 ```dart
-void launchWebView(String url) sync {
+void launchWebView(String url) async {
   var flutterWebviewPlugin = new FlutterWebviewPlugin();  
   
   flutterWebviewPlugin.launch(url);  
