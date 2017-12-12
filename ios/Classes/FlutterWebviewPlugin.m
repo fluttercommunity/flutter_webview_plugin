@@ -108,12 +108,16 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
     [self.webview removeFromSuperview];
     self.webview.delegate = nil;
     self.webview = nil;
+    [self sendEvent:@"destroy"];
 }
 
 
 #pragma mark -- WebView Delegate
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-    [self sendStateEvent:[NSString stringWithFormat:@"shouldStart %@", request.URL]];
+    NSArray *data = [NSArray arrayWithObjects:@"shouldStart",
+                     request.URL.absoluteString, [NSNumber numberWithInt:navigationType],
+                     nil];
+    [self sendEvent:data];
     
     if (_enableAppScheme)
         return YES;
@@ -125,18 +129,18 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
 }
 
 -(void)webViewDidStartLoad:(UIWebView *)webView {
-    [self sendStateEvent:@"startLoad"];
+    [self sendEvent:@"startLoad"];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-    [self sendStateEvent:@"finishLoad"];
+    [self sendEvent:@"finishLoad"];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     id data = [FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
                                   message:error.localizedDescription
                                   details:error.localizedFailureReason];
-    [self sendStateEvent:data];
+    [self sendEvent:data];
 }
 
 #pragma mark -- WkWebView Delegate
@@ -154,7 +158,7 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
     return nil;
 }
 
-- (void)sendStateEvent:(id)data {
+- (void)sendEvent:(id)data {
     // data should be @"" or [FlutterError]
     if (!_eventSink)
         return;
