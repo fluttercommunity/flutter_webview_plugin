@@ -32,7 +32,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // Instance of WebView plugin
-  final FlutterWebviewPlugin flutterWebviewPlugin = new FlutterWebviewPlugin();
+  final FlutterWebViewPlugin flutterWebviewPlugin = new FlutterWebViewPlugin();
 
   // On destroy stream
   StreamSubscription _onDestroy;
@@ -43,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
   StreamSubscription<String> _onStateChanged;
 
   TextEditingController _urlCtrl =
-      new TextEditingController(text: "https://flutter.io");
+      new TextEditingController(text: "http://github.com");
 
   TextEditingController _codeCtrl =
       new TextEditingController(text: "window.location.href");
@@ -56,10 +56,10 @@ class _MyHomePageState extends State<MyHomePage> {
   initState() {
     super.initState();
 
-    _onStateChanged = flutterWebviewPlugin.stateChanged.listen((String state) {
+    _onStateChanged = flutterWebviewPlugin.stateChanged.listen((dynamic state) {
       if (mounted) {
         setState(() {
-          _history.add(state);
+          _history.add("stateChanged: $state");
         });
       }
     });
@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _onUrlChanged = flutterWebviewPlugin.onUrlChanged.listen((String url) {
       if (mounted) {
         setState(() {
-          _history.add(url);
+          _history.add("onUrlChanged: $url");
         });
       }
     });
@@ -113,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   rect: new Rect.fromLTWH(
                       0.0, 0.0, MediaQuery.of(context).size.width, 300.0));
             },
-            child: new Text("Open Webview"),
+            child: new Text("Open Webview (rect)"),
           ),
           new RaisedButton(
             onPressed: () {
@@ -137,11 +137,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   flutterWebviewPlugin.evalJavascript(_codeCtrl.text);
               future.then((String result) {
                 setState(() {
-                  _history.add(result);
+                  _history.add("eval: $result");
                 });
               });
             },
-            child: new Text("Open Fullscreen Webview"),
+            child: new Text("Eval some javascript"),
+          ),
+          new RaisedButton(
+            onPressed: () {
+              _history.clear();
+              flutterWebviewPlugin.close();
+            },
+            child: new Text("Close"),
           ),
           new Text(_history.join("\n"))
         ],

@@ -6,17 +6,49 @@ import 'package:flutter/material.dart';
 const _kChannel = 'flutter_webview_plugin';
 const _kEvent = 'flutter_webview_plugin_event';
 
+// TODO: more genral state for iOS/android
+enum WebViewState { startLoad, finishLoad }
+
+// copy from UIWebView.h
+enum _WebViewNavigateType {
+  TypeLinkClicked,
+  TypeFormSubmitted,
+  TypeBackForward,
+  TypeReload,
+  TypeFormResubmitted,
+  TypeOther
+}
+
 /// Singleton Class that communicate with a fullscreen Webview Instance
 /// Have to be instanciate after `runApp` called.
-class FlutterWebviewPlugin {
+class FlutterWebViewPlugin {
   final MethodChannel _channel;
 
   final EventChannel _event;
   Stream<String> _stateChanged;
 
   Stream<String> get stateChanged {
+    assert(_WebViewNavigateType.TypeLinkClicked.index == 0);
+    assert(_WebViewNavigateType.TypeOther.index == 5);
     if (_stateChanged == null) {
       _stateChanged = _event.receiveBroadcastStream();
+      _stateChanged.listen((var result) {
+        // the list like: [state, url, navtype]
+        if (result is List && result.length == 3) {
+          if (_WebViewNavigateType.TypeBackForward.index == result[2]) {
+            _onBackPressed.add(Null);
+          } else if (_WebViewNavigateType.TypeOther.index == result[2] ||
+              _WebViewNavigateType.TypeLinkClicked.index == result[2] ||
+              _WebViewNavigateType.TypeFormSubmitted.index == result[2]) {
+            // TODO: find out better way
+            _onUrlChanged.add(result[1]);
+          }
+        } else if (result is String) {
+          if (result == "destroy") {
+            _onDestroy.add(Null);
+          }
+        }
+      });
     }
     return _stateChanged;
   }
@@ -28,14 +60,13 @@ class FlutterWebviewPlugin {
   final StreamController<String> _onUrlChanged =
       new StreamController.broadcast();
 
-  FlutterWebviewPlugin()
+  FlutterWebViewPlugin()
       : _channel = const MethodChannel(_kChannel),
         _event = const EventChannel(_kEvent) {
     _channel.setMethodCallHandler(_handleMessages);
   }
 
   Future<Null> _handleMessages(MethodCall call) async {
-    print("_handleMessages $call");
     switch (call.method) {
       case "onDestroy":
         _onDestroy.add(null);
@@ -61,8 +92,27 @@ class FlutterWebviewPlugin {
 
   /// Start the Webview with [url]
   /// - [withJavascript] enable Javascript or not for the Webview
+  ///     iOS WebView: Not implemented yet
+  ///     android: Implemented.
   /// - [clearCache] clear the cache of the Webview
-  /// - clearCookies] clear all cookies of the Webview
+  ///     iOS WebView: Not implemented yet
+  ///     iOS WKWebView: will implement later
+  ///     android: Implemented
+  /// - [clearCookies] clear all cookies of the Webview
+  ///     iOS WebView: Not implemented yet
+  ///     iOS WKWebView: will implement later
+  ///     android: Implemented
+  /// - [hidden] not show
+  ///     iOS WebView: not shown(addSubView) in ViewController
+  ///     android: Implemented
+  ///   [fullScreen]: show in full screen mode, default true
+  ///     iOS WebView: without rect, show in full screen mode
+  ///     android: Not implemented yet
+  ///   [rect]: show in rect(not full screen)
+  ///     iOS WebView: worked
+  ///     android: Not implemented yet
+  ///   [enableAppScheme]: false will enable all schemes, true only for
+  /// httt/https/about
   Future<Null> launch(String url,
       {bool withJavascript: true,
       bool clearCache: false,
@@ -92,7 +142,7 @@ class FlutterWebviewPlugin {
     await _channel.invokeMethod('launch', args);
   }
 
-  Future<Null> evalJavascript(String code) {
+  Future<String> evalJavascript(String code) {
     return _channel.invokeMethod('eval', {"code": code});
   }
 
