@@ -6,6 +6,7 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
 // UIWebViewDelegate
 @interface FlutterWebviewPlugin() <UIWebViewDelegate, FlutterStreamHandler> {
     FlutterEventSink _eventSink;
+    BOOL _enableAppScheme;
 }
 @end
 
@@ -44,16 +45,11 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
     } else if ([@"close" isEqualToString:call.method]) {
         [self closeWebView];
         result(nil);
+    } else if ([@"eval" isEqualToString:call.method]) {
+        result([self evalJavascript:call]);
     } else {
         result(FlutterMethodNotImplemented);
     }
-}
-
-- (void)launch:(FlutterMethodCall*)call {
-    NSString *url = call.arguments[@"url"];
-    
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    [self.webview loadRequest:request];
 }
 
 - (void)initWebView:(FlutterMethodCall*)call {
@@ -62,6 +58,7 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
     NSNumber *clearCookies = call.arguments[@"clearCookies"];
     NSNumber *hidden = call.arguments[@"hidden"];
     NSDictionary *rect = call.arguments[@"rect"];
+    _enableAppScheme = call.arguments[@"enableAppScheme"];
     
     //
     if ([clearCache boolValue]) {
@@ -92,32 +89,58 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
     [self launch:call];
 }
 
+- (void)launch:(FlutterMethodCall*)call {
+    NSString *url = call.arguments[@"url"];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    [self.webview loadRequest:request];
+}
+
+- (NSString *)evalJavascript:(FlutterMethodCall*)call {
+    NSString *code = call.arguments[@"code"];
+    
+    NSString *result = [self.webview stringByEvaluatingJavaScriptFromString:code];
+    return result;
+}
+
 - (void)closeWebView {
     [self.webview stopLoading];
     [self.webview removeFromSuperview];
     self.webview.delegate = nil;
     self.webview = nil;
+    [self sendEvent:@"destroy"];
 }
 
 
 #pragma mark -- WebView Delegate
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-    [self sendStateEvent:[NSString stringWithFormat:@"shouldStart %@", request.URL]];
-    return YES;
+    NSArray *data = [NSArray arrayWithObjects:@"shouldStart",
+                     request.URL.absoluteString, [NSNumber numberWithInt:navigationType],
+                     nil];
+    [self sendEvent:data];
+    
+    if (_enableAppScheme)
+        return YES;
+
+    // disable some scheme
+    return [request.URL.scheme isEqualToString:@"http"] ||
+            [request.URL.scheme isEqualToString:@"https"] ||
+            [request.URL.scheme isEqualToString:@"about"];
 }
+
 -(void)webViewDidStartLoad:(UIWebView *)webView {
-    [self sendStateEvent:@"startLoad"];
+    [self sendEvent:@"startLoad"];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-    [self sendStateEvent:@"finishLoad"];
+    [self sendEvent:@"finishLoad"];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     id data = [FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
                                   message:error.localizedDescription
                                   details:error.localizedFailureReason];
-    [self sendStateEvent:data];
+    [self sendEvent:data];
 }
 
 #pragma mark -- WkWebView Delegate
@@ -135,7 +158,7 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
     return nil;
 }
 
-- (void)sendStateEvent:(id)data {
+- (void)sendEvent:(id)data {
     // data should be @"" or [FlutterError]
     if (!_eventSink)
         return;
