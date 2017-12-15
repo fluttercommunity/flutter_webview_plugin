@@ -5,5 +5,5 @@ static FlutterMethodChannel *channel;
 
 @interface FlutterWebviewPlugin : NSObject<FlutterPlugin>
 @property (nonatomic, retain) UIViewController *viewController;
-@property (nonatomic, retain) WebviewController *webviewController;
+@property (nonatomic, retain) UIWebView *webview;
 @end

@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
+const kAndroidUserAgent =
+    "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36";
+
 void main() {
   runApp(new MyApp());
 }
@@ -32,7 +35,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // Instance of WebView plugin
-  final FlutterWebviewPlugin flutterWebviewPlugin = new FlutterWebviewPlugin();
+  final FlutterWebViewPlugin flutterWebviewPlugin = new FlutterWebViewPlugin();
 
   // On destroy stream
   StreamSubscription _onDestroy;
@@ -40,8 +43,14 @@ class _MyHomePageState extends State<MyHomePage> {
   // On urlChanged stream
   StreamSubscription<String> _onUrlChanged;
 
-  TextEditingController _ctrl =
-  new TextEditingController(text: "https://flutter.io");
+  StreamSubscription<String> _onStateChanged;
+
+  TextEditingController _urlCtrl =
+      new TextEditingController(text: "http://github.com");
+
+  TextEditingController _codeCtrl =
+      new TextEditingController(text: "window.navigator.userAgent");
+
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
 
   final _history = [];
@@ -49,6 +58,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   initState() {
     super.initState();
+
+    _onStateChanged = flutterWebviewPlugin.stateChanged.listen((dynamic state) {
+      if (mounted) {
+        setState(() {
+          _history.add("stateChanged: $state");
+        });
+      }
+    });
 
     // Add a listener to on destroy WebView, so you can make came actions.
     _onDestroy = flutterWebviewPlugin.onDestroy.listen((_) {
@@ -63,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _onUrlChanged = flutterWebviewPlugin.onUrlChanged.listen((String url) {
       if (mounted) {
         setState(() {
-          _history.add(url);
+          _history.add("onUrlChanged: $url");
         });
       }
     });
@@ -90,24 +107,56 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           new Container(
             padding: const EdgeInsets.all(24.0),
-            child: new TextField(controller: _ctrl),
+            child: new TextField(controller: _urlCtrl),
           ),
           new RaisedButton(
-            onPressed: _onPressed,
-            child: new Text("Open Webview"),
+            onPressed: () {
+              flutterWebviewPlugin.launch(_urlCtrl.text,
+                  fullScreen: false,
+                  rect: new Rect.fromLTWH(
+                      0.0, 0.0, MediaQuery.of(context).size.width, 300.0),
+                  userAgent: kAndroidUserAgent);
+            },
+            child: new Text("Open Webview (rect)"),
           ),
-          new Text(_history.join(", "))
+          new RaisedButton(
+            onPressed: () {
+              flutterWebviewPlugin.launch(_urlCtrl.text, hidden: true);
+            },
+            child: new Text("Open 'hidden' Webview"),
+          ),
+          new RaisedButton(
+            onPressed: () {
+              flutterWebviewPlugin.launch(_urlCtrl.text, fullScreen: true);
+            },
+            child: new Text("Open Fullscreen Webview"),
+          ),
+          new Container(
+            padding: const EdgeInsets.all(24.0),
+            child: new TextField(controller: _codeCtrl),
+          ),
+          new RaisedButton(
+            onPressed: () {
+              Future<String> future =
+                  flutterWebviewPlugin.evalJavascript(_codeCtrl.text);
+              future.then((String result) {
+                setState(() {
+                  _history.add("eval: $result");
+                });
+              });
+            },
+            child: new Text("Eval some javascript"),
+          ),
+          new RaisedButton(
+            onPressed: () {
+              _history.clear();
+              flutterWebviewPlugin.close();
+            },
+            child: new Text("Close"),
+          ),
+          new Text(_history.join("\n"))
         ],
       ),
     );
-  }
-
-  void _onPressed() {
-    try {
-      // This way you launch WebView with an url as a parameter.
-      flutterWebviewPlugin.launch(_ctrl.text);
-    } catch (e) {
-      print(e);
-    }
   }
 }
