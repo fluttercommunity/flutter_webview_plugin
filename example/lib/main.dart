@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
+const kAndroidUserAgent =
+    "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36";
+
 void main() {
   runApp(new MyApp());
 }
@@ -46,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
       new TextEditingController(text: "http://github.com");
 
   TextEditingController _codeCtrl =
-      new TextEditingController(text: "window.location.href");
+      new TextEditingController(text: "window.navigator.userAgent");
 
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
 
@@ -111,7 +114,8 @@ class _MyHomePageState extends State<MyHomePage> {
               flutterWebviewPlugin.launch(_urlCtrl.text,
                   fullScreen: false,
                   rect: new Rect.fromLTWH(
-                      0.0, 0.0, MediaQuery.of(context).size.width, 300.0));
+                      0.0, 0.0, MediaQuery.of(context).size.width, 300.0),
+                  userAgent: kAndroidUserAgent);
             },
             child: new Text("Open Webview (rect)"),
           ),

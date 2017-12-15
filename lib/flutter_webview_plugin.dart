@@ -24,6 +24,8 @@ enum _WebViewNavigateType {
 class FlutterWebViewPlugin {
   final MethodChannel _channel;
 
+  /// iOS WebView: Implemented
+  /// Android WebView: not implemented
   final EventChannel _event;
   Stream<String> _stateChanged;
 
@@ -96,23 +98,27 @@ class FlutterWebViewPlugin {
   ///     android: Implemented.
   /// - [clearCache] clear the cache of the Webview
   ///     iOS WebView: Not implemented yet
-  ///     iOS WKWebView: will implement later
+  ///     iOS WkWebView: TODO: later
   ///     android: Implemented
   /// - [clearCookies] clear all cookies of the Webview
   ///     iOS WebView: Not implemented yet
-  ///     iOS WKWebView: will implement later
+  ///     iOS WkWebView: will implement later
   ///     android: Implemented
   /// - [hidden] not show
   ///     iOS WebView: not shown(addSubView) in ViewController
-  ///     android: Implemented
+  ///     android: Not implemented yet.
   ///   [fullScreen]: show in full screen mode, default true
   ///     iOS WebView: without rect, show in full screen mode
-  ///     android: Not implemented yet
+  ///     android: Implemented
   ///   [rect]: show in rect(not full screen)
   ///     iOS WebView: worked
   ///     android: Not implemented yet
-  ///   [enableAppScheme]: false will enable all schemes, true only for
-  /// httt/https/about
+  ///   [enableAppScheme]: false will enable all schemes, true only for httt/https/about
+  ///     iOS WebView: worked
+  ///     android: Not implemented yet
+  ///   [userAgent]: set the User-Agent of WebView
+  ///     iOS WebView: worked
+  ///     android: Not implemented yet
   Future<Null> launch(String url,
       {bool withJavascript: true,
       bool clearCache: false,
@@ -120,7 +126,8 @@ class FlutterWebViewPlugin {
       bool hidden: false,
       bool fullScreen: true,
       bool enableAppScheme: true,
-      Rect rect: null}) async {
+      Rect rect: null,
+      String userAgent: null}) async {
     Map<String, dynamic> args = {
       "url": url,
       "withJavascript": withJavascript,
@@ -128,7 +135,8 @@ class FlutterWebViewPlugin {
       "hidden": hidden,
       "clearCookies": clearCookies,
       "fullScreen": fullScreen,
-      "enableAppScheme": enableAppScheme
+      "enableAppScheme": enableAppScheme,
+      "userAgent": userAgent
     };
     if (!fullScreen) assert(rect != null);
     if (rect != null) {
@@ -142,6 +150,8 @@ class FlutterWebViewPlugin {
     await _channel.invokeMethod('launch', args);
   }
 
+  /// iOS WebView: worked
+  /// android: Not implemented yet
   Future<String> evalJavascript(String code) {
     return _channel.invokeMethod('eval', {"code": code});
   }
@@ -151,6 +161,7 @@ class FlutterWebViewPlugin {
   Future<Null> close() => _channel.invokeMethod("close");
 
   /// Listening url changed
-  ///
+  /// iOS WebView: worked
+  /// android: worked
   Stream<String> get onUrlChanged => _onUrlChanged.stream;
 }
