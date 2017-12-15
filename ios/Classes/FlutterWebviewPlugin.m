@@ -59,6 +59,7 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
     NSNumber *hidden = call.arguments[@"hidden"];
     NSDictionary *rect = call.arguments[@"rect"];
     _enableAppScheme = call.arguments[@"enableAppScheme"];
+    NSString *userAgent = call.arguments[@"userAgent"];
     
     //
     if ([clearCache boolValue]) {
@@ -78,6 +79,10 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
                                [[rect valueForKey:@"height"] doubleValue]);
     } else {
         rc = self.viewController.view.bounds;
+    }
+    
+    if (userAgent) {
+        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": userAgent}];
     }
     
     self.webview = [[UIWebView alloc] initWithFrame:rc];
