@@ -1,11 +1,9 @@
 #import "FlutterWebviewPlugin.h"
 
 static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
-static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
 
 // UIWebViewDelegate
-@interface FlutterWebviewPlugin() <UIWebViewDelegate, FlutterStreamHandler> {
-    FlutterEventSink _eventSink;
+@interface FlutterWebviewPlugin() <UIWebViewDelegate> {
     BOOL _enableAppScheme;
 }
 @end
@@ -20,11 +18,6 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
     FlutterWebviewPlugin* instance = [[FlutterWebviewPlugin alloc] initWithViewController:viewController];
     
     [registrar addMethodCallDelegate:instance channel:channel];
-    
-    FlutterEventChannel* event =
-    [FlutterEventChannel eventChannelWithName:EVENT_CHANNEL_NAME
-                              binaryMessenger:[registrar messenger]];
-    [event setStreamHandler:instance];
 }
 
 - (instancetype)initWithViewController:(UIViewController *)viewController {
@@ -62,34 +55,36 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
     NSString *userAgent = call.arguments[@"userAgent"];
     
     //
-    if ([clearCache boolValue]) {
+    if (clearCache != (id)[NSNull null] && [clearCache boolValue]) {
         [[NSURLCache sharedURLCache] removeAllCachedResponses];
     }
     
-    if ([clearCookies boolValue]) {
+    if (clearCookies != (id)[NSNull null] && [clearCookies boolValue]) {
         [[NSURLSession sharedSession] resetWithCompletionHandler:^{
         }];
     }
     
-    CGRect rc;
-    if (rect) {
-        rc = CGRectMake([[rect valueForKey:@"left"] doubleValue],
-                               [[rect valueForKey:@"top"] doubleValue],
-                               [[rect valueForKey:@"width"] doubleValue],
-                               [[rect valueForKey:@"height"] doubleValue]);
-    } else {
-        rc = self.viewController.view.bounds;
+    if (userAgent != (id)[NSNull null]) {
+        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": userAgent}];
     }
     
-    if (userAgent) {
-        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": userAgent}];
+    CGRect rc;
+    if (rect != nil) {
+        rc = CGRectMake([[rect valueForKey:@"left"] doubleValue],
+                        [[rect valueForKey:@"top"] doubleValue],
+                        [[rect valueForKey:@"width"] doubleValue],
+                        [[rect valueForKey:@"height"] doubleValue]);
+    } else {
+        // TODO: create top NavigatorController and push
+        rc = self.viewController.view.bounds;
     }
     
     self.webview = [[UIWebView alloc] initWithFrame:rc];
     self.webview.delegate = self;
     
-    if (!hidden || ![hidden boolValue])
-        [self.viewController.view addSubview:self.webview];
+    if (hidden != (id)[NSNull null] && [hidden boolValue])
+        self.webview.hidden = YES;
+    [self.viewController.view addSubview:self.webview];
     
     [self launch:call];
 }
@@ -113,16 +108,25 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
     [self.webview removeFromSuperview];
     self.webview.delegate = nil;
     self.webview = nil;
-    [self sendEvent:@"destroy"];
+    
+    // manually trigger onDestroy
+    [channel invokeMethod:@"onDestroy" arguments:nil];
 }
 
 
 #pragma mark -- WebView Delegate
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-    NSArray *data = [NSArray arrayWithObjects:@"shouldStart",
-                     request.URL.absoluteString, [NSNumber numberWithInt:navigationType],
-                     nil];
-    [self sendEvent:data];
+    id data = @{@"url": request.URL.absoluteString,
+                @"type": @"shouldStart",
+                @"navigationType": [NSNumber numberWithInt:navigationType]};
+    [channel invokeMethod:@"onState" arguments:data];
+    
+    if (navigationType == UIWebViewNavigationTypeBackForward)
+        [channel invokeMethod:@"onBackPressed" arguments:nil];
+    else {
+        id data = @{@"url": request.URL.absoluteString};
+        [channel invokeMethod:@"onUrlChanged" arguments:data];
+    }
     
     if (_enableAppScheme)
         return YES;
@@ -134,40 +138,19 @@ static NSString *const EVENT_CHANNEL_NAME = @"flutter_webview_plugin_event";
 }
 
 -(void)webViewDidStartLoad:(UIWebView *)webView {
-    [self sendEvent:@"startLoad"];
+    [channel invokeMethod:@"onState" arguments:@{@"type": @"startLoad"}];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-    [self sendEvent:@"finishLoad"];
+    [channel invokeMethod:@"onState" arguments:@{@"type": @"finishLoad"}];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     id data = [FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
                                   message:error.localizedDescription
                                   details:error.localizedFailureReason];
-    [self sendEvent:data];
+    [channel invokeMethod:@"onError" arguments:data];
 }
 
 #pragma mark -- WkWebView Delegate
-
-#pragma mark -- FlutterStreamHandler impl
-
-- (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
-    _eventSink = eventSink;
-    return nil;
-}
-
-- (FlutterError*)onCancelWithArguments:(id)arguments {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    _eventSink = nil;
-    return nil;
-}
-
-- (void)sendEvent:(id)data {
-    // data should be @"" or [FlutterError]
-    if (!_eventSink)
-        return;
-    
-    _eventSink(data);
-}
 @end

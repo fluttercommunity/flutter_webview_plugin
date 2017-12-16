@@ -59,10 +59,11 @@ class _MyHomePageState extends State<MyHomePage> {
   initState() {
     super.initState();
 
-    _onStateChanged = flutterWebviewPlugin.stateChanged.listen((dynamic state) {
+    _onStateChanged =
+        flutterWebviewPlugin.onStateChanged.listen((dynamic state) {
       if (mounted) {
         setState(() {
-          _history.add("stateChanged: $state");
+          _history.add("state: $state");
         });
       }
     });
@@ -149,7 +150,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           new RaisedButton(
             onPressed: () {
-              _history.clear();
+              setState(() {
+                _history.clear();
+              });
               flutterWebviewPlugin.close();
             },
             child: new Text("Close"),
