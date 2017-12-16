@@ -4,56 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
 const _kChannel = 'flutter_webview_plugin';
-const _kEvent = 'flutter_webview_plugin_event';
 
 // TODO: more genral state for iOS/android
-enum WebViewState { startLoad, finishLoad }
-
-// copy from UIWebView.h
-enum _WebViewNavigateType {
-  TypeLinkClicked,
-  TypeFormSubmitted,
-  TypeBackForward,
-  TypeReload,
-  TypeFormResubmitted,
-  TypeOther
-}
+enum WebViewState { shouldStart, startLoad, finishLoad }
 
 /// Singleton Class that communicate with a fullscreen Webview Instance
 /// Have to be instanciate after `runApp` called.
 class FlutterWebViewPlugin {
   final MethodChannel _channel;
-
-  /// iOS WebView: Implemented
-  /// Android WebView: not implemented
-  final EventChannel _event;
-  Stream<String> _stateChanged;
-
-  Stream<String> get stateChanged {
-    assert(_WebViewNavigateType.TypeLinkClicked.index == 0);
-    assert(_WebViewNavigateType.TypeOther.index == 5);
-    if (_stateChanged == null) {
-      _stateChanged = _event.receiveBroadcastStream();
-      _stateChanged.listen((var result) {
-        // the list like: [state, url, navtype]
-        if (result is List && result.length == 3) {
-          if (_WebViewNavigateType.TypeBackForward.index == result[2]) {
-            _onBackPressed.add(Null);
-          } else if (_WebViewNavigateType.TypeOther.index == result[2] ||
-              _WebViewNavigateType.TypeLinkClicked.index == result[2] ||
-              _WebViewNavigateType.TypeFormSubmitted.index == result[2]) {
-            // TODO: find out better way
-            _onUrlChanged.add(result[1]);
-          }
-        } else if (result is String) {
-          if (result == "destroy") {
-            _onDestroy.add(Null);
-          }
-        }
-      });
-    }
-    return _stateChanged;
-  }
 
   final StreamController<Null> _onDestroy = new StreamController.broadcast();
   final StreamController<Null> _onBackPressed =
@@ -62,9 +20,12 @@ class FlutterWebViewPlugin {
   final StreamController<String> _onUrlChanged =
       new StreamController.broadcast();
 
-  FlutterWebViewPlugin()
-      : _channel = const MethodChannel(_kChannel),
-        _event = const EventChannel(_kEvent) {
+  final StreamController<Null> _onStateChanged =
+      new StreamController.broadcast();
+
+  final StreamController<Null> _onError = new StreamController.broadcast();
+
+  FlutterWebViewPlugin() : _channel = const MethodChannel(_kChannel) {
     _channel.setMethodCallHandler(_handleMessages);
   }
 
@@ -79,18 +40,36 @@ class FlutterWebViewPlugin {
       case "onUrlChanged":
         _onUrlChanged.add(call.arguments["url"]);
         break;
+      case "onState":
+        _onStateChanged.add(call.arguments);
+        break;
+      case "onError":
+        _onError.add(call.arguments);
+        break;
     }
   }
 
-  //////////////////////
-
   /// Listening the OnDestroy LifeCycle Event for Android
-  ///
+  /// content is Map for url
   Stream<Null> get onDestroy => _onDestroy.stream;
 
+  /// Listening url changed
+  /// iOS WebView: worked
+  /// android: worked
+  Stream<Null> get onUrlChanged => _onUrlChanged.stream;
+
   /// Listening the onBackPressed Event for Android
-  ///
+  /// content null
+  /// iOS WebView: worked
+  /// android: worked
   Stream<Null> get onBackPressed => _onBackPressed.stream;
+
+  /// Listening the onState Event for iOS WebView and Android
+  /// content is Map for type: {shouldStart|startLoad|finishLoad}
+  /// more detail than other events
+  /// iOS WebView: worked
+  /// android: Not for now.
+  Stream<Null> get onStateChanged => _onStateChanged.stream;
 
   /// Start the Webview with [url]
   /// - [withJavascript] enable Javascript or not for the Webview
@@ -106,19 +85,19 @@ class FlutterWebViewPlugin {
   ///     android: Implemented
   /// - [hidden] not show
   ///     iOS WebView: not shown(addSubView) in ViewController
-  ///     android: Not implemented yet.
+  ///     android: Implemented
   ///   [fullScreen]: show in full screen mode, default true
   ///     iOS WebView: without rect, show in full screen mode
   ///     android: Implemented
   ///   [rect]: show in rect(not full screen)
   ///     iOS WebView: worked
-  ///     android: Not implemented yet
+  ///     android: Implemented
   ///   [enableAppScheme]: false will enable all schemes, true only for httt/https/about
   ///     iOS WebView: worked
   ///     android: Not implemented yet
   ///   [userAgent]: set the User-Agent of WebView
   ///     iOS WebView: worked
-  ///     android: Not implemented yet
+  ///     android: Implemented
   Future<Null> launch(String url,
       {bool withJavascript: true,
       bool clearCache: false,
@@ -142,7 +121,7 @@ class FlutterWebViewPlugin {
     if (rect != null) {
       args["rect"] = {
         "left": rect.left,
-        "right": rect.right,
+        "top": rect.top,
         "width": rect.width,
         "height": rect.height
       };
@@ -151,7 +130,7 @@ class FlutterWebViewPlugin {
   }
 
   /// iOS WebView: worked
-  /// android: Not implemented yet
+  /// android: implemented
   Future<String> evalJavascript(String code) {
     return _channel.invokeMethod('eval', {"code": code});
   }
@@ -159,9 +138,4 @@ class FlutterWebViewPlugin {
   /// Close the Webview
   /// Will trigger the [onDestroy] event
   Future<Null> close() => _channel.invokeMethod("close");
-
-  /// Listening url changed
-  /// iOS WebView: worked
-  /// android: worked
-  Stream<String> get onUrlChanged => _onUrlChanged.stream;
 }
