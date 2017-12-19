@@ -158,8 +158,10 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
   }
 
   private void close(MethodCall call, MethodChannel.Result result) {
-    ViewGroup vg = (ViewGroup)(webView.getParent());
-    vg.removeView(webView);
+    if (View.VISIBLE == webView.getVisibility()) {
+      ViewGroup vg = (ViewGroup) (webView.getParent());
+      vg.removeView(webView);
+    }
     webView = null;
     result.success(null);
 
