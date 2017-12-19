@@ -43,8 +43,6 @@ class _MyHomePageState extends State<MyHomePage> {
   // On urlChanged stream
   StreamSubscription<String> _onUrlChanged;
 
-  StreamSubscription<String> _onStateChanged;
-
   TextEditingController _urlCtrl =
       new TextEditingController(text: "http://github.com");
 
@@ -58,15 +56,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   initState() {
     super.initState();
-
-    _onStateChanged =
-        flutterWebviewPlugin.onStateChanged.listen((dynamic state) {
-      if (mounted) {
-        setState(() {
-          _history.add("state: $state");
-        });
-      }
-    });
 
     // Add a listener to on destroy WebView, so you can make came actions.
     _onDestroy = flutterWebviewPlugin.onDestroy.listen((_) {
