@@ -1,3 +1,15 @@
+# 0.0.10
+
+- iOS: add Delegate, same as the event of android.
+
+- iOS && Android:
+
+    - eval javascript
+    - user agent setting
+    - state change event
+    - embed in rectangle(not fullscreen)
+    - hidden webview
+
 # 0.0.9
 
 - Android: remove the need to use FlutterActivity as base activity
