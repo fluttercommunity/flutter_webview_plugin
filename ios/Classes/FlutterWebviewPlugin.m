@@ -138,11 +138,11 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 }
 
 -(void)webViewDidStartLoad:(UIWebView *)webView {
-    [channel invokeMethod:@"onState" arguments:@{@"type": @"startLoad"}];
+    [channel invokeMethod:@"onState" arguments:@{@"type": @"startLoad", @"url": webView.request.URL.absoluteString}];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-    [channel invokeMethod:@"onState" arguments:@{@"type": @"finishLoad"}];
+    [channel invokeMethod:@"onState" arguments:@{@"type": @"finishLoad", @"url": webView.request.URL.absoluteString}];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {

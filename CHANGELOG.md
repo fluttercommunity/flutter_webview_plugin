@@ -1,14 +1,14 @@
 # 0.0.10
 
-- iOS: add Delegate, same as the event of android.
-
 - iOS && Android:
-
     - eval javascript
     - user agent setting
     - state change event
     - embed in rectangle(not fullscreen)
     - hidden webview
+    
+- Android
+    - adding Activity in manifest is no mandatory when not using fullScreen
 
 # 0.0.9
 
