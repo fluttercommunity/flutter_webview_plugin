@@ -1,5 +1,6 @@
 package com.flutter_webview_plugin;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
 import android.view.View;
@@ -18,17 +19,13 @@ import io.flutter.plugin.common.MethodChannel;
 
 class WebviewManager {
 
-    Activity activity;
     WebView webView;
 
     WebviewManager(Activity activity) {
-        this.activity = activity;
         this.webView = new WebView(activity);
         WebViewClient webViewClient = new BrowserClient();
         webView.setWebViewClient(webViewClient);
     }
-
-
 
     private void clearCookies() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -81,20 +78,15 @@ class WebviewManager {
         FlutterWebviewPlugin.channel.invokeMethod("onDestroy", null);
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     void eval(MethodCall call, final MethodChannel.Result result) {
         String code = call.argument("code");
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            webView.evaluateJavascript(code, new ValueCallback<String>() {
-                @Override
-                public void onReceiveValue(String value) {
-                    result.success(value);
-                }
-            });
-        } else {
-            // TODO:
-            webView.loadUrl(code);
-        }
+        webView.evaluateJavascript(code, new ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String value) {
+                result.success(value);
+            }
+        });
     }
-
 }

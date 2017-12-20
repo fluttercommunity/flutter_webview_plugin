@@ -111,9 +111,8 @@ class FlutterWebviewPlugin {
   }
 
   /// Execute Javascript inside webview
-  Future<String> evalJavascript(String code) {
-    return _channel.invokeMethod('eval', {"code": code});
-  }
+  Future<String> evalJavascript(String code) =>
+      _channel.invokeMethod('eval', {"code": code});
 
   /// Close the Webview
   /// Will trigger the [onDestroy] event
@@ -127,6 +126,20 @@ class FlutterWebviewPlugin {
     _onStateChanged.close();
     _onError.close();
     _instance = null;
+  }
+
+  Future<Map<String, dynamic>> getCookies() async {
+    final cookiesString = await evalJavascript("document.cookie");
+    final cookies = {};
+
+    if (cookiesString?.isNotEmpty == true) {
+      cookiesString.split(";").forEach((String cookie) {
+        final splited = cookie.split("=");
+        cookies[splited[0]] = splited[1];
+      });
+    }
+
+    return cookies;
   }
 }
 
