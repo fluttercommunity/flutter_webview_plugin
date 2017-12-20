@@ -1,6 +1,7 @@
 # 0.0.10
 
 - iOS && Android:
+    - get cookies
     - eval javascript
     - user agent setting
     - state change event

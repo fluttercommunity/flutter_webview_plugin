@@ -46,8 +46,8 @@ class _MyHomePageState extends State<MyHomePage> {
   // On urlChanged stream
   StreamSubscription<WebViewStateChanged> _onStateChanged;
 
-  TextEditingController _urlCtrl =
-      new TextEditingController(text: "https://github.com/dart-flitter/flutter_webview_plugin");
+  TextEditingController _urlCtrl = new TextEditingController(
+      text: "https://github.com/dart-flitter/flutter_webview_plugin");
 
   TextEditingController _codeCtrl =
       new TextEditingController(text: "window.navigator.userAgent");
@@ -78,7 +78,8 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    _onStateChanged = flutterWebviewPlugin.onStateChanged.listen((WebViewStateChanged state) {
+    _onStateChanged =
+        flutterWebviewPlugin.onStateChanged.listen((WebViewStateChanged state) {
       if (mounted) {
         setState(() {
           _history.add("onStateChanged: ${state.type} ${state.url}");
@@ -159,6 +160,16 @@ class _MyHomePageState extends State<MyHomePage> {
               flutterWebviewPlugin.close();
             },
             child: new Text("Close"),
+          ),
+          new RaisedButton(
+            onPressed: () {
+              flutterWebviewPlugin.getCookies().then((m) {
+                setState(() {
+                  _history.add("cookies: $m");
+                });
+              });
+            },
+            child: new Text("Cookies"),
           ),
           new Text(_history.join("\n"))
         ],
