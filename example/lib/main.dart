@@ -35,7 +35,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // Instance of WebView plugin
-  final FlutterWebViewPlugin flutterWebviewPlugin = new FlutterWebViewPlugin();
+  final flutterWebviewPlugin = new FlutterWebviewPlugin();
 
   // On destroy stream
   StreamSubscription _onDestroy;
@@ -43,8 +43,11 @@ class _MyHomePageState extends State<MyHomePage> {
   // On urlChanged stream
   StreamSubscription<String> _onUrlChanged;
 
+  // On urlChanged stream
+  StreamSubscription<WebViewStateChanged> _onStateChanged;
+
   TextEditingController _urlCtrl =
-      new TextEditingController(text: "http://github.com");
+      new TextEditingController(text: "https://github.com/dart-flitter/flutter_webview_plugin");
 
   TextEditingController _codeCtrl =
       new TextEditingController(text: "window.navigator.userAgent");
@@ -74,13 +77,24 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     });
+
+    _onStateChanged = flutterWebviewPlugin.onStateChanged.listen((WebViewStateChanged state) {
+      if (mounted) {
+        setState(() {
+          _history.add("onStateChanged: ${state.type} ${state.url}");
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
     // Every listener should be canceled, the same should be done with this stream.
-    _onDestroy?.cancel();
-    _onUrlChanged?.cancel();
+    _onDestroy.cancel();
+    _onUrlChanged.cancel();
+    _onStateChanged.cancel();
+
+    flutterWebviewPlugin.dispose();
 
     super.dispose();
   }
