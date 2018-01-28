@@ -69,7 +69,7 @@ class WebviewManager {
     }
 
     void close(MethodCall call, MethodChannel.Result result) {
-        if (View.VISIBLE == webView.getVisibility()) {
+        if (webView != null) {
             ViewGroup vg = (ViewGroup) (webView.getParent());
             vg.removeView(webView);
         }

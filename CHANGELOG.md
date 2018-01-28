@@ -1,5 +1,9 @@
 # 0.1.0
 
+- fix Android close webview
+
+# 0.1.0
+
 - iOS && Android:
     - get cookies
     - eval javascript
