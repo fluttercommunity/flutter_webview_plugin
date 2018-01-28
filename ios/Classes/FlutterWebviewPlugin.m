@@ -31,21 +31,24 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"launch" isEqualToString:call.method]) {
         if (!self.webview)
-            [self initWebView:call];
+            [self initWebview:call];
         else
-            [self launch:call];
+            [self navigate:call];
         result(nil);
     } else if ([@"close" isEqualToString:call.method]) {
         [self closeWebView];
         result(nil);
     } else if ([@"eval" isEqualToString:call.method]) {
         result([self evalJavascript:call]);
+    } else if ([@"resize" isEqualToString:call.method]) {
+        [self resize:call];
+        result(nil);
     } else {
         result(FlutterMethodNotImplemented);
     }
 }
 
-- (void)initWebView:(FlutterMethodCall*)call {
+- (void)initWebview:(FlutterMethodCall*)call {
     // NSNumber *withJavascript = call.arguments[@"withJavascript"];
     NSNumber *clearCache = call.arguments[@"clearCache"];
     NSNumber *clearCookies = call.arguments[@"clearCookies"];
@@ -70,12 +73,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     
     CGRect rc;
     if (rect != nil) {
-        rc = CGRectMake([[rect valueForKey:@"left"] doubleValue],
-                        [[rect valueForKey:@"top"] doubleValue],
-                        [[rect valueForKey:@"width"] doubleValue],
-                        [[rect valueForKey:@"height"] doubleValue]);
+        rc = [self parseRect:rect];
     } else {
-        // TODO: create top NavigatorController and push
         rc = self.viewController.view.bounds;
     }
     
@@ -86,10 +85,17 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         self.webview.hidden = YES;
     [self.viewController.view addSubview:self.webview];
     
-    [self launch:call];
+    [self navigate:call];
 }
 
-- (void)launch:(FlutterMethodCall*)call {
+- (CGRect)parseRect:(NSDictionary *)rect {
+    return CGRectMake([[rect valueForKey:@"left"] doubleValue],
+                      [[rect valueForKey:@"top"] doubleValue],
+                      [[rect valueForKey:@"width"] doubleValue],
+                      [[rect valueForKey:@"height"] doubleValue]);
+}
+
+- (void)navigate:(FlutterMethodCall*)call {
     NSString *url = call.arguments[@"url"];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
@@ -101,6 +107,12 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     
     NSString *result = [self.webview stringByEvaluatingJavaScriptFromString:code];
     return result;
+}
+
+- (void)resize:(FlutterMethodCall*)call {
+    NSDictionary *rect = call.arguments[@"rect"];
+    CGRect rc = [self parseRect:rect];
+    self.webview.frame = rc;
 }
 
 - (void)closeWebView {

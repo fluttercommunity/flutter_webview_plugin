@@ -1,15 +1,17 @@
-# 0.0.10
+# 0.1.0
 
 - iOS && Android:
     - get cookies
     - eval javascript
     - user agent setting
     - state change event
-    - embed in rectangle(not fullscreen)
+    - embed in rectangle or fullscreen if null
     - hidden webview
     
 - Android
-    - adding Activity in manifest is no mandatory when not using fullScreen
+    - adding Activity in manifest is not needed anymore
+    
+- Add `WebviewScaffold`
 
 # 0.0.9
 
