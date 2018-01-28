@@ -7,6 +7,8 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 const kAndroidUserAgent =
     "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36";
 
+String selectedUrl = "https://github.com/dart-flitter/flutter_webview_plugin";
+
 void main() {
   runApp(new MyApp());
 }
@@ -19,7 +21,15 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(title: 'Flutter WebView Demo'),
+      routes: {
+        "/": (_) => new MyHomePage(title: "Flutter WebView Demo"),
+        "/widget": (_) => new WebviewScaffold(
+              url: selectedUrl,
+              appBar: new AppBar(
+                title: new Text("Widget webview"),
+              ),
+            )
+      },
     );
   }
 }
@@ -46,8 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // On urlChanged stream
   StreamSubscription<WebViewStateChanged> _onStateChanged;
 
-  TextEditingController _urlCtrl = new TextEditingController(
-      text: "https://github.com/dart-flitter/flutter_webview_plugin");
+  TextEditingController _urlCtrl = new TextEditingController(text: selectedUrl);
 
   TextEditingController _codeCtrl =
       new TextEditingController(text: "window.navigator.userAgent");
@@ -59,6 +68,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   initState() {
     super.initState();
+
+    flutterWebviewPlugin.close();
+
+    _urlCtrl.addListener(() {
+      selectedUrl = _urlCtrl.text;
+    });
 
     // Add a listener to on destroy WebView, so you can make came actions.
     _onDestroy = flutterWebviewPlugin.onDestroy.listen((_) {
@@ -116,8 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           new RaisedButton(
             onPressed: () {
-              flutterWebviewPlugin.launch(_urlCtrl.text,
-                  fullScreen: false,
+              flutterWebviewPlugin.launch(selectedUrl,
                   rect: new Rect.fromLTWH(
                       0.0, 0.0, MediaQuery.of(context).size.width, 300.0),
                   userAgent: kAndroidUserAgent);
@@ -126,15 +140,21 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           new RaisedButton(
             onPressed: () {
-              flutterWebviewPlugin.launch(_urlCtrl.text, hidden: true);
+              flutterWebviewPlugin.launch(selectedUrl, hidden: true);
             },
             child: new Text("Open 'hidden' Webview"),
           ),
           new RaisedButton(
             onPressed: () {
-              flutterWebviewPlugin.launch(_urlCtrl.text, fullScreen: true);
+              flutterWebviewPlugin.launch(selectedUrl);
             },
             child: new Text("Open Fullscreen Webview"),
+          ),
+          new RaisedButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed("/widget");
+            },
+            child: new Text("Open widget webview"),
           ),
           new Container(
             padding: const EdgeInsets.all(24.0),

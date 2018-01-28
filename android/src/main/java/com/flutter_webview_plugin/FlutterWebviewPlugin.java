@@ -3,7 +3,8 @@ package com.flutter_webview_plugin;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.Point;
+import android.view.Display;
 import android.widget.FrameLayout;
 
 import java.util.Map;
@@ -17,16 +18,14 @@ import io.flutter.plugin.common.PluginRegistry;
  * FlutterWebviewPlugin
  */
 public class FlutterWebviewPlugin implements MethodCallHandler {
-    private final int WEBVIEW_ACTIVITY_CODE = 1;
-
     private Activity activity;
     private WebviewManager webViewManager;
-    public static MethodChannel channel;
+    static MethodChannel channel;
     private static final String CHANNEL_NAME = "flutter_webview_plugin";
 
     public static void registerWith(PluginRegistry.Registrar registrar) {
         channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-        FlutterWebviewPlugin instance = new FlutterWebviewPlugin((Activity) registrar.activity());
+        FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity());
         channel.setMethodCallHandler(instance);
     }
 
@@ -46,6 +45,9 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
             case "eval":
                 eval(call, result);
                 break;
+            case "resize":
+                resize(call, result);
+                break;
             default:
                 result.notImplemented();
                 break;
@@ -53,38 +55,49 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
     }
 
     private void openUrl(MethodCall call, MethodChannel.Result result) {
-        if ((boolean) call.argument("fullScreen") && !(boolean) call.argument("hidden")) {
-            Intent intent = new Intent(activity, WebviewActivity.class);
-            intent.putExtra(WebviewActivity.URL_KEY, (String) call.argument("url"));
-            intent.putExtra(WebviewActivity.WITH_JAVASCRIPT_KEY, (boolean) call.argument("withJavascript"));
-            intent.putExtra(WebviewActivity.CLEAR_CACHE_KEY, (boolean) call.argument("clearCache"));
-            intent.putExtra(WebviewActivity.CLEAR_COOKIES_KEY, (boolean) call.argument("clearCookies"));
-            activity.startActivityForResult(intent, WEBVIEW_ACTIVITY_CODE);
-        } else {
-            if (webViewManager == null) {
-                webViewManager = new WebviewManager(activity);
-            }
+        boolean hidden = call.argument("hidden");
+        String url = call.argument("url");
+        String userAgent = call.argument("userAgent");
+        boolean withJavascript = call.argument("withJavascript");
+        boolean clearCache = call.argument("clearCache");
+        boolean clearCookies = call.argument("clearCookies");
 
-            Map<String, Number> rc = call.argument("rect");
-            if (rc != null) {
-                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                        dp2px(activity, rc.get("width").intValue()), dp2px(activity, rc.get("height").intValue()));
-                params.setMargins(dp2px(activity, rc.get("left").intValue()), dp2px(activity, rc.get("top").intValue()),
-                        0, 0);
-                activity.addContentView(webViewManager.webView, params);
-            } else if (!(boolean) call.argument("hidden")) {
-                activity.setContentView(webViewManager.webView);
-            }
-
-            webViewManager.openUrl((boolean) call.argument("withJavascript"),
-                    (boolean) call.argument("clearCache"),
-                    (boolean) call.argument("hidden"),
-                    (boolean) call.argument("clearCookies"),
-                    (String) call.argument("userAgent"),
-                    (String) call.argument("url")
-            );
+        if (webViewManager == null) {
+            webViewManager = new WebviewManager(activity);
         }
+
+        FrameLayout.LayoutParams params = buildLayoutParams(call);
+
+        activity.addContentView(webViewManager.webView, params);
+
+        webViewManager.openUrl(withJavascript,
+                clearCache,
+                hidden,
+                clearCookies,
+                userAgent,
+                url
+        );
         result.success(null);
+    }
+
+    private FrameLayout.LayoutParams buildLayoutParams(MethodCall call) {
+        Map<String, Number> rc = call.argument("rect");
+        FrameLayout.LayoutParams params;
+        if (rc != null) {
+            params = new FrameLayout.LayoutParams(
+                    dp2px(activity, rc.get("width").intValue()), dp2px(activity, rc.get("height").intValue()));
+            params.setMargins(dp2px(activity, rc.get("left").intValue()), dp2px(activity, rc.get("top").intValue()),
+                    0, 0);
+        } else {
+            Display display = activity.getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int width = size.x;
+            int height = size.y;
+            params = new FrameLayout.LayoutParams(width, height);
+        }
+
+        return params;
     }
 
     private void close(MethodCall call, MethodChannel.Result result) {
@@ -100,7 +113,15 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
         }
     }
 
-    private static int dp2px(Context context, float dp) {
+    private void resize(MethodCall call, final MethodChannel.Result result) {
+        if (webViewManager != null) {
+            FrameLayout.LayoutParams params = buildLayoutParams(call);
+            webViewManager.resize(params);
+        }
+        result.success(null);
+    }
+
+    private int dp2px(Context context, float dp) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
     }

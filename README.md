@@ -8,45 +8,45 @@ For help getting started with Flutter, view our online [documentation](http://fl
 
 ### How it works
 
-#### Launch WebView Fullscreen (default)
-
-On Android, add the Activity to you `AndroidManifest.xml`:
-
-```xml
-<activity android:name="com.flutter_webview_plugin.WebviewActivity" android:parentActivityName=".MainActivity"/>
-```
-
-***For Android, it will launch a new Activity inside the App with the Webview inside. Does not allow to integrate a Webview inside a Flutter Widget***
-
-***For IOS, it will launch a new UIViewController inside the App with the UIWebView inside. Does not allow to integrate a Webview inside a Flutter Widget***
-
+#### Launch WebView Fullscreen with Flutter navigation
 
 ```dart
-final flutterWebviewPlugin = new FlutterWebviewPlugin();  
-
-flutterWebviewPlugin.launch(url);  
+new MaterialApp(
+      routes: {
+        "/": (_) => new WebviewScaffold(
+              url: "https://www.google.com",
+              appBar: new AppBar(
+                title: new Text("Widget webview"),
+              ),
+            )
+      },
+    );
 ```
 
-#### Close launched WebView
+`FlutterWebviewPlugin` provide a singleton instance linked to one unique webview,
+so you can take control of the webview from anywhere in the app
 
+listen for events
 ```dart
-final flutterWebviewPlugin = new FlutterWebviewPlugin();  
+final flutterWebviewPlugin = new FlutterWebviewPlugin();
 
-flutterWebviewPlugin.launch(url);  
-
-....
-
-// Close WebView.
-// This will also emit the onDestroy event.
-flutterWebviewPlugin.close();
+flutterWebviewPlugin.onUrlChanged.listen((String url) {
+  
+});
 ```
 
-#### Hidden webView
+#### Hidden WebView
 
 ```dart
 final flutterWebviewPlugin = new FlutterWebviewPlugin();  
 
 flutterWebviewPlugin.launch(url, hidden: true);
+```
+
+#### Close launched WebView
+
+```dart
+flutterWebviewPlugin.close();
 ```
 
 #### Webview inside custom Rectangle
@@ -67,8 +67,30 @@ flutterWebviewPlugin.launch(url,
 
 - `Stream<Null>` onDestroy
 - `Stream<String>` onUrlChanged
-- `Stream<Null>` onBackPressed
 - `Stream<WebViewStateChanged>` onStateChanged
+- `Stream<String>` onError
 
 ***Don't forget to dispose webview***
 `flutterWebviewPlugin.dispose()`
+
+### Webview Functions
+
+```dart
+Future<Null> launch(String url,
+         {bool withJavascript: true,
+         bool clearCache: false,
+         bool clearCookies: false,
+         bool hidden: false,
+         bool enableAppScheme: true,
+         Rect rect: null,
+         String userAgent: null});
+```
+```dart
+Future<String> evalJavascript(String code);
+```
+```dart
+Future<Map<String, dynamic>> getCookies();
+```
+```dart
+Future<Null> resize(Rect rect);
+```
