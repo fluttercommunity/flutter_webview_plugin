@@ -98,12 +98,14 @@ class FlutterWebviewPlugin {
   }
 
   /// Execute Javascript inside webview
-  Future<String> evalJavascript(String code) =>
-      _channel.invokeMethod('eval', {"code": code});
+  Future<String> evalJavascript(String code) async {
+    final res = await _channel.invokeMethod('eval', {"code": code});
+    return res;
+  }
 
   /// Close the Webview
   /// Will trigger the [onDestroy] event
-  Future<Null> close() => _channel.invokeMethod("close");
+  Future close() => _channel.invokeMethod("close");
 
   /// Close all Streams
   void dispose() {

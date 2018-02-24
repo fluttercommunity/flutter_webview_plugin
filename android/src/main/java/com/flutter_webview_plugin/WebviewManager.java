@@ -1,5 +1,6 @@
 package com.flutter_webview_plugin;
 
+import android.util.Log;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
@@ -21,31 +22,32 @@ import io.flutter.plugin.common.MethodChannel;
 
 class WebviewManager {
 
+    boolean closed = false;
     WebView webView;
 
     WebviewManager(Activity activity) {
         this.webView = new WebView(activity);
         WebViewClient webViewClient = new BrowserClient();
-        webView.setWebViewClient(webViewClient);
-
         webView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_BACK:
                             if (webView.canGoBack()) {
                                 webView.goBack();
-                                return true;
+                            } else {
+                                close();
                             }
-                            break;
+                            return true;
                     }
                 }
 
                 return false;
             }
         });
+
+        webView.setWebViewClient(webViewClient);
     }
 
     private void clearCookies() {
@@ -94,9 +96,16 @@ class WebviewManager {
             vg.removeView(webView);
         }
         webView = null;
-        result.success(null);
+        if (result != null) {
+            result.success(null);
+        }
 
+        closed = true;
         FlutterWebviewPlugin.channel.invokeMethod("onDestroy", null);
+    }
+
+    void close() {
+        close(null, null);
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
