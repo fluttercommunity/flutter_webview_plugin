@@ -62,7 +62,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
         boolean clearCache = call.argument("clearCache");
         boolean clearCookies = call.argument("clearCookies");
 
-        if (webViewManager == null) {
+        if (webViewManager == null || webViewManager.closed == true) {
             webViewManager = new WebviewManager(activity);
         }
 

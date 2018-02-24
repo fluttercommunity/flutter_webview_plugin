@@ -1,4 +1,9 @@
-# 0.1.0
+# 0.1.1
+- support back button navigation for Android
+    + if cannot go back, it will trigger onDestroy
+- support preview dart2
+
+# 0.1.0+1
 
 - fix Android close webview
 
