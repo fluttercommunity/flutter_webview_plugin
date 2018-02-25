@@ -8,12 +8,14 @@ import 'base.dart';
 class WebviewScaffold extends StatefulWidget {
   final PreferredSizeWidget appBar;
   final String url;
-  final withJavascript;
-  final clearCache;
-  final clearCookies;
-  final enableAppScheme;
-  final userAgent;
-  final primary;
+  final bool withJavascript;
+  final bool clearCache;
+  final bool clearCookies;
+  final bool enableAppScheme;
+  final String userAgent;
+  final bool primary;
+  final List<Widget> persistentFooterButtons;
+  final Widget bottomNavigationBar;
 
   WebviewScaffold(
       {Key key,
@@ -24,7 +26,9 @@ class WebviewScaffold extends StatefulWidget {
       this.clearCookies,
       this.enableAppScheme,
       this.userAgent,
-      this.primary: true})
+      this.primary: true,
+      this.persistentFooterButtons,
+      this.bottomNavigationBar})
       : super(key: key);
 
   @override
@@ -71,6 +75,8 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     }
     return new Scaffold(
         appBar: widget.appBar,
+        persistentFooterButtons: widget.persistentFooterButtons,
+        bottomNavigationBar: widget.bottomNavigationBar,
         body: new Center(child: new CircularProgressIndicator()));
   }
 
@@ -79,9 +85,19 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
 
     final mediaQuery = MediaQuery.of(context);
     final topPadding = widget.primary ? mediaQuery.padding.top : 0.0;
-    final appBarHeight =
+    num top =
         fullscreen ? 0.0 : widget.appBar.preferredSize.height + topPadding;
-    return new Rect.fromLTWH(0.0, appBarHeight, mediaQuery.size.width,
-        mediaQuery.size.height - appBarHeight);
+
+    num height = mediaQuery.size.height - top;
+
+    if (widget.bottomNavigationBar != null) {
+      height -= 56.0; // todo(lejard_h) find a way to determine bottomNavigationBar programmatically
+    }
+
+    if (widget.persistentFooterButtons != null) {
+      height -= 53.0; // todo(lejard_h) find a way to determine persistentFooterButtons programmatically
+    }
+
+    return new Rect.fromLTWH(0.0, top, mediaQuery.size.width, height);
   }
 }
