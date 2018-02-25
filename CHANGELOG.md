@@ -1,3 +1,7 @@
+# 0.1.2
+
+- support bottomNavigationBar and persistentFooterButtons on webview scaffold
+
 # 0.1.1
 - support back button navigation for Android
     + if cannot go back, it will trigger onDestroy
