@@ -1,3 +1,7 @@
+# 0.1.3
+
+- support zoom in webview
+
 # 0.1.2
 
 - support bottomNavigationBar and persistentFooterButtons on webview scaffold

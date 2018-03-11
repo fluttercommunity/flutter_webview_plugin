@@ -68,8 +68,10 @@ class WebviewManager {
         webView.clearFormData();
     }
 
-    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url) {
+    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, boolean withZoom) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
+        webView.getSettings().setBuiltInZoomControls(withZoom);
+        webView.getSettings().setSupportZoom(withZoom);
 
         if (clearCache) {
             clearCache();

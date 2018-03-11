@@ -16,6 +16,7 @@ class WebviewScaffold extends StatefulWidget {
   final bool primary;
   final List<Widget> persistentFooterButtons;
   final Widget bottomNavigationBar;
+  final bool withZoom;
 
   WebviewScaffold(
       {Key key,
@@ -28,7 +29,8 @@ class WebviewScaffold extends StatefulWidget {
       this.userAgent,
       this.primary: true,
       this.persistentFooterButtons,
-      this.bottomNavigationBar})
+      this.bottomNavigationBar,
+      this.withZoom})
       : super(key: key);
 
   @override
@@ -61,7 +63,8 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
           clearCookies: widget.clearCookies,
           enableAppScheme: widget.enableAppScheme,
           userAgent: widget.userAgent,
-          rect: _rect);
+          rect: _rect,
+          withZoom: widget.withZoom);
     } else {
       Rect rect = _buildRect(context);
       if (_rect != rect) {
@@ -91,11 +94,13 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     num height = mediaQuery.size.height - top;
 
     if (widget.bottomNavigationBar != null) {
-      height -= 56.0; // todo(lejard_h) find a way to determine bottomNavigationBar programmatically
+      height -=
+          56.0; // todo(lejard_h) find a way to determine bottomNavigationBar programmatically
     }
 
     if (widget.persistentFooterButtons != null) {
-      height -= 53.0; // todo(lejard_h) find a way to determine persistentFooterButtons programmatically
+      height -=
+          53.0; // todo(lejard_h) find a way to determine persistentFooterButtons programmatically
     }
 
     return new Rect.fromLTWH(0.0, top, mediaQuery.size.width, height);

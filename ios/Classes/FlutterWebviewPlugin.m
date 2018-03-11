@@ -56,6 +56,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     NSDictionary *rect = call.arguments[@"rect"];
     _enableAppScheme = call.arguments[@"enableAppScheme"];
     NSString *userAgent = call.arguments[@"userAgent"];
+    NSNumber *withZoom = call.arguments[@"withZoom"];
     
     //
     if (clearCache != (id)[NSNull null] && [clearCache boolValue]) {
@@ -81,8 +82,13 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     self.webview = [[UIWebView alloc] initWithFrame:rc];
     self.webview.delegate = self;
     
-    if (hidden != (id)[NSNull null] && [hidden boolValue])
+    if (withZoom != (id)[NSNull null] && [withZoom boolValue]) {
+        self.webview.scalesPageToFit = YES;
+    }
+    
+    if (hidden != (id)[NSNull null] && [hidden boolValue]) {
         self.webview.hidden = YES;
+    }
     [self.viewController.view addSubview:self.webview];
     
     [self navigate:call];

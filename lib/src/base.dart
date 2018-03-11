@@ -67,8 +67,7 @@ class FlutterWebviewPlugin {
   /// - [enableAppScheme]: false will enable all schemes, true only for httt/https/about
   ///     android: Not implemented yet
   /// - [userAgent]: set the User-Agent of WebView
-  /// - [title]: title for app/navigation bar
-  /// - [withBackButton]: show back button when fullscreen
+  /// - [withZoom]: enable zoom on webview
   Future<Null> launch(String url,
       {bool withJavascript,
       bool clearCache,
@@ -76,7 +75,8 @@ class FlutterWebviewPlugin {
       bool hidden,
       bool enableAppScheme,
       Rect rect,
-      String userAgent}) async {
+      String userAgent,
+      bool withZoom}) async {
     Map<String, dynamic> args = {
       "url": url,
       "withJavascript": withJavascript ?? true,
@@ -85,6 +85,7 @@ class FlutterWebviewPlugin {
       "clearCookies": clearCookies ?? false,
       "enableAppScheme": enableAppScheme ?? true,
       "userAgent": userAgent,
+      "withZoom": withZoom ?? false
     };
     if (rect != null) {
       args["rect"] = {
