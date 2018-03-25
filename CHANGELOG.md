@@ -1,3 +1,7 @@
+# 0.1.4
+
+- support localstorage for ANDROID
+
 # 0.1.3
 
 - support zoom in webview
