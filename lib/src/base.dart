@@ -68,6 +68,9 @@ class FlutterWebviewPlugin {
   ///     android: Not implemented yet
   /// - [userAgent]: set the User-Agent of WebView
   /// - [withZoom]: enable zoom on webview
+  /// - [withLocalStorage] enable localStorage API on Webview
+  ///     Currently Android only.
+  ///     It is always enabled in UIWebView of iOS and  can not be disabled.
   Future<Null> launch(String url,
       {bool withJavascript,
       bool clearCache,
@@ -76,7 +79,8 @@ class FlutterWebviewPlugin {
       bool enableAppScheme,
       Rect rect,
       String userAgent,
-      bool withZoom}) async {
+      bool withZoom,
+      bool withLocalStorage}) async {
     Map<String, dynamic> args = {
       "url": url,
       "withJavascript": withJavascript ?? true,
@@ -85,7 +89,8 @@ class FlutterWebviewPlugin {
       "clearCookies": clearCookies ?? false,
       "enableAppScheme": enableAppScheme ?? true,
       "userAgent": userAgent,
-      "withZoom": withZoom ?? false
+      "withZoom": withZoom ?? false,
+      "withLocalStorage": withLocalStorage ?? true
     };
     if (rect != null) {
       args["rect"] = {

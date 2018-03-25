@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
                 title: new Text("Widget webview"),
               ),
               withZoom: true,
+              withLocalStorage: true,
             )
       },
     );
