@@ -82,17 +82,13 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     
     self.webview = [[WKWebView alloc] initWithFrame:rc];
     self.webview.navigationDelegate = self;
+    self.webview.scrollView.delegate = self;
+    self.webview.hidden = [hidden boolValue];
+
+    _enableZoom = [withZoom boolValue];
+
     [self.viewController.view addSubview:self.webview];
 
-    if (withZoom != (id)[NSNull null] && [withZoom boolValue]) {
-        self.webview.scrollView.delegate = self;
-        _enableZoom = [withZoom boolValue];
-    }
-    
-    if (hidden != (id)[NSNull null] && [hidden boolValue]) {
-        self.webview.hidden = [hidden boolValue];
-    }
-    
     [self navigate:call];
 }
 
