@@ -1,3 +1,7 @@
+# 0.1.5
+
+- iOS use WKWebView instead of UIWebView
+
 # 0.1.4
 
 - support localstorage for ANDROID
