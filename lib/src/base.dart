@@ -113,6 +113,8 @@ class FlutterWebviewPlugin {
   /// Will trigger the [onDestroy] event
   Future close() => _channel.invokeMethod("close");
 
+  Future reload() => _channel.invokeMethod("reload");
+
   /// Close all Streams
   void dispose() {
     _onDestroy.close();
