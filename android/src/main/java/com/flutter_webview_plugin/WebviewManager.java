@@ -123,6 +123,12 @@ class WebviewManager {
         });
     }
 
+    void reload(MethodCall call, MethodChannel.Result result) {
+        if (webView != null) {
+            webView.reload();
+        }
+    }
+
     void resize(FrameLayout.LayoutParams params) {
         webView.setLayoutParams(params);
     }
