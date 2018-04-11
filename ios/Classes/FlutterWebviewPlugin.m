@@ -101,10 +101,20 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
 - (void)navigate:(FlutterMethodCall*)call {
     if (self.webview != nil) {
-        NSString *url = call.arguments[@"url"];
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-        [self.webview loadRequest:request];
-    }
+            NSString *url = call.arguments[@"url"];
+            NSNumber *withLocalUrl = call.arguments[@"withLocalUrl"];
+            if ( [withLocalUrl boolValue]) {
+                NSURL *htmlUrl = [NSURL fileURLWithPath:url isDirectory:false];
+                if (@available(iOS 9.0, *)) {
+                    [self.webview loadFileURL:htmlUrl allowingReadAccessToURL:htmlUrl];
+                } else {
+                    @throw @"not available on version earlier than ios 9.0";
+                }
+            } else {
+                NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+                [self.webview loadRequest:request];
+            }
+        }
 }
 
 - (void)evalJavascript:(FlutterMethodCall*)call
