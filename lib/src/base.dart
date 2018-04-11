@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 const _kChannel = 'flutter_webview_plugin';
 
@@ -80,7 +80,8 @@ class FlutterWebviewPlugin {
       Rect rect,
       String userAgent,
       bool withZoom,
-      bool withLocalStorage}) async {
+      bool withLocalStorage,
+      bool withLocalUrl}) async {
     Map<String, dynamic> args = {
       "url": url,
       "withJavascript": withJavascript ?? true,
@@ -90,7 +91,8 @@ class FlutterWebviewPlugin {
       "enableAppScheme": enableAppScheme ?? true,
       "userAgent": userAgent,
       "withZoom": withZoom ?? false,
-      "withLocalStorage": withLocalStorage ?? true
+      "withLocalStorage": withLocalStorage ?? true,
+      "withLocalUrl": withLocalUrl ?? false
     };
     if (rect != null) {
       args["rect"] = {
