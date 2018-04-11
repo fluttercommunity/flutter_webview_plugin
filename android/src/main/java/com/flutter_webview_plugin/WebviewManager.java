@@ -129,7 +129,27 @@ class WebviewManager {
         }
     }
 
+    void back(MethodCall call, MethodChannel.Result result) {
+        if (webView != null && webView.canGoBack()) {
+            webView.goBack();
+        }
+    }
+
+    void forward(MethodCall call, MethodChannel.Result result) {
+        if (webView != null && webView.canGoForward()) {
+            webView.goForward();
+        }
+    }
+
     void resize(FrameLayout.LayoutParams params) {
         webView.setLayoutParams(params);
+    }
+
+    boolean canGoBack() {
+        return webView.canGoBack();
+    }
+
+    boolean canGoForward() {
+        return webView.canGoForward();
     }
 }

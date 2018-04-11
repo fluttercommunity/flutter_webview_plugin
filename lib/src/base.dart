@@ -115,6 +115,10 @@ class FlutterWebviewPlugin {
 
   Future reload() => _channel.invokeMethod("reload");
 
+  Future goBack() => _channel.invokeMethod("back");
+
+  Future goForward() => _channel.invokeMethod("forward");
+
   /// Close all Streams
   void dispose() {
     _onDestroy.close();

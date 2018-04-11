@@ -51,6 +51,12 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
             case "reload":
                 reload(call, result);
                 break;
+            case "back":
+                back(call, result);
+                break;
+                case "forward":
+                forward(call, result);
+                break;
             default:
                 result.notImplemented();
                 break;
@@ -113,6 +119,20 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
             webViewManager = null;
         }
     }
+
+
+    private void back(MethodCall call, MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.back(call, result);
+        }
+    }
+
+    private void forward(MethodCall call, MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.forward(call, result);
+        }
+    }
+
 
     private void reload(MethodCall call, MethodChannel.Result result) {
         if (webViewManager != null) {
