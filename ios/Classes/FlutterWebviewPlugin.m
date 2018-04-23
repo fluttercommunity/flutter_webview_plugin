@@ -6,6 +6,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 @interface FlutterWebviewPlugin() <WKNavigationDelegate, UIScrollViewDelegate> {
     BOOL _enableAppScheme;
     BOOL _enableZoom;
+    NSMutableDictionary *_additionalHttpHeaders;
 }
 @end
 
@@ -25,6 +26,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     self = [super init];
     if (self) {
         self.viewController = viewController;
+        _additionalHttpHeaders = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -57,6 +59,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     NSNumber *hidden = call.arguments[@"hidden"];
     NSDictionary *rect = call.arguments[@"rect"];
     _enableAppScheme = call.arguments[@"enableAppScheme"];
+    _additionalHttpHeaders = call.arguments[@"additionalHttpHeaders"];
     NSString *userAgent = call.arguments[@"userAgent"];
     NSNumber *withZoom = call.arguments[@"withZoom"];
     
@@ -102,7 +105,10 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 - (void)navigate:(FlutterMethodCall*)call {
     if (self.webview != nil) {
         NSString *url = call.arguments[@"url"];
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+        for (NSString *key in _additionalHttpHeaders) {
+            [request setValue:_additionalHttpHeaders[key] forHTTPHeaderField:key];
+        }
         [self.webview loadRequest:request];
     }
 }
@@ -155,7 +161,6 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         id data = @{@"url": navigationAction.request.URL.absoluteString};
         [channel invokeMethod:@"onUrlChanged" arguments:data];
     }
-
     if (_enableAppScheme ||
         ([webView.URL.scheme isEqualToString:@"http"] ||
          [webView.URL.scheme isEqualToString:@"https"] ||
