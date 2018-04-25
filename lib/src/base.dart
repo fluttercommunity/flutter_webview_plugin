@@ -81,7 +81,9 @@ class FlutterWebviewPlugin {
       String userAgent,
       bool withZoom,
       bool withLocalStorage,
-      Map<String,String>  additionalHttpHeaders,}) async {
+      Map<String,String>  additionalHttpHeaders,
+      List<String>  interceptUrls,
+      }) async {
     Map<String, dynamic> args = {
       "url": url,
       "withJavascript": withJavascript ?? true,
@@ -92,7 +94,8 @@ class FlutterWebviewPlugin {
       "userAgent": userAgent,
       "withZoom": withZoom ?? false,
       "withLocalStorage": withLocalStorage ?? true,
-      "additionalHttpHeaders": additionalHttpHeaders ?? {}
+      "additionalHttpHeaders": additionalHttpHeaders ?? {},
+      "interceptUrls": interceptUrls ?? []
     };
     if (rect != null) {
       args["rect"] = {
