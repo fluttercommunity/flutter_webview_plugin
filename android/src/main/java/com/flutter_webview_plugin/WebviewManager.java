@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,9 +28,9 @@ class WebviewManager {
     boolean closed = false;
     WebView webView;
 
-    WebviewManager(Activity activity) {
+    WebviewManager(Activity activity, List<String> interceptUrls) {
         this.webView = new WebView(activity);
-        WebViewClient webViewClient = new BrowserClient();
+        WebViewClient webViewClient = new BrowserClient(interceptUrls);
         webView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
