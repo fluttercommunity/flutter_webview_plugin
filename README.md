@@ -5,6 +5,10 @@
 
 Plugin that allow Flutter to communicate with a native WebView.
 
+***Warning:***
+The webview is not integrated in the widget tree, it is a native view on top of the flutter view.
+you won't be able to use snackbars, dialogs ...
+
 ## Getting Started
 
 For help getting started with Flutter, view our online [documentation](http://flutter.io/).
