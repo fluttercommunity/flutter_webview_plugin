@@ -76,7 +76,8 @@ class WebviewManager {
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
         webView.getSettings().setDomStorageEnabled(withLocalStorage);
-
+        webView.getSettings().setUseWideViewPort(true);
+        webView.getSettings().setLoadWithOverviewMode(true);
         if (clearCache) {
             clearCache();
         }
