@@ -98,12 +98,15 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
 
     if (widget.bottomNavigationBar != null) {
       height -=
-          56.0; // todo(lejard_h) find a way to determine bottomNavigationBar programmatically
+          56.0 + mediaQuery.padding.bottom; // todo(lejard_h) find a way to determine bottomNavigationBar programmatically
     }
 
     if (widget.persistentFooterButtons != null) {
       height -=
           53.0; // todo(lejard_h) find a way to determine persistentFooterButtons programmatically
+      if (widget.bottomNavigationBar == null){
+         height -= mediaQuery.padding.bottom;
+      }
     }
 
     return new Rect.fromLTWH(0.0, top, mediaQuery.size.width, height);
