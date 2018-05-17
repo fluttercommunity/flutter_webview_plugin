@@ -1,4 +1,4 @@
-package android.src.main.java.com.flutter_webview_plugin;
+package com.flutter_webview_plugin;
 import com.flutter_webview_plugin.OpenFileChooser;
 
 import android.app.Activity;

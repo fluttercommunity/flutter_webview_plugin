@@ -1,4 +1,4 @@
-package android.src.main.java.com.flutter_webview_plugin;
+package com.flutter_webview_plugin;
 
 import android.util.Log;
 import android.annotation.TargetApi;
@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.*;
 import android.widget.FrameLayout;
-import android.src.main.java.com.flutter_webview_plugin.BrowserChromeClient;
-import android.src.main.java.com.flutter_webview_plugin.BrowserClient;
+import com.flutter_webview_plugin.BrowserChromeClient;
+import com.flutter_webview_plugin.BrowserClient;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
