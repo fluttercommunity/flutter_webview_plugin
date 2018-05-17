@@ -1,4 +1,4 @@
-package com.flutter_webview_plugin;
+package android.src.main.java.com.flutter_webview_plugin;
 
 import android.util.Log;
 import android.annotation.TargetApi;
@@ -7,12 +7,10 @@ import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.CookieManager;
-import android.webkit.ValueCallback;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.webkit.*;
 import android.widget.FrameLayout;
-
+import com.flutter_webview_plugin.BrowserChromeClient;
+import com.flutter_webview_plugin.BrowserClient;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
@@ -51,6 +49,8 @@ class WebviewManager {
         });
 
         webView.setWebViewClient(webViewClient);
+        WebChromeClient webChromeClient= new BrowserChromeClient(activity);
+        webView.setWebChromeClient(webChromeClient);
     }
 
     private void clearCookies() {

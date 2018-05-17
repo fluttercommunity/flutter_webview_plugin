@@ -1,4 +1,4 @@
-package com.flutter_webview_plugin;
+package android.src.main.java.com.flutter_webview_plugin;
 
 import android.graphics.Bitmap;
 import android.webkit.WebResourceRequest;
