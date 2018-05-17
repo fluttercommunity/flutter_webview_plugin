@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.*;
 import android.widget.FrameLayout;
-import com.flutter_webview_plugin.BrowserChromeClient;
-import com.flutter_webview_plugin.BrowserClient;
+import android.src.main.java.com.flutter_webview_plugin.BrowserChromeClient;
+import android.src.main.java.com.flutter_webview_plugin.BrowserClient;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
