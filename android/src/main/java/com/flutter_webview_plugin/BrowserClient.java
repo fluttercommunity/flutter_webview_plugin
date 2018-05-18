@@ -1,10 +1,12 @@
 package com.flutter_webview_plugin;
 
 import android.graphics.Bitmap;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,8 +14,12 @@ import java.util.Map;
  */
 
 public class BrowserClient extends WebViewClient {
-    public BrowserClient() {
+
+    private final List<String> mInterceptUrls;
+
+    public BrowserClient(List<String> interceptUrls) {
         super();
+        mInterceptUrls = interceptUrls;
     }
 
     @Override
@@ -26,13 +32,24 @@ public class BrowserClient extends WebViewClient {
     }
 
     @Override
-    public void onPageFinished(WebView view, String url) {
-        super.onPageFinished(view, url);
+    public boolean shouldOverrideUrlLoading(WebView view, String url) {
         Map<String, Object> data = new HashMap<>();
         data.put("url", url);
 
         FlutterWebviewPlugin.channel.invokeMethod("onUrlChanged", data);
+        for (String interceptUrl : mInterceptUrls) {
+            if(url.contains(interceptUrl)){
+                return true;
+            }
+        }
+        return false;
+    }
 
+    @Override
+    public void onPageFinished(WebView view, String url) {
+        super.onPageFinished(view, url);
+        Map<String, Object> data = new HashMap<>();
+        data.put("url", url);
         data.put("type", "finishLoad");
         FlutterWebviewPlugin.channel.invokeMethod("onState", data);
 

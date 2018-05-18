@@ -7,6 +7,7 @@ import android.graphics.Point;
 import android.view.Display;
 import android.widget.FrameLayout;
 
+import java.util.List;
 import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
@@ -63,11 +64,16 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
         boolean clearCookies = call.argument("clearCookies");
         boolean withZoom = call.argument("withZoom");
         boolean withLocalStorage = call.argument("withLocalStorage");
+        Map<String, String> additionalHttpHeaders = call.argument("additionalHttpHeaders");
+        List<String> interceptUrls = call.argument("interceptUrls");
 
         if (webViewManager == null || webViewManager.closed == true) {
-            webViewManager = new WebviewManager(activity);
+            webViewManager = new WebviewManager(activity,interceptUrls);
         }
-
+        if(webViewManager.webView.getParent() != null){
+            webViewManager.webView.loadUrl(url);
+            return;
+        }
         FrameLayout.LayoutParams params = buildLayoutParams(call);
 
         activity.addContentView(webViewManager.webView, params);
@@ -79,7 +85,8 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
                 userAgent,
                 url,
                 withZoom,
-                withLocalStorage
+                withLocalStorage,
+                additionalHttpHeaders
         );
         result.success(null);
     }

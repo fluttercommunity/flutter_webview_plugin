@@ -7,14 +7,15 @@ import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.CookieManager;
-import android.webkit.ValueCallback;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.webkit.*;
 import android.widget.FrameLayout;
-
+import com.flutter_webview_plugin.BrowserChromeClient;
+import com.flutter_webview_plugin.BrowserClient;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by lejard_h on 20/12/2017.
@@ -25,9 +26,9 @@ class WebviewManager {
     boolean closed = false;
     WebView webView;
 
-    WebviewManager(Activity activity) {
+    WebviewManager(Activity activity, List<String> interceptUrls) {
         this.webView = new WebView(activity);
-        WebViewClient webViewClient = new BrowserClient();
+        WebViewClient webViewClient = new BrowserClient(interceptUrls);
         webView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -48,6 +49,8 @@ class WebviewManager {
         });
 
         webView.setWebViewClient(webViewClient);
+        WebChromeClient webChromeClient= new BrowserChromeClient(activity);
+        webView.setWebChromeClient(webChromeClient);
     }
 
     private void clearCookies() {
@@ -68,12 +71,13 @@ class WebviewManager {
         webView.clearFormData();
     }
 
-    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, boolean withZoom, boolean withLocalStorage) {
+    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, boolean withZoom, boolean withLocalStorage, Map<String, String> additionalHttpHeaders) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
         webView.getSettings().setDomStorageEnabled(withLocalStorage);
-
+        webView.getSettings().setUseWideViewPort(true);
+        webView.getSettings().setLoadWithOverviewMode(true);
         if (clearCache) {
             clearCache();
         }
@@ -90,7 +94,7 @@ class WebviewManager {
             webView.getSettings().setUserAgentString(userAgent);
         }
 
-        webView.loadUrl(url);
+        webView.loadUrl(url, additionalHttpHeaders);
     }
 
     void close(MethodCall call, MethodChannel.Result result) {
