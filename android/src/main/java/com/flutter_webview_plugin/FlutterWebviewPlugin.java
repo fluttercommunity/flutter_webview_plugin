@@ -54,7 +54,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
             case "back":
                 back(call, result);
                 break;
-                case "forward":
+            case "forward":
                 forward(call, result);
                 break;
             default:
