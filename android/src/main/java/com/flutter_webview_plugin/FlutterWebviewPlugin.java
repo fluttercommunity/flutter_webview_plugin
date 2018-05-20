@@ -120,20 +120,26 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
         }
     }
 
-
+    /** 
+    * Navigates back on the Webview.
+    */
     private void back(MethodCall call, MethodChannel.Result result) {
         if (webViewManager != null) {
             webViewManager.back(call, result);
         }
     }
-
+    /** 
+    * Navigates forward on the Webview.
+    */
     private void forward(MethodCall call, MethodChannel.Result result) {
         if (webViewManager != null) {
             webViewManager.forward(call, result);
         }
     }
 
-
+    /** 
+    * Reloads the Webview.
+    */
     private void reload(MethodCall call, MethodChannel.Result result) {
         if (webViewManager != null) {
             webViewManager.reload(call, result);
