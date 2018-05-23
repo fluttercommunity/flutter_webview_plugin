@@ -113,8 +113,11 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
 
     private void close(MethodCall call, MethodChannel.Result result) {
         if (webViewManager != null) {
-            webViewManager.close(call, result);
-            webViewManager = null;
+            boolean goBack = call.argument("goBack");
+            webViewManager.close(goBack, result);
+            if(!goBack){
+                webViewManager = null;
+            }
         }
     }
 

@@ -97,22 +97,25 @@ class WebviewManager {
         webView.loadUrl(url, additionalHttpHeaders);
     }
 
-    void close(MethodCall call, MethodChannel.Result result) {
-        if (webView != null) {
-            ViewGroup vg = (ViewGroup) (webView.getParent());
-            vg.removeView(webView);
+    void close(boolean goBack, MethodChannel.Result result) {
+        if(goBack && webView.canGoBack()){
+            webView.goBack();
+        }else {
+            if (webView != null) {
+                ViewGroup vg = (ViewGroup) (webView.getParent());
+                vg.removeView(webView);
+            }
+            webView = null;
+            if (result != null) {
+                result.success(null);
+            }
+            closed = true;
+            FlutterWebviewPlugin.channel.invokeMethod("onDestroy", null);
         }
-        webView = null;
-        if (result != null) {
-            result.success(null);
-        }
-
-        closed = true;
-        FlutterWebviewPlugin.channel.invokeMethod("onDestroy", null);
     }
 
     void close() {
-        close(null, null);
+        close(false, null);
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)

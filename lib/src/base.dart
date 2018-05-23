@@ -116,7 +116,7 @@ class FlutterWebviewPlugin {
 
   /// Close the Webview
   /// Will trigger the [onDestroy] event
-  Future close() => _channel.invokeMethod("close");
+  Future close([bool goBack = false]) => _channel.invokeMethod("close",{'goBack':goBack});
 
   /// Close all Streams
   void dispose() {
