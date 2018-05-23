@@ -71,6 +71,8 @@ class FlutterWebviewPlugin {
   /// - [withLocalStorage] enable localStorage API on Webview
   ///     Currently Android only.
   ///     It is always enabled in UIWebView of iOS and  can not be disabled.
+  /// - [withLocalUrl]: allow url as a local path
+  ///     Allow local files on iOs > 9.0
   Future<Null> launch(String url,
       {bool withJavascript,
       bool clearCache,
