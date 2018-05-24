@@ -47,7 +47,9 @@ class WebviewManager {
                 return false;
             }
         });
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
         webView.setWebViewClient(webViewClient);
         WebChromeClient webChromeClient= new BrowserChromeClient(activity);
         webView.setWebChromeClient(webChromeClient);
