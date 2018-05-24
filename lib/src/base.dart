@@ -172,7 +172,7 @@ class WebViewStateChanged {
 
   WebViewStateChanged(this.type, this.url, this.navigationType);
 
-  factory WebViewStateChanged.fromMap(Map<String, dynamic> map) {
+  factory WebViewStateChanged.fromMap(Map<dynamic, dynamic> map) {
     WebViewState t;
     switch (map["type"]) {
       case "shouldStart":
