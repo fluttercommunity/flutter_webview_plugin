@@ -38,7 +38,10 @@ class FlutterWebviewPlugin {
         _onUrlChanged.add(call.arguments["url"]);
         break;
       case "onState":
-        _onStateChanged.add(new WebViewStateChanged.fromMap(call.arguments));
+        _onStateChanged.add(
+          new WebViewStateChanged.fromMap(
+              new Map<String, dynamic>.from(call.arguments)),
+        );
         break;
       case "onError":
         _onError.add(call.arguments);
@@ -120,11 +123,11 @@ class FlutterWebviewPlugin {
   /// Reloads the WebView.
   /// This is only available on Android for now.
   Future reload() => _channel.invokeMethod("reload");
-  
+
   /// Navigates back on the Webview.
   /// This is only available on Android for now.
   Future goBack() => _channel.invokeMethod("back");
-  
+
   /// Navigates forward on the Webview.
   /// This is only available on Android for now.
   Future goForward() => _channel.invokeMethod("forward");
