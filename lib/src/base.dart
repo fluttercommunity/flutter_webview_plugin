@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 const _kChannel = 'flutter_webview_plugin';
 
@@ -71,6 +71,8 @@ class FlutterWebviewPlugin {
   /// - [withLocalStorage] enable localStorage API on Webview
   ///     Currently Android only.
   ///     It is always enabled in UIWebView of iOS and  can not be disabled.
+  /// - [withLocalUrl]: allow url as a local path
+  ///     Allow local files on iOs > 9.0
   Future<Null> launch(String url,
       {bool withJavascript,
       bool clearCache,
@@ -80,7 +82,8 @@ class FlutterWebviewPlugin {
       Rect rect,
       String userAgent,
       bool withZoom,
-      bool withLocalStorage}) async {
+      bool withLocalStorage,
+      bool withLocalUrl}) async {
     Map<String, dynamic> args = {
       "url": url,
       "withJavascript": withJavascript ?? true,
@@ -90,7 +93,8 @@ class FlutterWebviewPlugin {
       "enableAppScheme": enableAppScheme ?? true,
       "userAgent": userAgent,
       "withZoom": withZoom ?? false,
-      "withLocalStorage": withLocalStorage ?? true
+      "withLocalStorage": withLocalStorage ?? true,
+      "withLocalUrl": withLocalUrl ?? false
     };
     if (rect != null) {
       args["rect"] = {
