@@ -103,3 +103,9 @@ Future<Map<String, dynamic>> getCookies();
 ```dart
 Future<Null> resize(Rect rect);
 ```
+```dart
+Future<Null> show();
+```
+```dart
+Future<Null> hide();
+```
