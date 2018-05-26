@@ -157,13 +157,13 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 }
 
 - (void)show {
-    if (self.webview 1= nil) {
+    if (self.webview != nil) {
         self.webview.hidden = false;
     }
 }
 
 - (void)hide {
-    if (self.webview 1= nil) {
+    if (self.webview != nil) {
         self.webview.hidden = true;
     }
 }
