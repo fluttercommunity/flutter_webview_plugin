@@ -46,6 +46,12 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else if ([@"resize" isEqualToString:call.method]) {
         [self resize:call];
         result(nil);
+    } else if ([@"show" isEqualToString:call.method]) {
+        [self show];
+        result(nil);
+    } else if ([@"hide" isEqualToString:call.method]) {
+        [self hide];
+        result(nil);
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -147,6 +153,18 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
         // manually trigger onDestroy
         [channel invokeMethod:@"onDestroy" arguments:nil];
+    }
+}
+
+- (void)show {
+    if (self.webview 1= nil) {
+        self.webview.hidden = false;
+    }
+}
+
+- (void)hide {
+    if (self.webview 1= nil) {
+        self.webview.hidden = true;
     }
 }
 

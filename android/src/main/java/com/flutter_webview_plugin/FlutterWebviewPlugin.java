@@ -57,6 +57,12 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
             case "forward":
                 forward(call, result);
                 break;
+            case "hide":
+                hide(call, result);
+                break;
+            case "show":
+                show(call, result);
+                break;
             default:
                 result.notImplemented();
                 break;
@@ -157,6 +163,16 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
             webViewManager.resize(params);
         }
         result.success(null);
+    }
+    private void hide(MethodCall call, final MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.hide(call, result);
+        }
+    }
+    private void show(MethodCall call, final MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.show(call, result);
+        }
     }
 
     private int dp2px(Context context, float dp) {
