@@ -109,3 +109,6 @@ Future<Null> show();
 ```dart
 Future<Null> hide();
 ```
+```dart
+Future<Null> reloadUrl(String url);
+```

@@ -63,6 +63,9 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
             case "show":
                 show(call, result);
                 break;
+			case "reloadUrl":
+                reloadUrl(call, result);
+                break;				
             default:
                 result.notImplemented();
                 break;
@@ -149,6 +152,20 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
     private void reload(MethodCall call, MethodChannel.Result result) {
         if (webViewManager != null) {
             webViewManager.reload(call, result);
+        }
+    }
+	private void reloadUrl(MethodCall call, MethodChannel.Result result) {
+        if (webViewManager != null) {
+            String url = call.argument("url");
+            webViewManager.openUrl(false,
+                    false,
+                    false,
+                    false,
+                    "",
+                    url,
+                    false,
+                    false
+            );
         }
     }
     private void eval(MethodCall call, final MethodChannel.Result result) {

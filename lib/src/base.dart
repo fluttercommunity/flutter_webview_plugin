@@ -138,6 +138,14 @@ class FlutterWebviewPlugin {
   // Shows the webview
   Future show() => _channel.invokeMethod("show");
 
+  // Reload webview with a new url
+  Future reloadUrl(String url) async {
+    Map<String, dynamic> args = {
+      "url": url
+    };
+    await _channel.invokeMethod("reloadUrl", args);
+  }
+
   /// Close all Streams
   void dispose() {
     _onDestroy.close();
