@@ -46,6 +46,9 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else if ([@"resize" isEqualToString:call.method]) {
         [self resize:call];
         result(nil);
+	} else if ([@"reloadUrl" isEqualToString:call.method]) {
+        [self reloadUrl:call];
+        result(nil);	
     } else if ([@"show" isEqualToString:call.method]) {
         [self show];
         result(nil);
@@ -156,6 +159,13 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     }
 }
 
+- (void)reloadUrl:(FlutterMethodCall*)call {
+    if (self.webview != nil) {
+		NSString *url = call.arguments[@"url"];
+		NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        [self.webview loadRequest:request];
+    }
+}
 - (void)show {
     if (self.webview != nil) {
         self.webview.hidden = false;
