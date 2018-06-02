@@ -46,7 +46,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else if ([@"resize" isEqualToString:call.method]) {
         [self resize:call];
         result(nil);
-	} else if ([@"reloadUrl" isEqualToString:call.method]) {
+    } else if ([@"reloadUrl" isEqualToString:call.method]) {
         [self reloadUrl:call];
         result(nil);	
     } else if ([@"show" isEqualToString:call.method]) {
