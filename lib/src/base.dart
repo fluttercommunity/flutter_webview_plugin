@@ -143,7 +143,7 @@ class FlutterWebviewPlugin {
 
   Future<Map<String, dynamic>> getCookies() async {
     final cookiesString = await evalJavascript("document.cookie");
-    final cookies = {};
+    final cookies = <String, dynamic>{};
 
     if (cookiesString?.isNotEmpty == true) {
       cookiesString.split(";").forEach((String cookie) {
