@@ -1,5 +1,7 @@
 package com.flutter_webview_plugin;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -16,17 +19,40 @@ import android.widget.FrameLayout;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Created by lejard_h on 20/12/2017.
  */
 
 class WebviewManager {
 
+    private ValueCallback<Uri> mUploadMessage;
+    private final static int FILECHOOSER_RESULTCODE=1;
+
+    @TargetApi(7)
+    class ResultHandler {
+        public void handleResult(int requestCode, int resultCode, Intent intent){
+            if(requestCode==FILECHOOSER_RESULTCODE)
+            {
+                if (null == mUploadMessage) return;
+                Uri result = intent == null || resultCode != RESULT_OK ? null
+                        : intent.getData();
+                mUploadMessage.onReceiveValue(result);
+                mUploadMessage = null;
+            }
+        }
+    }
+
     boolean closed = false;
     WebView webView;
+    Activity activity;
+    ResultHandler resultHandler;
 
-    WebviewManager(Activity activity) {
+    WebviewManager(final Activity activity) {
         this.webView = new WebView(activity);
+        this.activity = activity;
+        this.resultHandler = new ResultHandler();
         WebViewClient webViewClient = new BrowserClient();
         webView.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -48,6 +74,42 @@ class WebviewManager {
         });
 
         webView.setWebViewClient(webViewClient);
+        webView.setWebChromeClient(new WebChromeClient()
+        {
+            //The undocumented magic method override
+            //Eclipse will swear at you if you try to put @Override here
+            // For Android 3.0+
+            public void openFileChooser(ValueCallback<Uri> uploadMsg) {
+
+                mUploadMessage = uploadMsg;
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("image/*");
+                activity.startActivityForResult(Intent.createChooser(i,"File Chooser"), FILECHOOSER_RESULTCODE);
+
+            }
+
+            // For Android 3.0+
+            public void openFileChooser( ValueCallback uploadMsg, String acceptType ) {
+                mUploadMessage = uploadMsg;
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("*/*");
+               activity.startActivityForResult(
+                        Intent.createChooser(i, "File Browser"),
+                        FILECHOOSER_RESULTCODE);
+            }
+
+            //For Android 4.1
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture){
+                mUploadMessage = uploadMsg;
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("image/*");
+                activity.startActivityForResult( Intent.createChooser( i, "File Chooser" ), FILECHOOSER_RESULTCODE );
+
+            }
+        });
     }
 
     private void clearCookies() {
