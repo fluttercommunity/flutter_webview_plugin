@@ -28,22 +28,41 @@ import static android.app.Activity.RESULT_OK;
 class WebviewManager {
 
     private ValueCallback<Uri> mUploadMessage;
+    private ValueCallback<Uri[]> mUploadMessageArray;
     private final static int FILECHOOSER_RESULTCODE=1;
 
     @TargetApi(7)
     class ResultHandler {
         public boolean handleResult(int requestCode, int resultCode, Intent intent){
-            if(requestCode==FILECHOOSER_RESULTCODE)
-            {
-                if (null != mUploadMessage) {
-                    Uri result = intent == null || resultCode != RESULT_OK ? null
-                            : intent.getData();
-                    mUploadMessage.onReceiveValue(result);
-                    mUploadMessage = null;
+            boolean handled = false;
+            if(Build.VERSION.SDK_INT >= 21){
+                Uri[] results = null;
+                // check result
+                if(resultCode == Activity.RESULT_OK){
+                    if(requestCode == FILECHOOSER_RESULTCODE){
+                        if(mUploadMessageArray != null){
+                            String dataString = intent.getDataString();
+                            if(dataString != null){
+                                results = new Uri[]{Uri.parse(dataString)};
+                            }
+                        }
+                        handled = true;
+                    }
                 }
-                return true;
+                mUploadMessageArray.onReceiveValue(results);
+                mUploadMessageArray = null;
+            }else {
+                if (requestCode == FILECHOOSER_RESULTCODE) {
+                    if (null != mUploadMessage) {
+                        Uri result = intent == null || resultCode != RESULT_OK ? null
+                                : intent.getData();
+                        mUploadMessage.onReceiveValue(result);
+                        mUploadMessage = null;
+                    }
+                    handled = true;
+                }
             }
-            return false;
+            return handled;
         }
     }
 
@@ -111,6 +130,29 @@ class WebviewManager {
                 i.setType("image/*");
                 activity.startActivityForResult( Intent.createChooser( i, "File Chooser" ), FILECHOOSER_RESULTCODE );
 
+            }
+
+            //For Android 5.0+
+            public boolean onShowFileChooser(
+                    WebView webView, ValueCallback<Uri[]> filePathCallback,
+                    FileChooserParams fileChooserParams){
+                if(mUploadMessageArray != null){
+                    mUploadMessageArray.onReceiveValue(null);
+                }
+                mUploadMessageArray = filePathCallback;
+
+                Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                contentSelectionIntent.setType("*/*");
+                Intent[] intentArray;
+                intentArray = new Intent[0];
+
+                Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
+                chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
+                chooserIntent.putExtra(Intent.EXTRA_TITLE, "Image Chooser");
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
+                activity.startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
+                return true;
             }
         });
     }
