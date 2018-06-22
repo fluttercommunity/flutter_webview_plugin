@@ -32,15 +32,18 @@ class WebviewManager {
 
     @TargetApi(7)
     class ResultHandler {
-        public void handleResult(int requestCode, int resultCode, Intent intent){
+        public boolean handleResult(int requestCode, int resultCode, Intent intent){
             if(requestCode==FILECHOOSER_RESULTCODE)
             {
-                if (null == mUploadMessage) return;
-                Uri result = intent == null || resultCode != RESULT_OK ? null
-                        : intent.getData();
-                mUploadMessage.onReceiveValue(result);
-                mUploadMessage = null;
+                if (null != mUploadMessage) {
+                    Uri result = intent == null || resultCode != RESULT_OK ? null
+                            : intent.getData();
+                    mUploadMessage.onReceiveValue(result);
+                    mUploadMessage = null;
+                }
+                return true;
             }
+            return false;
         }
     }
 
