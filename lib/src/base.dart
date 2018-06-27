@@ -80,19 +80,21 @@ class FlutterWebviewPlugin {
       {bool withJavascript,
       bool clearCache,
       bool clearCookies,
+      Map<String, String> cookies,
       bool hidden,
       bool enableAppScheme,
       Rect rect,
       String userAgent,
       bool withZoom,
       bool withLocalStorage,
-      bool withLocalUrl}) async {
+        bool withLocalUrl}) async {
     Map<String, dynamic> args = {
       "url": url,
       "withJavascript": withJavascript ?? true,
       "clearCache": clearCache ?? false,
       "hidden": hidden ?? false,
       "clearCookies": clearCookies ?? false,
+      "cookies": cookies ?? null,
       "enableAppScheme": enableAppScheme ?? true,
       "userAgent": userAgent,
       "withZoom": withZoom ?? false,

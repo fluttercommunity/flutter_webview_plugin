@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import java.util.Map;
 
 /**
  * Created by lejard_h on 20/12/2017.
@@ -63,12 +64,18 @@ class WebviewManager {
         }
     }
 
+    private void setCookies(String url, Map<String, String> cookies) {
+        for (String key : cookies.keySet()) {
+            CookieManager.getInstance().setCookie(url, key + "=" + cookies.get(key));
+        }
+    }
+
     private void clearCache() {
         webView.clearCache(true);
         webView.clearFormData();
     }
 
-    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, boolean withZoom, boolean withLocalStorage) {
+    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, boolean withZoom, boolean withLocalStorage, Map<String, String> cookies) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
@@ -84,6 +91,10 @@ class WebviewManager {
 
         if (clearCookies) {
             clearCookies();
+        }
+
+        if (cookies != null && !cookies.isEmpty()) {
+            setCookies(url, cookies);
         }
 
         if (userAgent != null) {

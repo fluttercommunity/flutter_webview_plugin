@@ -61,6 +61,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 }
 
 - (void)initWebview:(FlutterMethodCall*)call {
+    NSString *url = call.arguments[@"url"];
     NSNumber *clearCache = call.arguments[@"clearCache"];
     NSNumber *clearCookies = call.arguments[@"clearCookies"];
     NSNumber *hidden = call.arguments[@"hidden"];
@@ -68,6 +69,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     _enableAppScheme = call.arguments[@"enableAppScheme"];
     NSString *userAgent = call.arguments[@"userAgent"];
     NSNumber *withZoom = call.arguments[@"withZoom"];
+    NSDictionary *cookies = call.arguments[@"cookies"];
     
     if (clearCache != (id)[NSNull null] && [clearCache boolValue]) {
         [[NSURLCache sharedURLCache] removeAllCachedResponses];
@@ -75,6 +77,26 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     
     if (clearCookies != (id)[NSNull null] && [clearCookies boolValue]) {
         [[NSURLSession sharedSession] resetWithCompletionHandler:^{
+        }];
+    }
+
+    if (cookies != (id)[NSNull null]) {
+        [dict enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop) {
+            NSMutableDictionary *cookieProperties = [NSMutableDictionary dictionary];
+            [cookieProperties setObject:@key" forKey:NSHTTPCookieName];
+            [cookieProperties setObject:@value forKey:NSHTTPCookieValue];
+            [cookieProperties setObject:@url forKey:NSHTTPCookieDomain];
+            [cookieProperties setObject:@url forKey:NSHTTPCookieOriginURL];
+            [cookieProperties setObject:@"/" forKey:NSHTTPCookiePath];
+            [cookieProperties setObject:@"0" forKey:NSHTTPCookieVersion];
+
+            // set expiration to one month from now or any NSDate of your choosing
+            // this makes the cookie sessionless and it will persist across web sessions and app launches
+            /// if you want the cookie to be destroyed when your app exits, don't set this
+            [cookieProperties setObject:[[NSDate date] dateByAddingTimeInterval:2629743] forKey:NSHTTPCookieExpires];
+
+            NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:cookieProperties];
+            [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
         }];
     }
     
