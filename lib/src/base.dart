@@ -132,6 +132,14 @@ class FlutterWebviewPlugin {
   /// This is only available on Android for now.
   Future goForward() => _channel.invokeMethod("forward");
 
+  /// adds the plugin as ActivityResultListener
+  /// Only needed and used on Android
+  Future registerAcitivityResultListener() => _channel.invokeMethod("registerAcitivityResultListener");
+
+  /// removes the plugin as ActivityResultListener
+  /// Only needed and used on Android
+  Future removeAcitivityResultListener() => _channel.invokeMethod("removeAcitivityResultListener");
+
   /// Close all Streams
   void dispose() {
     _onDestroy.close();
