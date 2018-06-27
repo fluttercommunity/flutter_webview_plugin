@@ -22,13 +22,12 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     private Activity activity;
     private WebviewManager webViewManager;
     static MethodChannel channel;
-    private PluginRegistry.Registrar registrar;
     private static final String CHANNEL_NAME = "flutter_webview_plugin";
 
     public static void registerWith(PluginRegistry.Registrar registrar) {
         channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
         final FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity());
-        this.registrar = registrar;
+        registrar.addActivityResultListener(instance);
         channel.setMethodCallHandler(instance);
     }
 
@@ -36,23 +35,9 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         this.activity = activity;
     }
 
-    private void addResultListener(){
-        registrar.addActivityResultListener(instance);
-    }
-
-    private void removeResultListener(){
-        registrar.removeResultListener(instance);
-    }
-
     @Override
     public void onMethodCall(MethodCall call, MethodChannel.Result result) {
         switch (call.method) {
-            case "registerActivityResultListener":
-                addResultListener();
-                break;
-            case "removeActivityResultListener":
-                removeResultListener();
-                break;
             case "launch":
                 openUrl(call, result);
                 break;
@@ -183,6 +168,9 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
 
     @Override
     public boolean onActivityResult(int i, int i1, Intent intent) {
-        return webViewManager.resultHandler.handleResult(i, i1, intent);
+        if(webViewManager != null && webViewManager.resultHandler != null){
+            return webViewManager.resultHandler.handleResult(i, i1, intent);
+        }
+        return false;
     }
 }
