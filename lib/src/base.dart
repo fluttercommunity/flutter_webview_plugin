@@ -131,6 +131,20 @@ class FlutterWebviewPlugin {
   /// Navigates forward on the Webview.
   /// This is only available on Android for now.
   Future goForward() => _channel.invokeMethod("forward");
+  
+  // Hides the webview
+  Future hide() => _channel.invokeMethod("hide");
+  
+  // Shows the webview
+  Future show() => _channel.invokeMethod("show");
+
+  // Reload webview with a new url
+  Future reloadUrl(String url) async {
+    Map<String, dynamic> args = {
+      "url": url
+    };
+    await _channel.invokeMethod("reloadUrl", args);
+  }
 
   /// adds the plugin as ActivityResultListener
   /// Only needed and used on Android

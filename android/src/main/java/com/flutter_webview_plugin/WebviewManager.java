@@ -269,4 +269,14 @@ class WebviewManager {
     boolean canGoForward() {
         return webView.canGoForward();
     }
+    void hide(MethodCall call, MethodChannel.Result result) {
+        if (webView != null) {
+            webView.setVisibility(View.INVISIBLE);
+        }
+    }
+    void show(MethodCall call, MethodChannel.Result result) {
+        if (webView != null) {
+            webView.setVisibility(View.VISIBLE);
+        }
+    }
 }
