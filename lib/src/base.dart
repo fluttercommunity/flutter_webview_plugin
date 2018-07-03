@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 const _kChannel = 'flutter_webview_plugin';
 
@@ -19,7 +19,7 @@ class FlutterWebviewPlugin {
   final _onDestroy = new StreamController<Null>.broadcast();
   final _onUrlChanged = new StreamController<String>.broadcast();
   final _onStateChanged = new StreamController<WebViewStateChanged>.broadcast();
-  final _onError = new StreamController<String>.broadcast();
+  final _onError = new StreamController<WebViewError>.broadcast();
 
   static FlutterWebviewPlugin _instance;
 
@@ -38,10 +38,13 @@ class FlutterWebviewPlugin {
         _onUrlChanged.add(call.arguments["url"]);
         break;
       case "onState":
-        _onStateChanged.add(new WebViewStateChanged.fromMap(call.arguments));
+        _onStateChanged.add(
+          new WebViewStateChanged.fromMap(
+              new Map<String, dynamic>.from(call.arguments)),
+        );
         break;
       case "onError":
-        _onError.add(call.arguments);
+        _onError.add(WebViewError(call.arguments['code'], call.arguments['url']));
         break;
     }
   }
@@ -57,6 +60,8 @@ class FlutterWebviewPlugin {
   /// more detail than other events
   Stream<WebViewStateChanged> get onStateChanged => _onStateChanged.stream;
 
+  Stream<WebViewError> get onError => _onError.stream;
+
   /// Start the Webview with [url]
   /// - [withJavascript] enable Javascript or not for the Webview
   ///     iOS WebView: Not implemented yet
@@ -71,6 +76,8 @@ class FlutterWebviewPlugin {
   /// - [withLocalStorage] enable localStorage API on Webview
   ///     Currently Android only.
   ///     It is always enabled in UIWebView of iOS and  can not be disabled.
+  /// - [withLocalUrl]: allow url as a local path
+  ///     Allow local files on iOs > 9.0
   Future<Null> launch(String url,
       {bool withJavascript,
       bool clearCache,
@@ -80,7 +87,8 @@ class FlutterWebviewPlugin {
       Rect rect,
       String userAgent,
       bool withZoom,
-      bool withLocalStorage}) async {
+      bool withLocalStorage,
+      bool withLocalUrl}) async {
     Map<String, dynamic> args = {
       "url": url,
       "withJavascript": withJavascript ?? true,
@@ -90,7 +98,8 @@ class FlutterWebviewPlugin {
       "enableAppScheme": enableAppScheme ?? true,
       "userAgent": userAgent,
       "withZoom": withZoom ?? false,
-      "withLocalStorage": withLocalStorage ?? true
+      "withLocalStorage": withLocalStorage ?? true,
+      "withLocalUrl": withLocalUrl ?? false
     };
     if (rect != null) {
       args["rect"] = {
@@ -112,6 +121,32 @@ class FlutterWebviewPlugin {
   /// Close the Webview
   /// Will trigger the [onDestroy] event
   Future close() => _channel.invokeMethod("close");
+
+  /// Reloads the WebView.
+  /// This is only available on Android for now.
+  Future reload() => _channel.invokeMethod("reload");
+
+  /// Navigates back on the Webview.
+  /// This is only available on Android for now.
+  Future goBack() => _channel.invokeMethod("back");
+
+  /// Navigates forward on the Webview.
+  /// This is only available on Android for now.
+  Future goForward() => _channel.invokeMethod("forward");
+  
+  // Hides the webview
+  Future hide() => _channel.invokeMethod("hide");
+  
+  // Shows the webview
+  Future show() => _channel.invokeMethod("show");
+
+  // Reload webview with a new url
+  Future reloadUrl(String url) async {
+    Map<String, dynamic> args = {
+      "url": url
+    };
+    await _channel.invokeMethod("reloadUrl", args);
+  }
 
   /// Close all Streams
   void dispose() {
@@ -171,4 +206,11 @@ class WebViewStateChanged {
     }
     return new WebViewStateChanged(t, map["url"], map["navigationType"]);
   }
+}
+
+class WebViewError {
+  final String url;
+  final String code;
+
+  WebViewError(this.code, this.url);
 }

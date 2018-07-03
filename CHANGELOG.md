@@ -1,3 +1,12 @@
+# 0.1.6
+
+- fix onStateChanged
+- Taking safe areas into account for bottom bars
+- iOS
+    + withLocalUrl option for iOS > 9.0
+- Android
+    + add reload, goBack and foForward function
+
 # 0.1.5
 
 - iOS use WKWebView instead of UIWebView
