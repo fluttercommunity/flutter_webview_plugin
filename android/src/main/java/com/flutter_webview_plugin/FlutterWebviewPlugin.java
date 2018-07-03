@@ -48,6 +48,24 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
             case "resize":
                 resize(call, result);
                 break;
+            case "reload":
+                reload(call, result);
+                break;
+            case "back":
+                back(call, result);
+                break;
+            case "forward":
+                forward(call, result);
+                break;
+            case "hide":
+                hide(call, result);
+                break;
+            case "show":
+                show(call, result);
+                break;
+            case "reloadUrl":
+                reloadUrl(call, result);
+                break;				
             default:
                 result.notImplemented();
                 break;
@@ -111,6 +129,45 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
         }
     }
 
+    /** 
+    * Navigates back on the Webview.
+    */
+    private void back(MethodCall call, MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.back(call, result);
+        }
+    }
+    /** 
+    * Navigates forward on the Webview.
+    */
+    private void forward(MethodCall call, MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.forward(call, result);
+        }
+    }
+
+    /** 
+    * Reloads the Webview.
+    */
+    private void reload(MethodCall call, MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.reload(call, result);
+        }
+    }
+    private void reloadUrl(MethodCall call, MethodChannel.Result result) {
+        if (webViewManager != null) {
+            String url = call.argument("url");
+            webViewManager.openUrl(false,
+                    false,
+                    false,
+                    false,
+                    "",
+                    url,
+                    false,
+                    false
+            );
+        }
+    }
     private void eval(MethodCall call, final MethodChannel.Result result) {
         if (webViewManager != null) {
             webViewManager.eval(call, result);
@@ -123,6 +180,16 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
             webViewManager.resize(params);
         }
         result.success(null);
+    }
+    private void hide(MethodCall call, final MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.hide(call, result);
+        }
+    }
+    private void show(MethodCall call, final MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.show(call, result);
+        }
     }
 
     private int dp2px(Context context, float dp) {

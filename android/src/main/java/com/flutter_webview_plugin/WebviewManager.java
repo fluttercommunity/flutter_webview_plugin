@@ -122,8 +122,54 @@ class WebviewManager {
             }
         });
     }
+    /** 
+    * Reloads the Webview.
+    */
+    void reload(MethodCall call, MethodChannel.Result result) {
+        if (webView != null) {
+            webView.reload();
+        }
+    }
+    /** 
+    * Navigates back on the Webview.
+    */
+    void back(MethodCall call, MethodChannel.Result result) {
+        if (webView != null && webView.canGoBack()) {
+            webView.goBack();
+        }
+    }
+    /** 
+    * Navigates forward on the Webview.
+    */
+    void forward(MethodCall call, MethodChannel.Result result) {
+        if (webView != null && webView.canGoForward()) {
+            webView.goForward();
+        }
+    }
 
     void resize(FrameLayout.LayoutParams params) {
         webView.setLayoutParams(params);
+    }
+    /** 
+    * Checks if going back on the Webview is possible.
+    */
+    boolean canGoBack() {
+        return webView.canGoBack();
+    }
+    /** 
+    * Checks if going forward on the Webview is possible.
+    */
+    boolean canGoForward() {
+        return webView.canGoForward();
+    }
+    void hide(MethodCall call, MethodChannel.Result result) {
+        if (webView != null) {
+            webView.setVisibility(View.INVISIBLE);
+        }
+    }
+    void show(MethodCall call, MethodChannel.Result result) {
+        if (webView != null) {
+            webView.setVisibility(View.VISIBLE);
+        }
     }
 }
