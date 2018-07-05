@@ -1,6 +1,4 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.flutter_webview_plugin">
 
-    <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="23"/>
-
 </manifest>
