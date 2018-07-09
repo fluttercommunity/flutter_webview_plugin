@@ -279,4 +279,10 @@ class WebviewManager {
             webView.setVisibility(View.VISIBLE);
         }
     }
+
+    void stopLoading(MethodCall call, MethodChannel.Result result){
+        if (webView != null){
+            webView.stopLoading();
+        }
+    }
 }
