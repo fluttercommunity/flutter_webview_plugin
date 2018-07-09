@@ -55,6 +55,9 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else if ([@"hide" isEqualToString:call.method]) {
         [self hide];
         result(nil);
+    } else if ([@"stopLoading" isEqualToString:call.method]) {
+        [self stopLoading];
+        result(nil);
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -175,6 +178,11 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 - (void)hide {
     if (self.webview != nil) {
         self.webview.hidden = true;
+    }
+}
+- (void)stopLoading {
+    if (self.webview != nil) {
+        [self.webview stopLoading];
     }
 }
 
