@@ -67,6 +67,9 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
                 break;
             case "reloadUrl":
                 reloadUrl(call, result);
+                break;
+            case "stopLoading":
+                stopLoading(call, result);
                 break;				
             default:
                 result.notImplemented();
@@ -122,6 +125,12 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         }
 
         return params;
+    }
+
+    private void stopLoading(MethodCall call, MethodChannel.Result result) {
+        if (webViewManager != null){
+            webViewManager.stopLoading(call, result);
+        }
     }
 
     private void close(MethodCall call, MethodChannel.Result result) {
