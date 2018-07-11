@@ -93,7 +93,7 @@ Future<Null> launch(String url,
          String userAgent: null,
          bool withZoom: false,
          bool withLocalStorage: true,
-         bool allowFileURLs: flase  # Allows using "file:///" urls in Android});
+         bool allowFileURLs: flase});  // Allows using "file:///" urls in Android
 ```
 
 ```dart
