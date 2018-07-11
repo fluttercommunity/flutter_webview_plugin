@@ -1,11 +1,10 @@
-[![pub package](https://img.shields.io/pub/v/flutter_webview_plugin.svg)](https://pub.dartlang.org/packages/flutter_webview_plugin) 
-
+[![pub package](https://img.shields.io/pub/v/flutter_webview_plugin.svg)](https://pub.dartlang.org/packages/flutter_webview_plugin)
 
 # flutter_webview_plugin
 
 Plugin that allow Flutter to communicate with a native WebView.
 
-***Warning:***
+**_Warning:_**
 The webview is not integrated in the widget tree, it is a native view on top of the flutter view.
 you won't be able to use snackbars, dialogs ...
 
@@ -34,11 +33,12 @@ new MaterialApp(
 so you can take control of the webview from anywhere in the app
 
 listen for events
+
 ```dart
 final flutterWebviewPlugin = new FlutterWebviewPlugin();
 
 flutterWebviewPlugin.onUrlChanged.listen((String url) {
-  
+
 });
 ```
 
@@ -64,9 +64,9 @@ final flutterWebviewPlugin = new FlutterWebviewPlugin();
 flutterWebviewPlugin.launch(url,
                   fullScreen: false,
                   rect: new Rect.fromLTWH(
-                      0.0, 
-                      0.0, 
-                      MediaQuery.of(context).size.width, 
+                      0.0,
+                      0.0,
+                      MediaQuery.of(context).size.width,
                       300.0));
 ```
 
@@ -77,7 +77,7 @@ flutterWebviewPlugin.launch(url,
 - `Stream<WebViewStateChanged>` onStateChanged
 - `Stream<String>` onError
 
-***Don't forget to dispose webview***
+**_Don't forget to dispose webview_**
 `flutterWebviewPlugin.dispose()`
 
 ### Webview Functions
@@ -92,23 +92,30 @@ Future<Null> launch(String url,
          Rect rect: null,
          String userAgent: null,
          bool withZoom: false,
-         bool withLocalStorage: true});
+         bool withLocalStorage: true,
+         bool allowFileURLs: flase  # Allows using "file:///" urls in Android});
 ```
+
 ```dart
 Future<String> evalJavascript(String code);
 ```
+
 ```dart
 Future<Map<String, dynamic>> getCookies();
 ```
+
 ```dart
 Future<Null> resize(Rect rect);
 ```
+
 ```dart
 Future<Null> show();
 ```
+
 ```dart
 Future<Null> hide();
 ```
+
 ```dart
 Future<Null> reloadUrl(String url);
 ```
