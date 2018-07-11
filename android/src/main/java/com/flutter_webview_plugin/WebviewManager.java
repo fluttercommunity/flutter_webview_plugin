@@ -68,11 +68,22 @@ class WebviewManager {
         webView.clearFormData();
     }
 
-    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, boolean withZoom, boolean withLocalStorage) {
+    void openUrl(
+            boolean withJavascript, 
+            boolean clearCache,
+            boolean hidden, 
+            boolean clearCookies,
+            String userAgent, 
+            String url, 
+            boolean withZoom, 
+            boolean withLocalStorage, 
+            boolean allowFileURLs) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
         webView.getSettings().setDomStorageEnabled(withLocalStorage);
+        webView.getSettings().setAllowFileAccessFromFileURLs(allowFileURLs);
+        webView.getSettings().setAllowUniversalAccessFromFileURLs(allowFileURLs);
 
         if (clearCache) {
             clearCache();

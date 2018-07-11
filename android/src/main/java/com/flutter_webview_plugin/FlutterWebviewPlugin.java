@@ -81,6 +81,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
         boolean clearCookies = call.argument("clearCookies");
         boolean withZoom = call.argument("withZoom");
         boolean withLocalStorage = call.argument("withLocalStorage");
+        boolean allowFileURLs = call.argument("allowFileURLs");
 
         if (webViewManager == null || webViewManager.closed == true) {
             webViewManager = new WebviewManager(activity);
@@ -90,14 +91,16 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
 
         activity.addContentView(webViewManager.webView, params);
 
-        webViewManager.openUrl(withJavascript,
-                clearCache,
-                hidden,
-                clearCookies,
-                userAgent,
-                url,
-                withZoom,
-                withLocalStorage
+        webViewManager.openUrl(
+            withJavascript,
+            clearCache,
+            hidden,
+            clearCookies,
+            userAgent,
+            url,
+            withZoom,
+            withLocalStorage,
+            allowFileURLs
         );
         result.success(null);
     }
@@ -157,14 +160,16 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
     private void reloadUrl(MethodCall call, MethodChannel.Result result) {
         if (webViewManager != null) {
             String url = call.argument("url");
-            webViewManager.openUrl(false,
-                    false,
-                    false,
-                    false,
-                    "",
-                    url,
-                    false,
-                    false
+            webViewManager.openUrl(
+                false,
+                false,
+                false,
+                false,
+                "",
+                url,
+                false,
+                false,
+                false
             );
         }
     }

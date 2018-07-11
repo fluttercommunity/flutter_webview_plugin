@@ -19,6 +19,7 @@ class WebviewScaffold extends StatefulWidget {
   final bool withZoom;
   final bool withLocalStorage;
   final bool withLocalUrl;
+  final bool allowFileURLs;
 
   WebviewScaffold(
       {Key key,
@@ -34,7 +35,8 @@ class WebviewScaffold extends StatefulWidget {
       this.bottomNavigationBar,
       this.withZoom,
       this.withLocalStorage,
-      this.withLocalUrl})
+      this.withLocalUrl,
+      this.allowFileURLs})
       : super(key: key);
 
   @override
@@ -70,7 +72,8 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
           rect: _rect,
           withZoom: widget.withZoom,
           withLocalStorage: widget.withLocalStorage,
-          withLocalUrl: widget.withLocalUrl);
+          withLocalUrl: widget.withLocalUrl,
+          allowFileURLs: widget.allowFileURLs);
     } else {
       Rect rect = _buildRect(context);
       if (_rect != rect) {

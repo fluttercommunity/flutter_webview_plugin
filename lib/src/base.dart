@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -86,7 +87,8 @@ class FlutterWebviewPlugin {
       String userAgent,
       bool withZoom,
       bool withLocalStorage,
-      bool withLocalUrl}) async {
+      bool withLocalUrl,
+      bool allowFileURLs}) async {
     Map<String, dynamic> args = {
       "url": url,
       "withJavascript": withJavascript ?? true,
@@ -97,7 +99,7 @@ class FlutterWebviewPlugin {
       "userAgent": userAgent,
       "withZoom": withZoom ?? false,
       "withLocalStorage": withLocalStorage ?? true,
-      "withLocalUrl": withLocalUrl ?? false
+      "withLocalUrl": withLocalUrl ?? false,
     };
     if (rect != null) {
       args["rect"] = {
@@ -106,6 +108,9 @@ class FlutterWebviewPlugin {
         "width": rect.width,
         "height": rect.height
       };
+    }
+    if (Platform.isAndroid) {
+      args["allowFileURLs"] = allowFileURLs ?? false;
     }
     await _channel.invokeMethod('launch', args);
   }
