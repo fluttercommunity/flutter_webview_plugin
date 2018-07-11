@@ -112,6 +112,9 @@ class FlutterWebviewPlugin {
     if (Platform.isAndroid) {
       args["allowFileURLs"] = allowFileURLs ?? false;
     }
+    else {
+      args["allowFileURLs"] = false; 
+    }
     await _channel.invokeMethod('launch', args);
   }
 
