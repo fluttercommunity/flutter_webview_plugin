@@ -13,6 +13,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import java.util.Map;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
@@ -68,7 +70,7 @@ class WebviewManager {
         webView.clearFormData();
     }
 
-    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, boolean withZoom, boolean withLocalStorage) {
+    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, Map<String, String> headers, boolean withZoom, boolean withLocalStorage) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
@@ -90,7 +92,11 @@ class WebviewManager {
             webView.getSettings().setUserAgentString(userAgent);
         }
 
-        webView.loadUrl(url);
+        if (headers != null) {
+            webView.loadUrl(url, headers);
+        } else {
+            webView.loadUrl(url);
+        }
     }
 
     void close(MethodCall call, MethodChannel.Result result) {

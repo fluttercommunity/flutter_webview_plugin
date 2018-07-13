@@ -120,7 +120,13 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                     @throw @"not available on version earlier than ios 9.0";
                 }
             } else {
-                NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+                NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+                NSDictionary *headers = call.arguments[@"headers"];
+                
+                if (headers != nil) {
+                    [request setAllHTTPHeaderFields:headers];
+                }
+                
                 [self.webview loadRequest:request];
             }
         }

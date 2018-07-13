@@ -81,6 +81,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
         boolean clearCookies = call.argument("clearCookies");
         boolean withZoom = call.argument("withZoom");
         boolean withLocalStorage = call.argument("withLocalStorage");
+        Map<String, String> headers = call.argument("headers");
 
         if (webViewManager == null || webViewManager.closed == true) {
             webViewManager = new WebviewManager(activity);
@@ -96,6 +97,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
                 clearCookies,
                 userAgent,
                 url,
+                headers,
                 withZoom,
                 withLocalStorage
         );
@@ -163,6 +165,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler {
                     false,
                     "",
                     url,
+                    null,
                     false,
                     false
             );
