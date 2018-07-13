@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'base.dart';
 
 class WebviewScaffold extends StatefulWidget {
+
   final PreferredSizeWidget appBar;
   final String url;
   final bool withJavascript;
@@ -20,10 +21,13 @@ class WebviewScaffold extends StatefulWidget {
   final bool withLocalStorage;
   final bool withLocalUrl;
 
+  final Map<String, String> headers;
+
   WebviewScaffold(
       {Key key,
       this.appBar,
       @required this.url,
+      this.headers,
       this.withJavascript,
       this.clearCache,
       this.clearCookies,
@@ -62,6 +66,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     if (_rect == null) {
       _rect = _buildRect(context);
       webviewReference.launch(widget.url,
+          headers: widget.headers,
           withJavascript: widget.withJavascript,
           clearCache: widget.clearCache,
           clearCookies: widget.clearCookies,
