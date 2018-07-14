@@ -13,8 +13,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+
 
 /**
  * Created by lejard_h on 20/12/2017.
@@ -24,9 +28,10 @@ class WebviewManager {
 
     boolean closed = false;
     WebView webView;
+    ObservableWebView observableWebView;
 
     WebviewManager(Activity activity) {
-        this.webView = new WebView(activity);
+        this.webView = (WebView) new ObservableWebView(activity);
         WebViewClient webViewClient = new BrowserClient();
         webView.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -44,6 +49,24 @@ class WebviewManager {
                 }
 
                 return false;
+            }
+        });
+
+        observableWebView = (ObservableWebView) webView;
+        observableWebView.setOnScrollChangedCallback(new ObservableWebView.OnScrollChangedCallback(){
+            public void onScroll(int l, int t, int oldl, int oldt){
+                if(t > oldt){
+                    // Call
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("direction", "UP");
+                    FlutterWebviewPlugin.channel.invokeMethod("onScrollChanged", data);
+                    //Do stuff
+                }
+                else if(t < oldt){
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("direction", "DOWN");
+                    FlutterWebviewPlugin.channel.invokeMethod("onScrollChanged", data);
+                }
             }
         });
 
