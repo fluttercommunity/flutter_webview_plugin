@@ -58,13 +58,13 @@ class WebviewManager {
                 if(t > oldt){
                     // Call
                     Map<String, Object> data = new HashMap<>();
-                    data.put("direction", "UP");
+                    data.put("direction", "DOWN");
                     FlutterWebviewPlugin.channel.invokeMethod("onScrollChanged", data);
                     //Do stuff
                 }
                 else if(t < oldt){
                     Map<String, Object> data = new HashMap<>();
-                    data.put("direction", "DOWN");
+                    data.put("direction", "UP");
                     FlutterWebviewPlugin.channel.invokeMethod("onScrollChanged", data);
                 }
             }
