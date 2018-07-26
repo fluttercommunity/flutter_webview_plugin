@@ -226,7 +226,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     if ([navigationResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
         NSHTTPURLResponse * response = (NSHTTPURLResponse *)navigationResponse.response;
 
-        [channel invokeMethod:@"onError" arguments:@{@"code": [NSString stringWithFormat:@"%ld", response.statusCode], @"url": webView.URL.absoluteString}];
+        [channel invokeMethod:@"onHttpError" arguments:@{@"code": [NSString stringWithFormat:@"%ld", response.statusCode], @"url": webView.URL.absoluteString}];
     }
     decisionHandler(WKNavigationResponsePolicyAllow);
 }

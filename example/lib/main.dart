@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // On urlChanged stream
   StreamSubscription<WebViewStateChanged> _onStateChanged;
 
-  StreamSubscription<WebViewError> _onError;
+  StreamSubscription<WebViewHttpError> _onHttpError;
 
   TextEditingController _urlCtrl = new TextEditingController(text: selectedUrl);
 
@@ -106,10 +106,10 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    _onError = flutterWebviewPlugin.onError.listen((WebViewError error) {
+    _onHttpError = flutterWebviewPlugin.onHttpError.listen((WebViewHttpError error) {
       if (mounted) {
         setState(() {
-          _history.add("onError: ${error.code} ${error.url}");
+          _history.add("onHttpError: ${error.code} ${error.url}");
         });
       }
     });
@@ -121,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _onDestroy.cancel();
     _onUrlChanged.cancel();
     _onStateChanged.cancel();
-    _onError.cancel();
+    _onHttpError.cancel();
 
     flutterWebviewPlugin.dispose();
 
