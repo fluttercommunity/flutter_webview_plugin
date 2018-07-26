@@ -76,6 +76,7 @@ class FlutterWebviewPlugin {
   ///     It is always enabled in UIWebView of iOS and  can not be disabled.
   /// - [withLocalUrl]: allow url as a local path
   ///     Allow local files on iOs > 9.0
+  /// - [scrollBar]: enable or disable scrollbar
   Future<Null> launch(String url,
       {bool withJavascript,
       bool clearCache,
@@ -86,7 +87,8 @@ class FlutterWebviewPlugin {
       String userAgent,
       bool withZoom,
       bool withLocalStorage,
-      bool withLocalUrl}) async {
+      bool withLocalUrl,
+      bool scrollBar}) async {
     Map<String, dynamic> args = {
       "url": url,
       "withJavascript": withJavascript ?? true,
@@ -97,7 +99,8 @@ class FlutterWebviewPlugin {
       "userAgent": userAgent,
       "withZoom": withZoom ?? false,
       "withLocalStorage": withLocalStorage ?? true,
-      "withLocalUrl": withLocalUrl ?? false
+      "withLocalUrl": withLocalUrl ?? false,
+      "scrollBar": scrollBar ?? true
     };
     if (rect != null) {
       args["rect"] = {

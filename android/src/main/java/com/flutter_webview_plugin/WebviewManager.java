@@ -175,7 +175,7 @@ class WebviewManager {
         webView.clearFormData();
     }
 
-    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, boolean withZoom, boolean withLocalStorage) {
+    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, boolean withZoom, boolean withLocalStorage, boolean scrollBar) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
@@ -195,6 +195,10 @@ class WebviewManager {
 
         if (userAgent != null) {
             webView.getSettings().setUserAgentString(userAgent);
+        }
+
+        if(!scrollBar){
+            webView.setVerticalScrollBarEnabled(false);
         }
 
         webView.loadUrl(url);
