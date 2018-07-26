@@ -112,6 +112,8 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
       }
     }
 
+    if (height < 0.0) height = 0.0;
+
     return new Rect.fromLTWH(0.0, top, mediaQuery.size.width, height);
   }
 }
