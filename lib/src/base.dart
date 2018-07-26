@@ -146,6 +146,14 @@ class FlutterWebviewPlugin {
     await _channel.invokeMethod("reloadUrl", args);
   }
 
+  /// adds the plugin as ActivityResultListener
+  /// Only needed and used on Android
+  Future registerAcitivityResultListener() => _channel.invokeMethod("registerAcitivityResultListener");
+
+  /// removes the plugin as ActivityResultListener
+  /// Only needed and used on Android
+  Future removeAcitivityResultListener() => _channel.invokeMethod("removeAcitivityResultListener");
+
   /// Close all Streams
   void dispose() {
     _onDestroy.close();
