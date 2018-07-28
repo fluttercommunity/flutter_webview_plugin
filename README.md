@@ -83,17 +83,19 @@ flutterWebviewPlugin.launch(url,
 ### Webview Functions
 
 ```dart
-Future<Null> launch(String url,
-         {bool withJavascript: true,
-         bool clearCache: false,
-         bool clearCookies: false,
-         bool hidden: false,
-         bool enableAppScheme: true,
-         Rect rect: null,
-         String userAgent: null,
-         bool withZoom: false,
-         bool withLocalStorage: true,
-         bool allowFileURLs: false});  // Allows using "file:///" urls in Android
+Future<Null> launch(
+    String url, {bool withJavascript: true,
+                 bool clearCache: false,
+                 bool clearCookies: false,
+                 bool hidden: false,
+                 bool enableAppScheme: true,
+                 Rect rect: null,
+                 String userAgent: null,
+                 bool withZoom: false,
+                 bool withLocalStorage: true,
+                 bool scrollBar: true
+                 bool allowFileURLs: false} // Allows using "file:///" urls in Android
+    );  
 ```
 
 ```dart

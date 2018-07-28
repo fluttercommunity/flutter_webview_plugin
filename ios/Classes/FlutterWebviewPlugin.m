@@ -68,6 +68,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     _enableAppScheme = call.arguments[@"enableAppScheme"];
     NSString *userAgent = call.arguments[@"userAgent"];
     NSNumber *withZoom = call.arguments[@"withZoom"];
+    NSNumber *scrollBar = call.arguments[@"scrollBar"];
     
     if (clearCache != (id)[NSNull null] && [clearCache boolValue]) {
         [[NSURLCache sharedURLCache] removeAllCachedResponses];
@@ -93,6 +94,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     self.webview.navigationDelegate = self;
     self.webview.scrollView.delegate = self;
     self.webview.hidden = [hidden boolValue];
+    self.webview.showsHorizontalScrollIndicator = [scrollBar boolValue];
+    self.webView.showsVerticalScrollIndicator = [scrollBar boolValue];
 
     _enableZoom = [withZoom boolValue];
 
