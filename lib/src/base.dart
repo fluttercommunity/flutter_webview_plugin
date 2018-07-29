@@ -102,7 +102,8 @@ class FlutterWebviewPlugin {
       "withZoom": withZoom ?? false,
       "withLocalStorage": withLocalStorage ?? true,
       "withLocalUrl": withLocalUrl ?? false,
-      "scrollBar": scrollBar ?? true
+      "scrollBar": scrollBar ?? true,
+      "allowFileURLs": allowFileURLs ?? false
     };
     if (rect != null) {
       args["rect"] = {
@@ -111,12 +112,6 @@ class FlutterWebviewPlugin {
         "width": rect.width,
         "height": rect.height
       };
-    }
-    if (Platform.isAndroid) {
-      args["allowFileURLs"] = allowFileURLs ?? false;
-    }
-    else {
-      args["allowFileURLs"] = false; 
     }
     await _channel.invokeMethod('launch', args);
   }
@@ -142,28 +137,28 @@ class FlutterWebviewPlugin {
   /// Navigates forward on the Webview.
   /// This is only available on Android for now.
   Future goForward() => _channel.invokeMethod("forward");
-  
+
   // Hides the webview
   Future hide() => _channel.invokeMethod("hide");
-  
+
   // Shows the webview
   Future show() => _channel.invokeMethod("show");
 
   // Reload webview with a new url
   Future reloadUrl(String url) async {
-    Map<String, dynamic> args = {
-      "url": url
-    };
+    Map<String, dynamic> args = {"url": url};
     await _channel.invokeMethod("reloadUrl", args);
   }
 
   /// adds the plugin as ActivityResultListener
   /// Only needed and used on Android
-  Future registerAcitivityResultListener() => _channel.invokeMethod("registerAcitivityResultListener");
+  Future registerAcitivityResultListener() =>
+      _channel.invokeMethod("registerAcitivityResultListener");
 
   /// removes the plugin as ActivityResultListener
   /// Only needed and used on Android
-  Future removeAcitivityResultListener() => _channel.invokeMethod("removeAcitivityResultListener");
+  Future removeAcitivityResultListener() =>
+      _channel.invokeMethod("removeAcitivityResultListener");
 
   /// Close all Streams
   void dispose() {

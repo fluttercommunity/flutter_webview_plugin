@@ -37,8 +37,8 @@ class WebviewScaffold extends StatefulWidget {
       this.withZoom,
       this.withLocalStorage,
       this.withLocalUrl,
-      this.scrollBar
-      this.allowFileURLs})      
+      this.scrollBar,
+      this.allowFileURLs})
       : super(key: key);
 
   @override
@@ -106,15 +106,16 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     num height = mediaQuery.size.height - top;
 
     if (widget.bottomNavigationBar != null) {
-      height -=
-          56.0 + mediaQuery.padding.bottom; // todo(lejard_h) find a way to determine bottomNavigationBar programmatically
+      height -= 56.0 +
+          mediaQuery.padding
+              .bottom; // todo(lejard_h) find a way to determine bottomNavigationBar programmatically
     }
 
     if (widget.persistentFooterButtons != null) {
       height -=
           53.0; // todo(lejard_h) find a way to determine persistentFooterButtons programmatically
-      if (widget.bottomNavigationBar == null){
-         height -= mediaQuery.padding.bottom;
+      if (widget.bottomNavigationBar == null) {
+        height -= mediaQuery.padding.bottom;
       }
     }
 
