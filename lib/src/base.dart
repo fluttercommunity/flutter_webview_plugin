@@ -77,18 +77,23 @@ class FlutterWebviewPlugin {
   /// - [withLocalUrl]: allow url as a local path
   ///     Allow local files on iOs > 9.0
   /// - [scrollBar]: enable or disable scrollbar
-  Future<Null> launch(String url,
-      {bool withJavascript,
-      bool clearCache,
-      bool clearCookies,
-      bool hidden,
-      bool enableAppScheme,
-      Rect rect,
-      String userAgent,
-      bool withZoom,
-      bool withLocalStorage,
-      bool withLocalUrl,
-      bool scrollBar}) async {
+  /// - [headers]: extra http get headers
+  ///     Only on android for now
+  Future<Null> launch(
+    String url, {
+    bool withJavascript,
+    bool clearCache,
+    bool clearCookies,
+    bool hidden,
+    bool enableAppScheme,
+    Rect rect,
+    String userAgent,
+    bool withZoom,
+    bool withLocalStorage,
+    bool withLocalUrl,
+    bool scrollBar,
+    Map<String, String> headers,
+  }) async {
     Map<String, dynamic> args = {
       "url": url,
       "withJavascript": withJavascript ?? true,
@@ -100,7 +105,8 @@ class FlutterWebviewPlugin {
       "withZoom": withZoom ?? false,
       "withLocalStorage": withLocalStorage ?? true,
       "withLocalUrl": withLocalUrl ?? false,
-      "scrollBar": scrollBar ?? true
+      "scrollBar": scrollBar ?? true,
+      "headers": headers ?? <String, String>{}
     };
     if (rect != null) {
       args["rect"] = {
@@ -134,28 +140,34 @@ class FlutterWebviewPlugin {
   /// Navigates forward on the Webview.
   /// This is only available on Android for now.
   Future goForward() => _channel.invokeMethod("forward");
-  
+
   // Hides the webview
   Future hide() => _channel.invokeMethod("hide");
-  
+
   // Shows the webview
   Future show() => _channel.invokeMethod("show");
 
   // Reload webview with a new url
-  Future reloadUrl(String url) async {
+  Future reloadUrl(
+    String url, {
+    Map<String, String> headers = const <String, String>{},
+  }) async {
     Map<String, dynamic> args = {
-      "url": url
+      "url": url,
+      "headers": headers,
     };
     await _channel.invokeMethod("reloadUrl", args);
   }
 
   /// adds the plugin as ActivityResultListener
   /// Only needed and used on Android
-  Future registerAcitivityResultListener() => _channel.invokeMethod("registerAcitivityResultListener");
+  Future registerAcitivityResultListener() =>
+      _channel.invokeMethod("registerAcitivityResultListener");
 
   /// removes the plugin as ActivityResultListener
   /// Only needed and used on Android
-  Future removeAcitivityResultListener() => _channel.invokeMethod("removeAcitivityResultListener");
+  Future removeAcitivityResultListener() =>
+      _channel.invokeMethod("removeAcitivityResultListener");
 
   /// Close all Streams
   void dispose() {
