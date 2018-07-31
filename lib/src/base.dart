@@ -77,6 +77,7 @@ class FlutterWebviewPlugin {
   ///     It is always enabled in UIWebView of iOS and  can not be disabled.
   /// - [withLocalUrl]: allow url as a local path
   ///     Allow local files on iOs > 9.0
+  /// - [scrollBar]: enable or disable scrollbar
   Future<Null> launch(String url,
       {Map<String, String> headers,
       bool withJavascript,
@@ -88,7 +89,8 @@ class FlutterWebviewPlugin {
       String userAgent,
       bool withZoom,
       bool withLocalStorage,
-      bool withLocalUrl}) async {
+      bool withLocalUrl,
+      bool scrollBar}) async {
     Map<String, dynamic> args = {
       "url": url,
       "withJavascript": withJavascript ?? true,
@@ -99,7 +101,8 @@ class FlutterWebviewPlugin {
       "userAgent": userAgent,
       "withZoom": withZoom ?? false,
       "withLocalStorage": withLocalStorage ?? true,
-      "withLocalUrl": withLocalUrl ?? false
+      "withLocalUrl": withLocalUrl ?? false,
+      "scrollBar": scrollBar ?? true
     };
 
     if (headers != null) {
@@ -153,6 +156,14 @@ class FlutterWebviewPlugin {
     await _channel.invokeMethod("reloadUrl", args);
   }
 
+  /// adds the plugin as ActivityResultListener
+  /// Only needed and used on Android
+  Future registerAcitivityResultListener() => _channel.invokeMethod("registerAcitivityResultListener");
+
+  /// removes the plugin as ActivityResultListener
+  /// Only needed and used on Android
+  Future removeAcitivityResultListener() => _channel.invokeMethod("removeAcitivityResultListener");
+
   /// Close all Streams
   void dispose() {
     _onDestroy.close();
@@ -162,9 +173,9 @@ class FlutterWebviewPlugin {
     _instance = null;
   }
 
-  Future<Map<String, dynamic>> getCookies() async {
+  Future<Map<String, String>> getCookies() async {
     final cookiesString = await evalJavascript("document.cookie");
-    final cookies = {};
+    final cookies = <String, String>{};
 
     if (cookiesString?.isNotEmpty == true) {
       cookiesString.split(";").forEach((String cookie) {

@@ -93,7 +93,8 @@ Future<Null> launch(String url,
          Rect rect: null,
          String userAgent: null,
          bool withZoom: false,
-         bool withLocalStorage: true});
+         bool withLocalStorage: true,
+         bool scrollBar: true});
 ```
 ```dart
 Future<String> evalJavascript(String code);

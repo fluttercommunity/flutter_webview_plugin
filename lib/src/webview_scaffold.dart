@@ -20,6 +20,7 @@ class WebviewScaffold extends StatefulWidget {
   final bool withZoom;
   final bool withLocalStorage;
   final bool withLocalUrl;
+  final bool scrollBar;
 
   final Map<String, String> headers;
 
@@ -38,7 +39,8 @@ class WebviewScaffold extends StatefulWidget {
       this.bottomNavigationBar,
       this.withZoom,
       this.withLocalStorage,
-      this.withLocalUrl})
+      this.withLocalUrl,
+      this.scrollBar})
       : super(key: key);
 
   @override
@@ -75,7 +77,8 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
           rect: _rect,
           withZoom: widget.withZoom,
           withLocalStorage: widget.withLocalStorage,
-          withLocalUrl: widget.withLocalUrl);
+          withLocalUrl: widget.withLocalUrl,
+          scrollBar: widget.scrollBar);
     } else {
       Rect rect = _buildRect(context);
       if (_rect != rect) {
@@ -116,6 +119,8 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
          height -= mediaQuery.padding.bottom;
       }
     }
+
+    if (height < 0.0) height = 0.0;
 
     return new Rect.fromLTWH(0.0, top, mediaQuery.size.width, height);
   }
