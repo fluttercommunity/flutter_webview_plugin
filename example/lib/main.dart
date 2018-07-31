@@ -30,6 +30,9 @@ class MyApp extends StatelessWidget {
               ),
               withZoom: true,
               withLocalStorage: true,
+              headers: <String, String>{
+                "Header": "TestHeader",
+              },
             )
       },
     );

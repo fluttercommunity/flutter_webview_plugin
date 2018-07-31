@@ -20,6 +20,7 @@ class WebviewScaffold extends StatefulWidget {
   final bool withLocalStorage;
   final bool withLocalUrl;
   final bool scrollBar;
+  final Map<String, String> headers;
 
   WebviewScaffold(
       {Key key,
@@ -36,7 +37,8 @@ class WebviewScaffold extends StatefulWidget {
       this.withZoom,
       this.withLocalStorage,
       this.withLocalUrl,
-      this.scrollBar})
+      this.scrollBar,
+      this.headers})
       : super(key: key);
 
   @override
@@ -73,7 +75,8 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
           withZoom: widget.withZoom,
           withLocalStorage: widget.withLocalStorage,
           withLocalUrl: widget.withLocalUrl,
-          scrollBar: widget.scrollBar);
+          scrollBar: widget.scrollBar,
+          headers: widget.headers);
     } else {
       Rect rect = _buildRect(context);
       if (_rect != rect) {
@@ -103,15 +106,16 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     num height = mediaQuery.size.height - top;
 
     if (widget.bottomNavigationBar != null) {
-      height -=
-          56.0 + mediaQuery.padding.bottom; // todo(lejard_h) find a way to determine bottomNavigationBar programmatically
+      height -= 56.0 +
+          mediaQuery.padding
+              .bottom; // todo(lejard_h) find a way to determine bottomNavigationBar programmatically
     }
 
     if (widget.persistentFooterButtons != null) {
       height -=
           53.0; // todo(lejard_h) find a way to determine persistentFooterButtons programmatically
-      if (widget.bottomNavigationBar == null){
-         height -= mediaQuery.padding.bottom;
+      if (widget.bottomNavigationBar == null) {
+        height -= mediaQuery.padding.bottom;
       }
     }
 
