@@ -94,8 +94,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     self.webview.navigationDelegate = self;
     self.webview.scrollView.delegate = self;
     self.webview.hidden = [hidden boolValue];
-    self.webview.showsHorizontalScrollIndicator = [scrollBar boolValue];
-    self.webView.showsVerticalScrollIndicator = [scrollBar boolValue];
+    self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
+    self.webview.scrollView.showsVerticalScrollIndicator = [scrollBar boolValue];
 
     _enableZoom = [withZoom boolValue];
 
