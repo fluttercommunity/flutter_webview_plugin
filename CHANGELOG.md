@@ -1,3 +1,14 @@
+# 0.2.0
+
+- update sdk
+- prevent negative webview height in scaffold
+- handle type error in getCookies
+- Support file upload via WebView on Android
+- fix WebviewScaffold crash on iOS
+- Scrollbar functionality to Web view
+- Add support of HTTP errors
+- Add headers when loading url
+
 # 0.1.6
 
 - fix onStateChanged

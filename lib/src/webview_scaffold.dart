@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'base.dart';
 
 class WebviewScaffold extends StatefulWidget {
-
   final PreferredSizeWidget appBar;
   final String url;
   final bool withJavascript;
@@ -24,7 +23,7 @@ class WebviewScaffold extends StatefulWidget {
 
   final Map<String, String> headers;
 
-  WebviewScaffold(
+  const WebviewScaffold(
       {Key key,
       this.appBar,
       @required this.url,
@@ -34,7 +33,7 @@ class WebviewScaffold extends StatefulWidget {
       this.clearCookies,
       this.enableAppScheme,
       this.userAgent,
-      this.primary: true,
+      this.primary = true,
       this.persistentFooterButtons,
       this.bottomNavigationBar,
       this.withZoom,
@@ -52,11 +51,13 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   Rect _rect;
   Timer _resizeTimer;
 
+  @override
   void initState() {
     super.initState();
     webviewReference.close();
   }
 
+  @override
   void dispose() {
     super.dispose();
     webviewReference.close();
@@ -80,7 +81,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
           withLocalUrl: widget.withLocalUrl,
           scrollBar: widget.scrollBar);
     } else {
-      Rect rect = _buildRect(context);
+      final rect = _buildRect(context);
       if (_rect != rect) {
         _rect = rect;
         _resizeTimer?.cancel();
@@ -94,33 +95,36 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
         appBar: widget.appBar,
         persistentFooterButtons: widget.persistentFooterButtons,
         bottomNavigationBar: widget.bottomNavigationBar,
-        body: new Center(child: new CircularProgressIndicator()));
+        body: const Center(child: const CircularProgressIndicator()));
   }
 
   Rect _buildRect(BuildContext context) {
-    bool fullscreen = widget.appBar == null;
+    final fullscreen = widget.appBar == null;
 
     final mediaQuery = MediaQuery.of(context);
     final topPadding = widget.primary ? mediaQuery.padding.top : 0.0;
-    num top =
+    final top =
         fullscreen ? 0.0 : widget.appBar.preferredSize.height + topPadding;
 
-    num height = mediaQuery.size.height - top;
+    var height = mediaQuery.size.height - top;
 
     if (widget.bottomNavigationBar != null) {
-      height -=
-          56.0 + mediaQuery.padding.bottom; // todo(lejard_h) find a way to determine bottomNavigationBar programmatically
+      height -= 56.0 +
+          mediaQuery.padding
+              .bottom; // todo(lejard_h) find a way to determine bottomNavigationBar programmatically
     }
 
     if (widget.persistentFooterButtons != null) {
       height -=
           53.0; // todo(lejard_h) find a way to determine persistentFooterButtons programmatically
-      if (widget.bottomNavigationBar == null){
-         height -= mediaQuery.padding.bottom;
+      if (widget.bottomNavigationBar == null) {
+        height -= mediaQuery.padding.bottom;
       }
     }
 
-    if (height < 0.0) height = 0.0;
+    if (height < 0.0) {
+      height = 0.0;
+    }
 
     return new Rect.fromLTWH(0.0, top, mediaQuery.size.width, height);
   }
