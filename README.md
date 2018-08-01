@@ -84,7 +84,8 @@ flutterWebviewPlugin.launch(url,
 
 ```dart
 Future<Null> launch(String url,
-         {bool withJavascript: true,
+         {Map<String, String> headers: null,
+         bool withJavascript: true,
          bool clearCache: false,
          bool clearCookies: false,
          bool hidden: false,

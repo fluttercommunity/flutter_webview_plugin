@@ -83,6 +83,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         boolean clearCookies = call.argument("clearCookies");
         boolean withZoom = call.argument("withZoom");
         boolean withLocalStorage = call.argument("withLocalStorage");
+        Map<String, String> headers = call.argument("headers");
         boolean scrollBar = call.argument("scrollBar");
 
         if (webViewManager == null || webViewManager.closed == true) {
@@ -99,6 +100,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
                 clearCookies,
                 userAgent,
                 url,
+                headers,
                 withZoom,
                 withLocalStorage,
                 scrollBar
@@ -167,6 +169,8 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
                     false,
                     "",
                     url,
+                    null,
+                    false,
                     false,
                     false
             );

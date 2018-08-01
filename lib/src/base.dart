@@ -63,6 +63,7 @@ class FlutterWebviewPlugin {
   Stream<WebViewHttpError> get onHttpError => _onHttpError.stream;
 
   /// Start the Webview with [url]
+  /// - [headers] specify additional HTTP headers
   /// - [withJavascript] enable Javascript or not for the Webview
   ///     iOS WebView: Not implemented yet
   /// - [clearCache] clear the cache of the Webview
@@ -80,7 +81,8 @@ class FlutterWebviewPlugin {
   ///     Allow local files on iOs > 9.0
   /// - [scrollBar]: enable or disable scrollbar
   Future<Null> launch(String url,
-      {bool withJavascript,
+      {Map<String, String> headers,
+      bool withJavascript,
       bool clearCache,
       bool clearCookies,
       bool hidden,
@@ -104,6 +106,11 @@ class FlutterWebviewPlugin {
       "withLocalUrl": withLocalUrl ?? false,
       "scrollBar": scrollBar ?? true
     };
+
+    if (headers != null) {
+      args["headers"] = headers;
+    }
+
     if (rect != null) {
       args["rect"] = {
         "left": rect.left,
@@ -136,10 +143,10 @@ class FlutterWebviewPlugin {
   /// Navigates forward on the Webview.
   /// This is only available on Android for now.
   Future goForward() => _channel.invokeMethod("forward");
-  
+
   // Hides the webview
   Future hide() => _channel.invokeMethod("hide");
-  
+
   // Shows the webview
   Future show() => _channel.invokeMethod("show");
 
