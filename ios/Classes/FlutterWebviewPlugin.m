@@ -68,6 +68,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     _enableAppScheme = call.arguments[@"enableAppScheme"];
     NSString *userAgent = call.arguments[@"userAgent"];
     NSNumber *withZoom = call.arguments[@"withZoom"];
+    NSNumber *scrollBar = call.arguments[@"scrollBar"];
     
     if (clearCache != (id)[NSNull null] && [clearCache boolValue]) {
         [[NSURLCache sharedURLCache] removeAllCachedResponses];
@@ -93,6 +94,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     self.webview.navigationDelegate = self;
     self.webview.scrollView.delegate = self;
     self.webview.hidden = [hidden boolValue];
+    self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
+    self.webview.scrollView.showsVerticalScrollIndicator = [scrollBar boolValue];
 
 
 
@@ -130,7 +133,13 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                     @throw @"not available on version earlier than ios 9.0";
                 }
             } else {
-                NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+                NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+                NSDictionary *headers = call.arguments[@"headers"];
+                
+                if (headers != nil) {
+                    [request setAllHTTPHeaderFields:headers];
+                }
+                
                 [self.webview loadRequest:request];
             }
         }
@@ -228,6 +237,15 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                                   message:error.localizedDescription
                                   details:error.localizedFailureReason];
     [channel invokeMethod:@"onError" arguments:data];
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
+    if ([navigationResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSHTTPURLResponse * response = (NSHTTPURLResponse *)navigationResponse.response;
+
+        [channel invokeMethod:@"onHttpError" arguments:@{@"code": [NSString stringWithFormat:@"%ld", response.statusCode], @"url": webView.URL.absoluteString}];
+    }
+    decisionHandler(WKNavigationResponsePolicyAllow);
 }
 
 #pragma mark -- UIScrollViewDelegate
