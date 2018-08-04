@@ -56,10 +56,10 @@ class WebviewManager {
         observableWebView.setOnScrollChangedCallback(new ObservableWebView.OnScrollChangedCallback(){
             public void onScroll(int x, int y, int oldx, int oldy){
                 Map<String, Object> yDirection = new HashMap<>();
-                yDirection.put("direction", (double)y);
+                yDirection.put("yDirection", (double)y);
                 FlutterWebviewPlugin.channel.invokeMethod("onScrollYChanged", yDirection);
                 Map<String, Object> xDirection = new HashMap<>();
-                xDirection.put("direction", (double)x);
+                xDirection.put("xDirection", (double)x);
                 FlutterWebviewPlugin.channel.invokeMethod("onScrollXChanged", xDirection);
             }
         });
