@@ -58,6 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
   // On urlChanged stream
   StreamSubscription<WebViewStateChanged> _onStateChanged;
 
+  StreamSubscription<double> _onScrollYChanged,_onScrollXChanged;
+
   TextEditingController _urlCtrl = new TextEditingController(text: selectedUrl);
 
   TextEditingController _codeCtrl =
@@ -95,6 +97,23 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
+
+    _onScrollYChanged = flutterWebviewPlugin.onScrollYChanged.listen((double y) {
+      if (mounted) {
+        setState(() {
+          _history.add("Scroll in  Y Direction: $y");
+        });
+      }
+    });
+
+    _onScrollXChanged = flutterWebviewPlugin.onScrollXChanged.listen((double x) {
+      if (mounted) {
+        setState(() {
+          _history.add("Scroll in  X Direction: $x");
+        });
+      }
+    });
+
     _onStateChanged =
         flutterWebviewPlugin.onStateChanged.listen((WebViewStateChanged state) {
       if (mounted) {
@@ -111,6 +130,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _onDestroy.cancel();
     _onUrlChanged.cancel();
     _onStateChanged.cancel();
+    _onScrollYChanged.cancel();
+    _onScrollXChanged.cancel();
 
     flutterWebviewPlugin.dispose();
 
@@ -193,7 +214,7 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             child: new Text("Cookies"),
           ),
-          new Text(_history.join("\n"))
+          new Text(_history.sublist(_history.length-10, _history.length ).join("\n")),
         ],
       ),
     );

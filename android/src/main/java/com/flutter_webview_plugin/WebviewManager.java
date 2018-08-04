@@ -54,19 +54,13 @@ class WebviewManager {
 
         observableWebView = (ObservableWebView) webView;
         observableWebView.setOnScrollChangedCallback(new ObservableWebView.OnScrollChangedCallback(){
-            public void onScroll(int l, int t, int oldl, int oldt){
-                if(t > oldt){
-                    // Call
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("direction", "DOWN");
-                    FlutterWebviewPlugin.channel.invokeMethod("onScrollChanged", data);
-                    //Do stuff
-                }
-                else if(t < oldt){
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("direction", "UP");
-                    FlutterWebviewPlugin.channel.invokeMethod("onScrollChanged", data);
-                }
+            public void onScroll(int x, int y, int oldx, int oldy){
+                Map<String, Object> yDirection = new HashMap<>();
+                yDirection.put("direction", (double)y);
+                FlutterWebviewPlugin.channel.invokeMethod("onScrollYChanged", yDirection);
+                Map<String, Object> xDirection = new HashMap<>();
+                xDirection.put("direction", (double)x);
+                FlutterWebviewPlugin.channel.invokeMethod("onScrollXChanged", xDirection);
             }
         });
 
