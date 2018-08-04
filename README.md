@@ -84,7 +84,8 @@ flutterWebviewPlugin.launch(url,
 
 ```dart
 Future<Null> launch(String url,
-         {bool withJavascript: true,
+         {Map<String, String> headers: null,
+         bool withJavascript: true,
          bool clearCache: false,
          bool clearCookies: false,
          bool hidden: false,
@@ -92,7 +93,8 @@ Future<Null> launch(String url,
          Rect rect: null,
          String userAgent: null,
          bool withZoom: false,
-         bool withLocalStorage: true});
+         bool withLocalStorage: true,
+         bool scrollBar: true});
 ```
 ```dart
 Future<String> evalJavascript(String code);

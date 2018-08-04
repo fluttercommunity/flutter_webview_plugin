@@ -19,9 +19,9 @@ class FlutterWebviewPlugin {
   final _onDestroy = new StreamController<Null>.broadcast();
   final _onUrlChanged = new StreamController<String>.broadcast();
   final _onStateChanged = new StreamController<WebViewStateChanged>.broadcast();
-  final _onError = new StreamController<String>.broadcast();
   final _onScrollXChanged = new StreamController<double>.broadcast();
   final _onScrollYChanged = new StreamController<double>.broadcast();
+  final _onHttpError = new StreamController<WebViewHttpError>.broadcast();
 
   static FlutterWebviewPlugin _instance;
 
@@ -33,11 +33,11 @@ class FlutterWebviewPlugin {
 
   Future<Null> _handleMessages(MethodCall call) async {
     switch (call.method) {
-      case "onDestroy":
+      case 'onDestroy':
         _onDestroy.add(null);
         break;
-      case "onUrlChanged":
-        _onUrlChanged.add(call.arguments["url"]);
+      case 'onUrlChanged':
+        _onUrlChanged.add(call.arguments['url']);
         break;
       case "onScrollXChanged":
         _onScrollXChanged.add(call.arguments["xDirection"]);
@@ -51,8 +51,9 @@ class FlutterWebviewPlugin {
               new Map<String, dynamic>.from(call.arguments)),
         );
         break;
-      case "onError":
-        _onError.add(call.arguments);
+      case 'onHttpError':
+        _onHttpError.add(
+            WebViewHttpError(call.arguments['code'], call.arguments['url']));
         break;
     }
   }
@@ -75,7 +76,10 @@ class FlutterWebviewPlugin {
   /// Listening web view x position scroll change
   Stream<double> get onScrollXChanged => _onScrollXChanged.stream;
 
+  Stream<WebViewHttpError> get onHttpError => _onHttpError.stream;
+
   /// Start the Webview with [url]
+  /// - [headers] specify additional HTTP headers
   /// - [withJavascript] enable Javascript or not for the Webview
   ///     iOS WebView: Not implemented yet
   /// - [clearCache] clear the cache of the Webview
@@ -91,8 +95,10 @@ class FlutterWebviewPlugin {
   ///     It is always enabled in UIWebView of iOS and  can not be disabled.
   /// - [withLocalUrl]: allow url as a local path
   ///     Allow local files on iOs > 9.0
+  /// - [scrollBar]: enable or disable scrollbar
   Future<Null> launch(String url,
-      {bool withJavascript,
+      {Map<String, String> headers,
+      bool withJavascript,
       bool clearCache,
       bool clearCookies,
       bool hidden,
@@ -101,25 +107,32 @@ class FlutterWebviewPlugin {
       String userAgent,
       bool withZoom,
       bool withLocalStorage,
-      bool withLocalUrl}) async {
-    Map<String, dynamic> args = {
-      "url": url,
-      "withJavascript": withJavascript ?? true,
-      "clearCache": clearCache ?? false,
-      "hidden": hidden ?? false,
-      "clearCookies": clearCookies ?? false,
-      "enableAppScheme": enableAppScheme ?? true,
-      "userAgent": userAgent,
-      "withZoom": withZoom ?? false,
-      "withLocalStorage": withLocalStorage ?? true,
-      "withLocalUrl": withLocalUrl ?? false
+      bool withLocalUrl,
+      bool scrollBar}) async {
+    final args = <String, dynamic>{
+      'url': url,
+      'withJavascript': withJavascript ?? true,
+      'clearCache': clearCache ?? false,
+      'hidden': hidden ?? false,
+      'clearCookies': clearCookies ?? false,
+      'enableAppScheme': enableAppScheme ?? true,
+      'userAgent': userAgent,
+      'withZoom': withZoom ?? false,
+      'withLocalStorage': withLocalStorage ?? true,
+      'withLocalUrl': withLocalUrl ?? false,
+      'scrollBar': scrollBar ?? true
     };
+
+    if (headers != null) {
+      args['headers'] = headers;
+    }
+
     if (rect != null) {
-      args["rect"] = {
-        "left": rect.left,
-        "top": rect.top,
-        "width": rect.width,
-        "height": rect.height
+      args['rect'] = {
+        'left': rect.left,
+        'top': rect.top,
+        'width': rect.width,
+        'height': rect.height
       };
     }
     await _channel.invokeMethod('launch', args);
@@ -127,39 +140,47 @@ class FlutterWebviewPlugin {
 
   /// Execute Javascript inside webview
   Future<String> evalJavascript(String code) async {
-    final res = await _channel.invokeMethod('eval', {"code": code});
+    final res = await _channel.invokeMethod('eval', {'code': code});
     return res;
   }
 
   /// Close the Webview
   /// Will trigger the [onDestroy] event
-  Future close() => _channel.invokeMethod("close");
+  Future close() => _channel.invokeMethod('close');
 
   /// Reloads the WebView.
   /// This is only available on Android for now.
-  Future reload() => _channel.invokeMethod("reload");
+  Future reload() => _channel.invokeMethod('reload');
 
   /// Navigates back on the Webview.
   /// This is only available on Android for now.
-  Future goBack() => _channel.invokeMethod("back");
+  Future goBack() => _channel.invokeMethod('back');
 
   /// Navigates forward on the Webview.
   /// This is only available on Android for now.
-  Future goForward() => _channel.invokeMethod("forward");
-  
+  Future goForward() => _channel.invokeMethod('forward');
+
   // Hides the webview
-  Future hide() => _channel.invokeMethod("hide");
-  
+  Future hide() => _channel.invokeMethod('hide');
+
   // Shows the webview
-  Future show() => _channel.invokeMethod("show");
+  Future show() => _channel.invokeMethod('show');
 
   // Reload webview with a new url
   Future reloadUrl(String url) async {
-    Map<String, dynamic> args = {
-      "url": url
-    };
-    await _channel.invokeMethod("reloadUrl", args);
+    final args = <String, String>{'url': url};
+    await _channel.invokeMethod('reloadUrl', args);
   }
+
+  /// adds the plugin as ActivityResultListener
+  /// Only needed and used on Android
+  Future registerAcitivityResultListener() =>
+      _channel.invokeMethod('registerAcitivityResultListener');
+
+  /// removes the plugin as ActivityResultListener
+  /// Only needed and used on Android
+  Future removeAcitivityResultListener() =>
+      _channel.invokeMethod('removeAcitivityResultListener');
 
   /// Close all Streams
   void dispose() {
@@ -168,17 +189,17 @@ class FlutterWebviewPlugin {
     _onStateChanged.close();
     _onScrollXChanged.close();
     _onScrollYChanged.close();
-    _onError.close();
+    _onHttpError.close();
     _instance = null;
   }
 
-  Future<Map<String, dynamic>> getCookies() async {
-    final cookiesString = await evalJavascript("document.cookie");
-    final cookies = {};
+  Future<Map<String, String>> getCookies() async {
+    final cookiesString = await evalJavascript('document.cookie');
+    final cookies = <String, String>{};
 
     if (cookiesString?.isNotEmpty == true) {
-      cookiesString.split(";").forEach((String cookie) {
-        final splited = cookie.split("=");
+      cookiesString.split(';').forEach((String cookie) {
+        final splited = cookie.split('=');
         cookies[splited[0]] = splited[1];
       });
     }
@@ -189,11 +210,11 @@ class FlutterWebviewPlugin {
   /// resize webview
   Future<Null> resize(Rect rect) async {
     final args = {};
-    args["rect"] = {
-      "left": rect.left,
-      "top": rect.top,
-      "width": rect.width,
-      "height": rect.height
+    args['rect'] = {
+      'left': rect.left,
+      'top': rect.top,
+      'width': rect.width,
+      'height': rect.height
     };
     await _channel.invokeMethod('resize', args);
   }
@@ -208,17 +229,24 @@ class WebViewStateChanged {
 
   factory WebViewStateChanged.fromMap(Map<String, dynamic> map) {
     WebViewState t;
-    switch (map["type"]) {
-      case "shouldStart":
+    switch (map['type']) {
+      case 'shouldStart':
         t = WebViewState.shouldStart;
         break;
-      case "startLoad":
+      case 'startLoad':
         t = WebViewState.startLoad;
         break;
-      case "finishLoad":
+      case 'finishLoad':
         t = WebViewState.finishLoad;
         break;
     }
-    return new WebViewStateChanged(t, map["url"], map["navigationType"]);
+    return new WebViewStateChanged(t, map['url'], map['navigationType']);
   }
+}
+
+class WebViewHttpError {
+  final String url;
+  final String code;
+
+  WebViewHttpError(this.code, this.url);
 }
