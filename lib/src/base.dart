@@ -20,7 +20,8 @@ class FlutterWebviewPlugin {
   final _onUrlChanged = new StreamController<String>.broadcast();
   final _onStateChanged = new StreamController<WebViewStateChanged>.broadcast();
   final _onError = new StreamController<String>.broadcast();
-  final _onScrollChanged = new StreamController<String>.broadcast();
+  final _onScrollXChanged = new StreamController<double>.broadcast();
+  final _onScrollYChanged = new StreamController<double>.broadcast();
 
   static FlutterWebviewPlugin _instance;
 
@@ -38,8 +39,11 @@ class FlutterWebviewPlugin {
       case "onUrlChanged":
         _onUrlChanged.add(call.arguments["url"]);
         break;
-      case "onScrollChanged":
-        _onScrollChanged.add(call.arguments["direction"]);
+      case "onScrollXChanged":
+        _onScrollXChanged.add(call.arguments["xDirection"]);
+        break;
+      case "onScrollYChanged":
+        _onScrollYChanged.add(call.arguments["yDirection"]);
         break;
       case "onState":
         _onStateChanged.add(
@@ -65,7 +69,12 @@ class FlutterWebviewPlugin {
   Stream<WebViewStateChanged> get onStateChanged => _onStateChanged.stream;
 
 
-  Stream<String> get onScrollChanged => _onScrollChanged.stream;
+  /// Listening web view y position scroll change
+  Stream<double> get onScrollYChanged => _onScrollYChanged.stream;
+
+  /// Listening web view x position scroll change
+  Stream<double> get onScrollXChanged => _onScrollXChanged.stream;
+
   /// Start the Webview with [url]
   /// - [withJavascript] enable Javascript or not for the Webview
   ///     iOS WebView: Not implemented yet
@@ -157,7 +166,8 @@ class FlutterWebviewPlugin {
     _onDestroy.close();
     _onUrlChanged.close();
     _onStateChanged.close();
-    _onScrollChanged.close();
+    _onScrollXChanged.close();
+    _onScrollYChanged.close();
     _onError.close();
     _instance = null;
   }

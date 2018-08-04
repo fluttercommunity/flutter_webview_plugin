@@ -111,14 +111,11 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 }
 
 - (void) scrollViewDidScroll:(UIScrollView *)scrollView {
-    CGPoint velocity = [[scrollView panGestureRecognizer]velocityInView:scrollView.superview];
-    if (velocity.y > 1) {
-        id data = @{@"direction": @"UP"};
-        [channel invokeMethod:@"onScrollChanged" arguments:data];
-    } else if (velocity.y < -1 ) {
-        id data = @{@"direction": @"DOWN"};
-        [channel invokeMethod:@"onScrollChanged" arguments:data];
-    }
+    id xDirection = @{@"xDirection": @(scrollView.contentOffset.x) };
+    [channel invokeMethod:@"onScrollXChanged" arguments:xDirection];
+
+    id yDirection = @{@"yDirection": @(scrollView.contentOffset.y) };
+    [channel invokeMethod:@"onScrollYChanged" arguments:yDirection];
 }
 
 - (void)navigate:(FlutterMethodCall*)call {
