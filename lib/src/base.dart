@@ -19,6 +19,8 @@ class FlutterWebviewPlugin {
   final _onDestroy = new StreamController<Null>.broadcast();
   final _onUrlChanged = new StreamController<String>.broadcast();
   final _onStateChanged = new StreamController<WebViewStateChanged>.broadcast();
+  final _onScrollXChanged = new StreamController<double>.broadcast();
+  final _onScrollYChanged = new StreamController<double>.broadcast();
   final _onHttpError = new StreamController<WebViewHttpError>.broadcast();
 
   static FlutterWebviewPlugin _instance;
@@ -37,7 +39,13 @@ class FlutterWebviewPlugin {
       case 'onUrlChanged':
         _onUrlChanged.add(call.arguments['url']);
         break;
-      case 'onState':
+      case "onScrollXChanged":
+        _onScrollXChanged.add(call.arguments["xDirection"]);
+        break;
+      case "onScrollYChanged":
+        _onScrollYChanged.add(call.arguments["yDirection"]);
+        break;
+      case "onState":
         _onStateChanged.add(
           new WebViewStateChanged.fromMap(
               new Map<String, dynamic>.from(call.arguments)),
@@ -60,6 +68,13 @@ class FlutterWebviewPlugin {
   /// content is Map for type: {shouldStart(iOS)|startLoad|finishLoad}
   /// more detail than other events
   Stream<WebViewStateChanged> get onStateChanged => _onStateChanged.stream;
+
+
+  /// Listening web view y position scroll change
+  Stream<double> get onScrollYChanged => _onScrollYChanged.stream;
+
+  /// Listening web view x position scroll change
+  Stream<double> get onScrollXChanged => _onScrollXChanged.stream;
 
   Stream<WebViewHttpError> get onHttpError => _onHttpError.stream;
 
@@ -172,6 +187,8 @@ class FlutterWebviewPlugin {
     _onDestroy.close();
     _onUrlChanged.close();
     _onStateChanged.close();
+    _onScrollXChanged.close();
+    _onScrollYChanged.close();
     _onHttpError.close();
     _instance = null;
   }

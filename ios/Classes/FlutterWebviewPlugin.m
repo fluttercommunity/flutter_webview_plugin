@@ -97,6 +97,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
     self.webview.scrollView.showsVerticalScrollIndicator = [scrollBar boolValue];
 
+
+
     _enableZoom = [withZoom boolValue];
 
     [self.viewController.view addSubview:self.webview];
@@ -109,6 +111,14 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                       [[rect valueForKey:@"top"] doubleValue],
                       [[rect valueForKey:@"width"] doubleValue],
                       [[rect valueForKey:@"height"] doubleValue]);
+}
+
+- (void) scrollViewDidScroll:(UIScrollView *)scrollView {
+    id xDirection = @{@"xDirection": @(scrollView.contentOffset.x) };
+    [channel invokeMethod:@"onScrollXChanged" arguments:xDirection];
+
+    id yDirection = @{@"yDirection": @(scrollView.contentOffset.y) };
+    [channel invokeMethod:@"onScrollYChanged" arguments:yDirection];
 }
 
 - (void)navigate:(FlutterMethodCall*)call {
@@ -212,6 +222,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         decisionHandler(WKNavigationActionPolicyCancel);
     }
 }
+
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
     [channel invokeMethod:@"onState" arguments:@{@"type": @"startLoad", @"url": webView.URL.absoluteString}];
