@@ -172,6 +172,9 @@ class FlutterWebviewPlugin {
     await _channel.invokeMethod('reloadUrl', args);
   }
 
+  // Stops current loading process
+  Future stopLoading() => _channel.invokeMethod("stopLoading");
+
   /// adds the plugin as ActivityResultListener
   /// Only needed and used on Android
   Future registerAcitivityResultListener() =>
