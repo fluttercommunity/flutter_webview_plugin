@@ -97,6 +97,23 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
+
+    _onScrollYChanged = flutterWebviewPlugin.onScrollYChanged.listen((double y) {
+      if (mounted) {
+        setState(() {
+          _history.add("Scroll in  Y Direction: $y");
+        });
+      }
+    });
+
+    _onScrollXChanged = flutterWebviewPlugin.onScrollXChanged.listen((double x) {
+      if (mounted) {
+        setState(() {
+          _history.add("Scroll in  X Direction: $x");
+        });
+      }
+    });
+
     _onStateChanged =
         flutterWebviewPlugin.onStateChanged.listen((WebViewStateChanged state) {
       if (mounted) {

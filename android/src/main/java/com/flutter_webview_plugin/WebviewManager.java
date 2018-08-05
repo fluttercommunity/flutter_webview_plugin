@@ -97,6 +97,18 @@ class WebviewManager {
             }
         });
 
+        observableWebView = (ObservableWebView) webView;
+        observableWebView.setOnScrollChangedCallback(new ObservableWebView.OnScrollChangedCallback(){
+            public void onScroll(int x, int y, int oldx, int oldy){
+                Map<String, Object> yDirection = new HashMap<>();
+                yDirection.put("yDirection", (double)y);
+                FlutterWebviewPlugin.channel.invokeMethod("onScrollYChanged", yDirection);
+                Map<String, Object> xDirection = new HashMap<>();
+                xDirection.put("xDirection", (double)x);
+                FlutterWebviewPlugin.channel.invokeMethod("onScrollXChanged", xDirection);
+            }
+        });
+
         webView.setWebViewClient(webViewClient);
         webView.setWebChromeClient(new WebChromeClient()
         {
