@@ -60,6 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   StreamSubscription<WebViewHttpError> _onHttpError;
 
+  StreamSubscription<double> _onScrollYChanged;
+
+  StreamSubscription<double> _onScrollXChanged;
+
   final _urlCtrl = new TextEditingController(text: selectedUrl);
 
   final _codeCtrl =
@@ -141,6 +145,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _onUrlChanged.cancel();
     _onStateChanged.cancel();
     _onHttpError.cancel();
+    _onScrollXChanged.cancel();
+    _onScrollYChanged.cancel();
 
     flutterWebviewPlugin.dispose();
 
