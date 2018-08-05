@@ -1,3 +1,8 @@
+# 0.2.1
+
+- Added webview scrolling listener
+- Added stopLoading() method
+
 # 0.2.0
 
 - update sdk

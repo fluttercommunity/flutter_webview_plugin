@@ -69,7 +69,6 @@ class FlutterWebviewPlugin {
   /// more detail than other events
   Stream<WebViewStateChanged> get onStateChanged => _onStateChanged.stream;
 
-
   /// Listening web view y position scroll change
   Stream<double> get onScrollYChanged => _onScrollYChanged.stream;
 
