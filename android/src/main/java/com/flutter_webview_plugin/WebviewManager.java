@@ -16,6 +16,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
@@ -72,6 +73,7 @@ class WebviewManager {
     WebView webView;
     Activity activity;
     ResultHandler resultHandler;
+    ObservableWebView observableWebView;
 
     WebviewManager(final Activity activity) {
         this.webView = new WebView(activity);
