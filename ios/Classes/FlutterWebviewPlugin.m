@@ -241,10 +241,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 }
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
-//    id data = [FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
-//                                  message:error.localizedDescription
-//                                  details:error.localizedFailureReason];
-//    [channel invokeMethod:@"onError" arguments:data];
+    [channel invokeMethod:@"onError" arguments:@{@"code": [NSString stringWithFormat:@"%ld", error.code], @"error": error.localizedDescription}];
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
