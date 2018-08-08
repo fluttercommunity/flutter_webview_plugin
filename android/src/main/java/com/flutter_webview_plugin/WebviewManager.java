@@ -73,10 +73,9 @@ class WebviewManager {
     WebView webView;
     Activity activity;
     ResultHandler resultHandler;
-    ObservableWebView observableWebView;
 
     WebviewManager(final Activity activity) {
-        this.webView = new WebView(activity);
+        this.webView = new ObservableWebView(activity);
         this.activity = activity;
         this.resultHandler = new ResultHandler();
         WebViewClient webViewClient = new BrowserClient();
@@ -99,8 +98,7 @@ class WebviewManager {
             }
         });
 
-        observableWebView = (ObservableWebView) webView;
-        observableWebView.setOnScrollChangedCallback(new ObservableWebView.OnScrollChangedCallback(){
+        ((ObservableWebView) webView).setOnScrollChangedCallback(new ObservableWebView.OnScrollChangedCallback(){
             public void onScroll(int x, int y, int oldx, int oldy){
                 Map<String, Object> yDirection = new HashMap<>();
                 yDirection.put("yDirection", (double)y);

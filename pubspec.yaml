@@ -5,7 +5,7 @@ authors:
 - Toufik Zitouni <toufiksapps@gmail.com>
 - Pedia <kpedia@163.com>
 homepage: https://github.com/dart-flitter/flutter_webview_plugin
-version: 0.2.1
+version: 0.2.1+2
 
 environment:
   sdk: ">=2.0.0-dev <3.0.0"
