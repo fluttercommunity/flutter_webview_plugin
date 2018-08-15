@@ -30,6 +30,13 @@ class MyApp extends StatelessWidget {
               ),
               withZoom: true,
               withLocalStorage: true,
+              hidden: true,
+              initialChild: Container(
+                color: Colors.redAccent,
+                child: const Center(
+                  child: Text('Waiting.....'),
+                ),
+              ),
             )
       },
     );
@@ -121,6 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _onStateChanged =
         flutterWebviewPlugin.onStateChanged.listen((WebViewStateChanged state) {
+
       if (mounted) {
         setState(() {
           _history.add('onStateChanged: ${state.type} ${state.url}');
