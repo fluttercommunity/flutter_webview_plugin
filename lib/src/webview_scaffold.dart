@@ -20,6 +20,8 @@ class WebviewScaffold extends StatefulWidget {
   final bool withLocalStorage;
   final bool withLocalUrl;
   final bool scrollBar;
+  final bool hidden;
+  final Widget initialChild;
 
   final Map<String, String> headers;
 
@@ -39,7 +41,9 @@ class WebviewScaffold extends StatefulWidget {
       this.withZoom,
       this.withLocalStorage,
       this.withLocalUrl,
-      this.scrollBar})
+      this.scrollBar,
+      this.hidden : false,
+      this.initialChild})
       : super(key: key);
 
   @override
@@ -50,17 +54,25 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   final webviewReference = new FlutterWebviewPlugin();
   Rect _rect;
   Timer _resizeTimer;
+  StreamSubscription<WebViewStateChanged> _onStateChanged;
 
   @override
   void initState() {
     super.initState();
     webviewReference.close();
+
+    _onStateChanged = webviewReference.onStateChanged.listen((WebViewStateChanged state) {
+      if (state.type == WebViewState.finishLoad) {
+        webviewReference.show();
+      }
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
     webviewReference.close();
+    _onStateChanged.cancel();
     webviewReference.dispose();
   }
 
@@ -79,7 +91,8 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
           withZoom: widget.withZoom,
           withLocalStorage: widget.withLocalStorage,
           withLocalUrl: widget.withLocalUrl,
-          scrollBar: widget.scrollBar);
+          scrollBar: widget.scrollBar,
+          hidden: widget.hidden);
     } else {
       final rect = _buildRect(context);
       if (_rect != rect) {
@@ -95,7 +108,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
         appBar: widget.appBar,
         persistentFooterButtons: widget.persistentFooterButtons,
         bottomNavigationBar: widget.bottomNavigationBar,
-        body: const Center(child: const CircularProgressIndicator()));
+        body: widget.initialChild ?? const Center(child: const CircularProgressIndicator()));
   }
 
   Rect _buildRect(BuildContext context) {
