@@ -42,7 +42,7 @@ class WebviewScaffold extends StatefulWidget {
       this.withLocalStorage,
       this.withLocalUrl,
       this.scrollBar,
-      this.hidden : false,
+      this.hidden = false,
       this.initialChild})
       : super(key: key);
 
@@ -61,18 +61,22 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     super.initState();
     webviewReference.close();
 
-    _onStateChanged = webviewReference.onStateChanged.listen((WebViewStateChanged state) {
-      if (state.type == WebViewState.finishLoad) {
-        webviewReference.show();
-      }
-    });
+    if (widget.hidden) {
+      _onStateChanged = webviewReference.onStateChanged.listen((WebViewStateChanged state) {
+        if (state.type == WebViewState.finishLoad) {
+          webviewReference.show();
+        }
+      });
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
     webviewReference.close();
-    _onStateChanged.cancel();
+    if (widget.hidden) {
+      _onStateChanged.cancel();
+    }
     webviewReference.dispose();
   }
 
@@ -116,20 +120,17 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
 
     final mediaQuery = MediaQuery.of(context);
     final topPadding = widget.primary ? mediaQuery.padding.top : 0.0;
-    final top =
-        fullscreen ? 0.0 : widget.appBar.preferredSize.height + topPadding;
+    final top = fullscreen ? 0.0 : widget.appBar.preferredSize.height + topPadding;
 
     var height = mediaQuery.size.height - top;
 
     if (widget.bottomNavigationBar != null) {
       height -= 56.0 +
-          mediaQuery.padding
-              .bottom; // todo(lejard_h) find a way to determine bottomNavigationBar programmatically
+          mediaQuery.padding.bottom; // todo(lejard_h) find a way to determine bottomNavigationBar programmatically
     }
 
     if (widget.persistentFooterButtons != null) {
-      height -=
-          53.0; // todo(lejard_h) find a way to determine persistentFooterButtons programmatically
+      height -= 53.0; // todo(lejard_h) find a way to determine persistentFooterButtons programmatically
       if (widget.bottomNavigationBar == null) {
         height -= mediaQuery.padding.bottom;
       }
