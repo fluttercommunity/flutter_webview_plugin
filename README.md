@@ -3,7 +3,7 @@
 
 # flutter_webview_plugin
 
-Plugin that allow Flutter to communicate with a native WebView.
+Plugin that allows Flutter to communicate with a native WebView.
 
 ***Warning:***
 The webview is not integrated in the widget tree, it is a native view on top of the flutter view.
