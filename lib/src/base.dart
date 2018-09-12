@@ -29,6 +29,7 @@ class FlutterWebviewPlugin {
   final _onScrollXChanged = StreamController<double>.broadcast();
   final _onScrollYChanged = StreamController<double>.broadcast();
   final _onHttpError = StreamController<WebViewHttpError>.broadcast();
+  final _onWebviewMessage = StreamController<String>.broadcast();
 
   Future<Null> _handleMessages(MethodCall call) async {
     switch (call.method) {
@@ -52,7 +53,12 @@ class FlutterWebviewPlugin {
         );
         break;
       case 'onHttpError':
-        _onHttpError.add(WebViewHttpError(call.arguments['code'], call.arguments['url']));
+        _onHttpError.add(
+            WebViewHttpError(call.arguments['code'], call.arguments['url']));
+        break;
+
+      case 'onWebviewMessage':
+        _onWebviewMessage.add(call.arguments);
         break;
     }
   }
@@ -76,6 +82,8 @@ class FlutterWebviewPlugin {
 
   Stream<WebViewHttpError> get onHttpError => _onHttpError.stream;
 
+  Stream<String> get onWebviewMessage => _onWebviewMessage.stream;
+
   /// Start the Webview with [url]
   /// - [headers] specify additional HTTP headers
   /// - [withJavascript] enable Javascript or not for the Webview
@@ -94,7 +102,9 @@ class FlutterWebviewPlugin {
   /// - [withLocalUrl]: allow url as a local path
   ///     Allow local files on iOs > 9.0
   /// - [scrollBar]: enable or disable scrollbar
-  Future<Null> launch(String url, {
+  /// - [enableMessaging]: enable postMessage
+  Future<Null> launch(
+    String url, {
     Map<String, String> headers,
     bool withJavascript,
     bool clearCache,
@@ -110,6 +120,7 @@ class FlutterWebviewPlugin {
     bool supportMultipleWindows,
     bool appCacheEnabled,
     bool allowFileURLs,
+    bool enableMessaging,
   }) async {
     final args = <String, dynamic>{
       'url': url,
@@ -126,6 +137,7 @@ class FlutterWebviewPlugin {
       'supportMultipleWindows': supportMultipleWindows ?? false,
       'appCacheEnabled': appCacheEnabled ?? false,
       'allowFileURLs': allowFileURLs ?? false,
+      'enableMessaging': enableMessaging ?? false,
     };
 
     if (headers != null) {
@@ -141,6 +153,14 @@ class FlutterWebviewPlugin {
       };
     }
     await _channel.invokeMethod('launch', args);
+
+    if (args['enableMessaging']) {
+      onStateChanged.listen((WebViewStateChanged state) {
+        if (state.type == WebViewState.finishLoad) {
+          linkBridge();
+        }
+      });
+    }
   }
 
   /// Execute Javascript inside webview
@@ -175,10 +195,11 @@ class FlutterWebviewPlugin {
   }
 
   // Clean cookies on WebView
-  Future<Null> cleanCookies() async => await _channel.invokeMethod('cleanCookies');
+  Future<Null> cleanCookies() async =>
+      await _channel.invokeMethod('cleanCookies');
 
   // Stops current loading process
-  Future<Null> stopLoading() async => await _channel.invokeMethod('stopLoading');
+  Future stopLoading() => _channel.invokeMethod('stopLoading');
 
   /// Close all Streams
   void dispose() {
@@ -188,6 +209,7 @@ class FlutterWebviewPlugin {
     _onScrollXChanged.close();
     _onScrollYChanged.close();
     _onHttpError.close();
+    _onWebviewMessage.close();
     _instance = null;
   }
 
@@ -215,6 +237,15 @@ class FlutterWebviewPlugin {
       'height': rect.height,
     };
     await _channel.invokeMethod('resize', args);
+  }
+
+  Future postMessage(String message) async {
+    final args = <String, String>{'data': message};
+    await _channel.invokeMethod('postMessage', args);
+  }
+
+  Future linkBridge() async {
+    await _channel.invokeMethod('linkBridge');
   }
 }
 

@@ -1,6 +1,5 @@
 package com.flutter_webview_plugin;
 
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -77,6 +76,12 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             case "cleanCookies":
                 cleanCookies(call, result);
                 break;
+            case "postMessage":
+                postMessage(call, result);
+                break;
+            case "linkBridge":
+                linkBridge(call, result);
+                break;
             default:
                 result.notImplemented();
                 break;
@@ -97,6 +102,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         Map<String, String> headers = call.argument("headers");
         boolean scrollBar = call.argument("scrollBar");
         boolean allowFileURLs = call.argument("allowFileURLs");
+        boolean enableMessaging = call.argument("enableMessaging");
 
         if (webViewManager == null || webViewManager.closed == true) {
             webViewManager = new WebviewManager(activity);
@@ -118,7 +124,8 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
                 scrollBar,
                 supportMultipleWindows,
                 appCacheEnabled,
-                allowFileURLs
+                allowFileURLs,
+                enableMessaging
         );
         result.success(null);
     }
@@ -127,10 +134,10 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         Map<String, Number> rc = call.argument("rect");
         FrameLayout.LayoutParams params;
         if (rc != null) {
-            params = new FrameLayout.LayoutParams(
-                    dp2px(activity, rc.get("width").intValue()), dp2px(activity, rc.get("height").intValue()));
-            params.setMargins(dp2px(activity, rc.get("left").intValue()), dp2px(activity, rc.get("top").intValue()),
-                    0, 0);
+            params = new FrameLayout.LayoutParams(dp2px(activity, rc.get("width").intValue()),
+                    dp2px(activity, rc.get("height").intValue()));
+            params.setMargins(dp2px(activity, rc.get("left").intValue()), dp2px(activity, rc.get("top").intValue()), 0,
+                    0);
         } else {
             Display display = activity.getWindowManager().getDefaultDisplay();
             Point size = new Point();
@@ -241,5 +248,17 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             return webViewManager.resultHandler.handleResult(i, i1, intent);
         }
         return false;
+    }
+
+    private void postMessage(MethodCall call, final MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.postMessage(call, result);
+        }
+    }
+
+    private void linkBridge(MethodCall call, final MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.linkBridge();
+        }
     }
 }

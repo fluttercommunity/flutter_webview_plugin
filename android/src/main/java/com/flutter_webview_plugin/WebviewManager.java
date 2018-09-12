@@ -25,6 +25,11 @@ import io.flutter.plugin.common.MethodChannel;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.webkit.JavascriptInterface;
+import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
+import org.json.JSONException;
+import org.json.JSONObject;
 /**
  * Created by lejard_h on 20/12/2017.
  */
@@ -34,6 +39,7 @@ class WebviewManager {
     private ValueCallback<Uri> mUploadMessage;
     private ValueCallback<Uri[]> mUploadMessageArray;
     private final static int FILECHOOSER_RESULTCODE=1;
+    private static final String CHANNEL_NAME = "flutter_webview_plugin";
 
     @TargetApi(7)
     class ResultHandler {
@@ -204,7 +210,8 @@ class WebviewManager {
             boolean scrollBar,
             boolean supportMultipleWindows,
             boolean appCacheEnabled,
-            boolean allowFileURLs
+            boolean allowFileURLs,
+            boolean enableMessaging
     ) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
@@ -248,6 +255,11 @@ class WebviewManager {
         } else {
             webView.loadUrl(url);
         }
+
+        if (messagingEnabled) {
+            enableMessaging();
+        }
+
     }
 
     void reloadUrl(String url) {
@@ -338,5 +350,61 @@ class WebviewManager {
         if (webView != null){
             webView.stopLoading();
         }
+    }
+
+    protected static class JsObject {
+        WebviewManager webviewManager;
+
+        JsObject(WebviewManager _webviewManager) {
+            webviewManager = _webviewManager;
+        }
+
+        @JavascriptInterface
+        public void postMessage(String message) {
+            webviewManager.onMessage(message);
+        }
+    }
+
+    public void onMessage(String message) {
+        FlutterWebviewPlugin.channel.invokeMethod("onWebviewMessage", message);
+    }
+
+    public void postMessage(MethodCall call, final MethodChannel.Result result) {
+        String message = call.argument("data");
+        try {
+            JSONObject eventInitDict = new JSONObject();
+            eventInitDict.put("data", message);
+            String script = "(function () {" +
+                "var event;" +
+                "var data = " + eventInitDict.toString() + ";" +
+                "try {" +
+                "event = new MessageEvent('message', data);" +
+                "} catch (e) {" +
+                "event = document.createEvent('MessageEvent');" +
+                "event.initMessageEvent('message', true, true, data.data, data.origin, data.lastEventId, data.source);" +
+                "}" +
+                "document.dispatchEvent(event);" +
+            "})();";
+            webView.evaluateJavascript(script, null);
+
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void enableMessaging() {
+        webView.addJavascriptInterface(new JsObject(this), CHANNEL_NAME);
+    }
+
+
+    protected void linkBridge() {
+        String script = "(" +
+                "window.originalPostMessage = window.postMessage," +
+                "window.postMessage = function(data) {" +
+                CHANNEL_NAME + ".postMessage(String(data));" +
+                "}" +
+                ")";
+
+        webView.evaluateJavascript(script, null);
     }
 }

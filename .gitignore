@@ -15,3 +15,7 @@ example/ios/Podfile.lock
 **/Flutter/Generated.xcconfig/
 **/Flutter/flutter_assets/
 
+.settings
+.classpath
+.project
+.vscode

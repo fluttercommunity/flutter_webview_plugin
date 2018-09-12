@@ -133,6 +133,7 @@ flutterWebviewPlugin.launch(url,
 - `Stream<double>` onScrollXChanged
 - `Stream<double>` onScrollYChanged
 - `Stream<String>` onError
+- `Stream<String>` onWebviewMessage
 
 **_Don't forget to dispose webview_**
 `flutterWebviewPlugin.dispose()`
@@ -156,7 +157,9 @@ Future<Null> launch(String url, {
    bool supportMultipleWindows: false,
    bool appCacheEnabled: false,
    bool allowFileURLs: false,
+   bool enableMessaging: false,
 });
+
 ```
 
 ```dart
@@ -205,5 +208,6 @@ Future<Null> goForward();
 
 ```dart
 Future<Null> stopLoading();
-```
 
+Future<Null> linkBridge();
+```
