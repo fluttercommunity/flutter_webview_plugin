@@ -93,6 +93,7 @@ flutterWebviewPlugin.launch(url,
 - `Stream<String>` onUrlChanged
 - `Stream<WebViewStateChanged>` onStateChanged
 - `Stream<String>` onError
+- `Stream<String>` onWebviewMessage
 
 ***Don't forget to dispose webview***
 `flutterWebviewPlugin.dispose()`
@@ -111,7 +112,9 @@ Future<Null> launch(String url,
          String userAgent: null,
          bool withZoom: false,
          bool withLocalStorage: true,
-         bool scrollBar: true});
+         bool scrollBar: true,
+         bool enableMessaging: false,
+         });
 ```
 ```dart
 Future<String> evalJavascript(String code);
@@ -130,4 +133,8 @@ Future<Null> hide();
 ```
 ```dart
 Future<Null> reloadUrl(String url);
+```
+
+```dart
+Future<Null> linkBridge();
 ```
