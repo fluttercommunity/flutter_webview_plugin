@@ -222,6 +222,10 @@ class WebviewManager {
         }
     }
 
+    void reloadUrl(String url) {
+        webView.loadUrl(url);
+    }
+
     void close(MethodCall call, MethodChannel.Result result) {
         if (webView != null) {
             ViewGroup vg = (ViewGroup) (webView.getParent());
