@@ -55,6 +55,9 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else if ([@"hide" isEqualToString:call.method]) {
         [self hide];
         result(nil);
+    } else if ([@"stopLoading" isEqualToString:call.method]) {
+        [self stopLoading];
+        result(nil);
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -70,6 +73,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     NSString *userAgent = call.arguments[@"userAgent"];
     NSNumber *withZoom = call.arguments[@"withZoom"];
     NSDictionary *cookies = call.arguments[@"cookies"];
+    NSNumber *scrollBar = call.arguments[@"scrollBar"];
     
     if (clearCache != (id)[NSNull null] && [clearCache boolValue]) {
         [[NSURLCache sharedURLCache] removeAllCachedResponses];
@@ -83,7 +87,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     if (cookies != (id)[NSNull null]) {
         [dict enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop) {
             NSMutableDictionary *cookieProperties = [NSMutableDictionary dictionary];
-            [cookieProperties setObject:@key" forKey:NSHTTPCookieName];
+            [cookieProperties setObject:@key forKey:NSHTTPCookieName];
             [cookieProperties setObject:@value forKey:NSHTTPCookieValue];
             [cookieProperties setObject:@url forKey:NSHTTPCookieDomain];
             [cookieProperties setObject:@url forKey:NSHTTPCookieOriginURL];
@@ -115,6 +119,10 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     self.webview.navigationDelegate = self;
     self.webview.scrollView.delegate = self;
     self.webview.hidden = [hidden boolValue];
+    self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
+    self.webview.scrollView.showsVerticalScrollIndicator = [scrollBar boolValue];
+
+
 
     _enableZoom = [withZoom boolValue];
 
@@ -130,6 +138,14 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                       [[rect valueForKey:@"height"] doubleValue]);
 }
 
+- (void) scrollViewDidScroll:(UIScrollView *)scrollView {
+    id xDirection = @{@"xDirection": @(scrollView.contentOffset.x) };
+    [channel invokeMethod:@"onScrollXChanged" arguments:xDirection];
+
+    id yDirection = @{@"yDirection": @(scrollView.contentOffset.y) };
+    [channel invokeMethod:@"onScrollYChanged" arguments:yDirection];
+}
+
 - (void)navigate:(FlutterMethodCall*)call {
     if (self.webview != nil) {
             NSString *url = call.arguments[@"url"];
@@ -142,7 +158,13 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                     @throw @"not available on version earlier than ios 9.0";
                 }
             } else {
-                NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+                NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+                NSDictionary *headers = call.arguments[@"headers"];
+                
+                if (headers != nil) {
+                    [request setAllHTTPHeaderFields:headers];
+                }
+                
                 [self.webview loadRequest:request];
             }
         }
@@ -199,6 +221,11 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         self.webview.hidden = true;
     }
 }
+- (void)stopLoading {
+    if (self.webview != nil) {
+        [self.webview stopLoading];
+    }
+}
 
 #pragma mark -- WkWebView Delegate
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
@@ -226,6 +253,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     }
 }
 
+
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
     [channel invokeMethod:@"onState" arguments:@{@"type": @"startLoad", @"url": webView.URL.absoluteString}];
 }
@@ -239,6 +267,15 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                                   message:error.localizedDescription
                                   details:error.localizedFailureReason];
     [channel invokeMethod:@"onError" arguments:data];
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
+    if ([navigationResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSHTTPURLResponse * response = (NSHTTPURLResponse *)navigationResponse.response;
+
+        [channel invokeMethod:@"onHttpError" arguments:@{@"code": [NSString stringWithFormat:@"%ld", response.statusCode], @"url": webView.URL.absoluteString}];
+    }
+    decisionHandler(WKNavigationResponsePolicyAllow);
 }
 
 #pragma mark -- UIScrollViewDelegate

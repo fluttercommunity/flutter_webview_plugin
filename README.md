@@ -42,6 +42,23 @@ flutterWebviewPlugin.onUrlChanged.listen((String url) {
 });
 ```
 
+#### Listen for scroll event in webview
+
+```dart
+final flutterWebviewPlugin = new FlutterWebviewPlugin();
+flutterWebviewPlugin.onScrollYChanged.listen((double offsetY) { // latest offset value in vertical scroll
+  // compare vertical scroll changes here with old value
+});
+
+flutterWebviewPlugin.onScrollXChanged.listen((double offsetX) { // latest offset value in horizontal scroll
+  // compare horizontal scroll changes here with old value
+});
+
+````
+
+Note: Do note there is a slight difference is scroll distance between ios and android. Android scroll value difference tends to be larger than ios devices.
+
+
 #### Hidden WebView
 
 ```dart
@@ -84,7 +101,8 @@ flutterWebviewPlugin.launch(url,
 
 ```dart
 Future<Null> launch(String url,
-         {bool withJavascript: true,
+         {Map<String, String> headers: null,
+         bool withJavascript: true,
          bool clearCache: false,
          bool clearCookies: false,
          bool hidden: false,
@@ -92,7 +110,8 @@ Future<Null> launch(String url,
          Rect rect: null,
          String userAgent: null,
          bool withZoom: false,
-         bool withLocalStorage: true});
+         bool withLocalStorage: true,
+         bool scrollBar: true});
 ```
 ```dart
 Future<String> evalJavascript(String code);
