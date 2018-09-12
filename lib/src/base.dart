@@ -22,6 +22,7 @@ class FlutterWebviewPlugin {
   final _onScrollXChanged = new StreamController<double>.broadcast();
   final _onScrollYChanged = new StreamController<double>.broadcast();
   final _onHttpError = new StreamController<WebViewHttpError>.broadcast();
+  final _onWebviewMessage = new StreamController<String>.broadcast();
 
   static FlutterWebviewPlugin _instance;
 
@@ -39,13 +40,13 @@ class FlutterWebviewPlugin {
       case 'onUrlChanged':
         _onUrlChanged.add(call.arguments['url']);
         break;
-      case "onScrollXChanged":
-        _onScrollXChanged.add(call.arguments["xDirection"]);
+      case 'onScrollXChanged':
+        _onScrollXChanged.add(call.arguments['xDirection']);
         break;
-      case "onScrollYChanged":
-        _onScrollYChanged.add(call.arguments["yDirection"]);
+      case 'onScrollYChanged':
+        _onScrollYChanged.add(call.arguments['yDirection']);
         break;
-      case "onState":
+      case 'onState':
         _onStateChanged.add(
           new WebViewStateChanged.fromMap(
               new Map<String, dynamic>.from(call.arguments)),
@@ -54,6 +55,10 @@ class FlutterWebviewPlugin {
       case 'onHttpError':
         _onHttpError.add(
             WebViewHttpError(call.arguments['code'], call.arguments['url']));
+        break;
+
+      case 'onWebviewMessage':
+        _onWebviewMessage.add(call.arguments);
         break;
     }
   }
@@ -77,6 +82,8 @@ class FlutterWebviewPlugin {
 
   Stream<WebViewHttpError> get onHttpError => _onHttpError.stream;
 
+  Stream<String> get onWebviewMessage => _onWebviewMessage.stream;
+
   /// Start the Webview with [url]
   /// - [headers] specify additional HTTP headers
   /// - [withJavascript] enable Javascript or not for the Webview
@@ -95,19 +102,23 @@ class FlutterWebviewPlugin {
   /// - [withLocalUrl]: allow url as a local path
   ///     Allow local files on iOs > 9.0
   /// - [scrollBar]: enable or disable scrollbar
-  Future<Null> launch(String url,
-      {Map<String, String> headers,
-      bool withJavascript,
-      bool clearCache,
-      bool clearCookies,
-      bool hidden,
-      bool enableAppScheme,
-      Rect rect,
-      String userAgent,
-      bool withZoom,
-      bool withLocalStorage,
-      bool withLocalUrl,
-      bool scrollBar}) async {
+  /// - [enableMessaging]: enable postMessage
+  Future<Null> launch(
+    String url, {
+    Map<String, String> headers,
+    bool withJavascript,
+    bool clearCache,
+    bool clearCookies,
+    bool hidden,
+    bool enableAppScheme,
+    Rect rect,
+    String userAgent,
+    bool withZoom,
+    bool withLocalStorage,
+    bool withLocalUrl,
+    bool scrollBar,
+    bool enableMessaging,
+  }) async {
     final args = <String, dynamic>{
       'url': url,
       'withJavascript': withJavascript ?? true,
@@ -119,7 +130,8 @@ class FlutterWebviewPlugin {
       'withZoom': withZoom ?? false,
       'withLocalStorage': withLocalStorage ?? true,
       'withLocalUrl': withLocalUrl ?? false,
-      'scrollBar': scrollBar ?? true
+      'scrollBar': scrollBar ?? true,
+      'enableMessaging' : enableMessaging ?? false,
     };
 
     if (headers != null) {
@@ -135,6 +147,14 @@ class FlutterWebviewPlugin {
       };
     }
     await _channel.invokeMethod('launch', args);
+
+    if (args['enableMessaging']) {
+      onStateChanged.listen((WebViewStateChanged state) {
+        if (state.type == WebViewState.finishLoad) {
+          linkBridge();
+        }
+      });
+    }
   }
 
   /// Execute Javascript inside webview
@@ -172,7 +192,7 @@ class FlutterWebviewPlugin {
   }
 
   // Stops current loading process
-  Future stopLoading() => _channel.invokeMethod("stopLoading");
+  Future stopLoading() => _channel.invokeMethod('stopLoading');
 
   /// adds the plugin as ActivityResultListener
   /// Only needed and used on Android
@@ -192,6 +212,7 @@ class FlutterWebviewPlugin {
     _onScrollXChanged.close();
     _onScrollYChanged.close();
     _onHttpError.close();
+    _onWebviewMessage.close();
     _instance = null;
   }
 
@@ -219,6 +240,15 @@ class FlutterWebviewPlugin {
       'height': rect.height
     };
     await _channel.invokeMethod('resize', args);
+  }
+
+  Future postMessage(String message) async {
+    final args = <String, String>{'data': message};
+    await _channel.invokeMethod('postMessage', args);
+  }
+
+  Future linkBridge() async {
+    await _channel.invokeMethod('linkBridge');
   }
 }
 

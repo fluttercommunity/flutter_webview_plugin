@@ -64,6 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   StreamSubscription<double> _onScrollXChanged;
 
+  StreamSubscription<String> _onWebviewMessaged;
+
   final _urlCtrl = new TextEditingController(text: selectedUrl);
 
   final _codeCtrl =
@@ -105,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
         flutterWebviewPlugin.onScrollYChanged.listen((double y) {
       if (mounted) {
         setState(() {
-          _history.add("Scroll in  Y Direction: $y");
+          _history.add('Scroll in  Y Direction: $y');
         });
       }
     });
@@ -114,13 +116,17 @@ class _MyHomePageState extends State<MyHomePage> {
         flutterWebviewPlugin.onScrollXChanged.listen((double x) {
       if (mounted) {
         setState(() {
-          _history.add("Scroll in  X Direction: $x");
+          _history.add('Scroll in  X Direction: $x');
         });
       }
     });
 
     _onStateChanged =
         flutterWebviewPlugin.onStateChanged.listen((WebViewStateChanged state) {
+      if (state.type == WebViewState.finishLoad) {
+        flutterWebviewPlugin.linkBridge();
+      }
+
       if (mounted) {
         setState(() {
           _history.add('onStateChanged: ${state.type} ${state.url}');
@@ -136,6 +142,11 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     });
+
+    _onWebviewMessaged =
+        flutterWebviewPlugin.onWebviewMessage.listen((String message) {
+      print(message);
+    });
   }
 
   @override
@@ -147,6 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _onHttpError.cancel();
     _onScrollXChanged.cancel();
     _onScrollYChanged.cancel();
+    _onWebviewMessaged.cancel();
 
     flutterWebviewPlugin.dispose();
 
@@ -169,10 +181,13 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           new RaisedButton(
             onPressed: () {
-              flutterWebviewPlugin.launch(selectedUrl,
-                  rect: new Rect.fromLTWH(
-                      0.0, 0.0, MediaQuery.of(context).size.width, 300.0),
-                  userAgent: kAndroidUserAgent);
+              flutterWebviewPlugin.launch(
+                selectedUrl,
+                rect: new Rect.fromLTWH(
+                    0.0, 0.0, MediaQuery.of(context).size.width, 100.0),
+                userAgent: kAndroidUserAgent,
+                enableMessaging: true,
+              );
             },
             child: const Text('Open Webview (rect)'),
           ),
@@ -193,6 +208,12 @@ class _MyHomePageState extends State<MyHomePage> {
               Navigator.of(context).pushNamed('/widget');
             },
             child: const Text('Open widget webview'),
+          ),
+          new RaisedButton(
+            onPressed: () {
+              flutterWebviewPlugin.postMessage('hello from flutter');
+            },
+            child: const Text('postMessage to WebView'),
           ),
           new Container(
             padding: const EdgeInsets.all(24.0),
