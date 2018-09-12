@@ -21,6 +21,7 @@ import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -184,12 +185,18 @@ class WebviewManager {
         }
     }
 
+    private void setCookies(String url, Map<String, String> cookies) {
+        for (String key : cookies.keySet()) {
+            CookieManager.getInstance().setCookie(url, key + "=" + cookies.get(key));
+        }
+    }
+
     private void clearCache() {
         webView.clearCache(true);
         webView.clearFormData();
     }
 
-    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, Map<String, String> headers, boolean withZoom, boolean withLocalStorage, boolean scrollBar) {
+    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, Map<String, String> headers, boolean withZoom, boolean withLocalStorage, Map<String, String> cookies, boolean scrollBar) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
@@ -205,6 +212,10 @@ class WebviewManager {
 
         if (clearCookies) {
             clearCookies();
+        }
+
+        if (cookies != null && !cookies.isEmpty()) {
+            setCookies(url, cookies);
         }
 
         if (userAgent != null) {

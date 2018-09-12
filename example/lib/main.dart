@@ -170,6 +170,9 @@ class _MyHomePageState extends State<MyHomePage> {
           new RaisedButton(
             onPressed: () {
               flutterWebviewPlugin.launch(selectedUrl,
+                  cookies: {
+                    "sessionid": "1234567890"
+                  },
                   rect: new Rect.fromLTWH(
                       0.0, 0.0, MediaQuery.of(context).size.width, 300.0),
                   userAgent: kAndroidUserAgent);
