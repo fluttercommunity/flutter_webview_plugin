@@ -57,8 +57,14 @@ class FlutterWebviewPlugin {
             WebViewHttpError(call.arguments['code'], call.arguments['url']));
         break;
 
+      case 'linkBridge':
+        {
+          linkBridge();
+          break;
+        }
+
       case 'onWebviewMessage':
-        _onWebviewMessage.add(call.arguments);
+        _onWebviewMessage.add(call.arguments['data']);
         break;
     }
   }

@@ -2,6 +2,9 @@
 
 static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
+static NSString *const kJSNavigationScheme = @"flutter-js-navigation";
+static NSString *const kPostMessageHost = @"postMessage";
+
 // UIWebViewDelegate
 @interface FlutterWebviewPlugin() <WKNavigationDelegate, UIScrollViewDelegate> {
     BOOL _enableAppScheme;
@@ -69,6 +72,11 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else if ([@"reload" isEqualToString:call.method]) {
         [self reload];
         result(nil);
+    } else if ([@"linkBridge" isEqualToString:call.method]) {
+        [self linkBridge];
+        result(nil);
+    } else if ([@"postMessage" isEqualToString:call.method]) {
+        [self postMessage:call];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -192,8 +200,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
 - (void)reloadUrl:(FlutterMethodCall*)call {
     if (self.webview != nil) {
-		NSString *url = call.arguments[@"url"];
-		NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        NSString *url = call.arguments[@"url"];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
         [self.webview loadRequest:request];
     }
 }
@@ -234,9 +242,81 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         }];
 }
 
+- (void)linkBridge {
+    if (self.webview != nil) {
+        NSString *source = [NSString stringWithFormat:
+        @"(function() {"
+            "window.originalPostMessage = window.postMessage;"
+
+            "var messageQueue = [];"
+            "var messagePending = false;"
+
+            "function processQueue() {"
+            "if (!messageQueue.length || messagePending) return;"
+            "messagePending = true;"
+            "var src = '%@://%@?' + encodeURIComponent(messageQueue.shift());"
+            "console.log(src);"
+            "window.location.href = src;"
+            "}"
+
+            "window.postMessage = function(data) {"
+            "messageQueue.push(String(data));"
+            "processQueue();"
+            "};"
+
+            "document.addEventListener('message:received', function(e) {"
+            "messagePending = false;"
+            "processQueue();"
+            "});"
+        "})();", kJSNavigationScheme, kPostMessageHost
+        ];
+        [self.webview evaluateJavaScript:source completionHandler:^(id _Nullable response, NSError * _Nullable error) {
+            return;
+        }];
+    }
+}
+
+- (void)postMessage:(FlutterMethodCall*)call {
+    if (self.webview != nil) {
+        NSString *data = call.arguments[@"data"];
+        NSString *source = [NSString
+            stringWithFormat:@"document.dispatchEvent(new MessageEvent('message', {'data': '%@'}));",
+            data
+        ];
+        [self.webview evaluateJavaScript:source completionHandler:^(id _Nullable response, NSError * _Nullable error) {
+            return;
+        }];
+    }
+}
+
 #pragma mark -- WkWebView Delegate
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
     decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+
+    BOOL isJSNavigation = [navigationAction.request.URL.scheme isEqualToString:kJSNavigationScheme];
+    BOOL isJSPostMessage = [navigationAction.request.URL.host isEqualToString:kPostMessageHost];
+
+    if (isJSNavigation && isJSPostMessage) {
+        NSString *data = navigationAction.request.URL.query;
+        data = [data stringByReplacingOccurrencesOfString:@"+" withString:@" "];
+        data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
+        NSMutableDictionary<NSString *, id> *event = [[NSMutableDictionary alloc] initWithDictionary:@{
+            @"url": navigationAction.request.URL.absoluteString ?: @"",
+        }];
+        [event addEntriesFromDictionary: @{
+            @"data": data,
+        }];
+
+        NSString *source = @"document.dispatchEvent(new MessageEvent('message:received'));";
+
+        [webView evaluateJavaScript:source completionHandler:^(id _Nullable response, NSError * _Nullable error) {
+            return;
+        }];
+        [channel invokeMethod:@"onWebviewMessage" arguments:event];
+        decisionHandler(WKNavigationActionPolicyCancel);
+        return;
+    }
 
     id data = @{@"url": navigationAction.request.URL.absoluteString,
                 @"type": @"shouldStart",
