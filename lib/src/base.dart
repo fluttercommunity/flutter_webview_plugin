@@ -137,6 +137,11 @@ class FlutterWebviewPlugin {
     await _channel.invokeMethod('launch', args);
   }
 
+Future<String> jsInvokeMethod(String method) async {
+    final res = await _channel.invokeMethod('jsInvoke', {'Method': method});
+    return res;
+  }
+
   /// Execute Javascript inside webview
   Future<String> evalJavascript(String code) async {
     final res = await _channel.invokeMethod('eval', {'code': code});
