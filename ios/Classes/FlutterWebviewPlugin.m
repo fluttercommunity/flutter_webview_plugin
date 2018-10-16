@@ -1,11 +1,14 @@
 #import "FlutterWebviewPlugin.h"
 
+
 static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
 // UIWebViewDelegate
-@interface FlutterWebviewPlugin() <WKNavigationDelegate, UIScrollViewDelegate> {
+@interface FlutterWebviewPlugin() <WKNavigationDelegate, UIScrollViewDelegate,WKScriptMessageHandler> {
+    
     BOOL _enableAppScheme;
     BOOL _enableZoom;
+    
 }
 @end
 
@@ -43,7 +46,11 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         [self evalJavascript:call completionHandler:^(NSString * response) {
             result(response);
         }];
-    } else if ([@"resize" isEqualToString:call.method]) {
+    } else if ([@"jsInvoke" isEqualToString:call.method]) {
+        [self javascriptInvokeMethod:call completionHandler:^(NSDictionary * response) {
+            result(response);
+        }];
+    }else if ([@"resize" isEqualToString:call.method]) {
         [self resize:call];
         result(nil);
     } else if ([@"reloadUrl" isEqualToString:call.method]) {
@@ -92,7 +99,6 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else {
         rc = self.viewController.view.bounds;
     }
-    
     self.webview = [[WKWebView alloc] initWithFrame:rc];
     self.webview.navigationDelegate = self;
     self.webview.scrollView.delegate = self;
@@ -158,6 +164,23 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         }];
     } else {
         completionHandler(nil);
+    }
+}
+- (void)javascriptInvokeMethod:(FlutterMethodCall*)call
+     completionHandler:(void (^_Nullable)(NSDictionary * response))completionHandler {
+    if (self.webview != nil) {
+        NSString *method = call.arguments[@"Method"];
+        [[self.webview configuration].userContentController addScriptMessageHandler:self name:method];
+        self.resultBlock =completionHandler;
+    } else {
+        completionHandler(nil);
+    }
+}
+
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message{
+    NSLog(@"JS 调用了 %@ 方法，传回参数 %@",message.name,message.body);
+    if (self.resultBlock) {
+        self.resultBlock(message.body);
     }
 }
 
