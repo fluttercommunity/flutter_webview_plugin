@@ -155,9 +155,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _onStateChanged =
         flutterWebViewPlugin.onStateChanged.listen((WebViewStateChanged state) {
-      // if (state.type == WebViewState.finishLoad) {
-      //   flutterWebviewPlugin.linkBridge();
-      // }
       if (mounted) {
         setState(() {
           _history.add('onStateChanged: ${state.type} ${state.url}');
