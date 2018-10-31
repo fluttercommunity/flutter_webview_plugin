@@ -86,6 +86,8 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         boolean clearCookies = call.argument("clearCookies");
         boolean withZoom = call.argument("withZoom");
         boolean withLocalStorage = call.argument("withLocalStorage");
+        boolean supportMultipleWindows = call.argument("supportMultipleWindows");
+        boolean appCacheEnabled = call.argument("appCacheEnabled");
         Map<String, String> headers = call.argument("headers");
         boolean scrollBar = call.argument("scrollBar");
 
@@ -106,7 +108,9 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
                 headers,
                 withZoom,
                 withLocalStorage,
-                scrollBar
+                scrollBar,
+                supportMultipleWindows,
+                appCacheEnabled
         );
         result.success(null);
     }

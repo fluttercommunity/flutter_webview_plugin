@@ -107,7 +107,9 @@ class FlutterWebviewPlugin {
       bool withZoom,
       bool withLocalStorage,
       bool withLocalUrl,
-      bool scrollBar}) async {
+      bool scrollBar,
+      bool supportMultipleWindows,
+      bool appCacheEnabled}) async {
     final args = <String, dynamic>{
       'url': url,
       'withJavascript': withJavascript ?? true,
@@ -119,7 +121,9 @@ class FlutterWebviewPlugin {
       'withZoom': withZoom ?? false,
       'withLocalStorage': withLocalStorage ?? true,
       'withLocalUrl': withLocalUrl ?? false,
-      'scrollBar': scrollBar ?? true
+      'scrollBar': scrollBar ?? true,
+      'supportMultipleWindows': supportMultipleWindows ?? false,
+      'appCacheEnabled': appCacheEnabled ?? false
     };
 
     if (headers != null) {

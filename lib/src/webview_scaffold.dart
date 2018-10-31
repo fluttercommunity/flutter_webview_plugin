@@ -9,6 +9,8 @@ class WebviewScaffold extends StatefulWidget {
   final PreferredSizeWidget appBar;
   final String url;
   final bool withJavascript;
+  final bool supportMultipleWindows;
+  final bool appCacheEnabled;
   final bool clearCache;
   final bool clearCookies;
   final bool enableAppScheme;
@@ -29,6 +31,8 @@ class WebviewScaffold extends StatefulWidget {
       @required this.url,
       this.headers,
       this.withJavascript,
+      this.supportMultipleWindows,
+      this.appCacheEnabled,
       this.clearCache,
       this.clearCookies,
       this.enableAppScheme,
@@ -79,7 +83,9 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
           withZoom: widget.withZoom,
           withLocalStorage: widget.withLocalStorage,
           withLocalUrl: widget.withLocalUrl,
-          scrollBar: widget.scrollBar);
+          scrollBar: widget.scrollBar,
+          supportMultipleWindows: widget.supportMultipleWindows,
+          appCacheEnabled: widget.appCacheEnabled);
     } else {
       final rect = _buildRect(context);
       if (_rect != rect) {

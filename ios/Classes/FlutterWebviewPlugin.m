@@ -15,7 +15,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                methodChannelWithName:CHANNEL_NAME
                binaryMessenger:[registrar messenger]];
     
-    UIViewController *viewController = (UIViewController *)registrar.messenger;
+    UIViewController *viewController = [UIApplication sharedApplication].delegate.window.rootViewController;
     FlutterWebviewPlugin* instance = [[FlutterWebviewPlugin alloc] initWithViewController:viewController];
     
     [registrar addMethodCallDelegate:instance channel:channel];
@@ -87,7 +87,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     }
 
     CGRect rc;
-    if (rect != nil) {
+    if (rect != (id)[NSNull null]) {
         rc = [self parseRect:rect];
     } else {
         rc = self.viewController.view.bounds;
@@ -99,8 +99,6 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     self.webview.hidden = [hidden boolValue];
     self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
     self.webview.scrollView.showsVerticalScrollIndicator = [scrollBar boolValue];
-
-
 
     _enableZoom = [withZoom boolValue];
 
