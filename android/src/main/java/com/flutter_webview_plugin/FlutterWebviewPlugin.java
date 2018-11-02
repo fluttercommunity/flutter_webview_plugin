@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.view.Display;
 import android.widget.FrameLayout;
+import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
+import android.os.Build;
 
 import java.util.Map;
 
@@ -70,6 +73,9 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
                 break;
             case "stopLoading":
                 stopLoading(call, result);
+                break;
+            case "cleanCookie":
+                cleanCookie(call, result);
                 break;
             default:
                 result.notImplemented();
@@ -206,6 +212,20 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         if (webViewManager != null) {
             webViewManager.show(call, result);
         }
+    }
+
+    private void cleanCookie(MethodCall call, final MethodChannel.Result result) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            CookieManager.getInstance().removeAllCookies(new ValueCallback<Boolean>() {
+                @Override
+                public void onReceiveValue(Boolean aBoolean) {
+
+                }
+            });
+        } else {
+            CookieManager.getInstance().removeAllCookie();
+        }
+        result.success(null);
     }
 
     private int dp2px(Context context, float dp) {

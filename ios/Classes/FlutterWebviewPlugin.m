@@ -58,6 +58,9 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else if ([@"stopLoading" isEqualToString:call.method]) {
         [self stopLoading];
         result(nil);
+    } else if ([@"cleanCookie" isEqualToString:call.method]) {
+        [self cleanCookie];
+        result(nil);
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -201,6 +204,11 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     if (self.webview != nil) {
         [self.webview stopLoading];
     }
+}
+
+- (void)cleanCookie {
+    [[NSURLSession sharedSession] resetWithCompletionHandler:^{
+        }];
 }
 
 #pragma mark -- WkWebView Delegate

@@ -175,13 +175,8 @@ class FlutterWebviewPlugin {
     await _channel.invokeMethod('reloadUrl', args);
   }
 
-  Future postUrl(
-      {String url,
-      Map<String, String> body,
-      Map<String, String> headers}) async {
-    final args = {'url': url, 'body': body, 'headers': headers};
-    await _channel.invokeMethod('postUrl', args);
-  }
+  // Clean cookie on WebView
+  Future cleanCookie() async => _channel.invokeMethod('cleanCookie');
 
   // Stops current loading process
   Future stopLoading() => _channel.invokeMethod("stopLoading");
