@@ -52,15 +52,18 @@ class WebviewManager {
                         handled = true;
                     }
                 }
-                if (mUploadMessageArray != null)
+                if (mUploadMessageArray != null){
                     mUploadMessageArray.onReceiveValue(results);
+                }
                 mUploadMessageArray = null;
             }else {
                 if (requestCode == FILECHOOSER_RESULTCODE) {
                     if (null != mUploadMessage) {
                         Uri result = intent == null || resultCode != RESULT_OK ? null
                                 : intent.getData();
-                        mUploadMessage.onReceiveValue(result);
+                        if (mUploadMessageArray != null){
+                            mUploadMessageArray.onReceiveValue(results);
+                        }
                         mUploadMessage = null;
                     }
                     handled = true;
