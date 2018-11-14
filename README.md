@@ -3,7 +3,7 @@
 
 # flutter_webview_plugin
 
-Plugin that allow Flutter to communicate with a native WebView.
+Plugin that allows Flutter to communicate with a native WebView.
 
 ***Warning:***
 The webview is not integrated in the widget tree, it is a native view on top of the flutter view.
@@ -28,6 +28,38 @@ new MaterialApp(
             )
       },
     );
+```
+
+Optional parameters `hidden` and `initialChild` are available so that you can show something else while waiting for the page to load.
+If you set `hidden` to true it will show a default CircularProgressIndicator. If you additionally specify a Widget for initialChild
+you can have it display whatever you like till page-load.
+
+e.g. The following will show a read screen with the text 'waiting.....'.
+```dart
+return new MaterialApp(
+  title: 'Flutter WebView Demo',
+  theme: new ThemeData(
+    primarySwatch: Colors.blue,
+  ),
+  routes: {
+    '/': (_) => const MyHomePage(title: 'Flutter WebView Demo'),
+    '/widget': (_) => new WebviewScaffold(
+          url: selectedUrl,
+          appBar: new AppBar(
+            title: const Text('Widget webview'),
+          ),
+          withZoom: true,
+          withLocalStorage: true,
+          hidden: true,
+          initialChild: Container(
+            color: Colors.redAccent,
+            child: const Center(
+              child: Text('Waiting.....'),
+            ),
+          ),
+        )
+  },
+);
 ```
 
 `FlutterWebviewPlugin` provide a singleton instance linked to one unique webview,
