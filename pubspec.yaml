@@ -6,6 +6,7 @@ authors:
 - Pedia <kpedia@163.com>
 homepage: https://github.com/dart-flitter/flutter_webview_plugin
 version: 0.2.1+2
+maintainer: Simon Lightfoot (@slightfoot)
 
 environment:
   sdk: ">=2.0.0-dev <3.0.0"

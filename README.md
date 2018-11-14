@@ -143,6 +143,7 @@ Future<Null> launch(String url,
          String userAgent: null,
          bool withZoom: false,
          bool withLocalStorage: true,
+         bool withLocalUrl: true,
          bool scrollBar: true});
 ```
 ```dart

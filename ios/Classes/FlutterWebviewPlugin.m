@@ -15,7 +15,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                methodChannelWithName:CHANNEL_NAME
                binaryMessenger:[registrar messenger]];
     
-    UIViewController *viewController = (UIViewController *)registrar.messenger;
+    UIViewController *viewController = [UIApplication sharedApplication].delegate.window.rootViewController;
     FlutterWebviewPlugin* instance = [[FlutterWebviewPlugin alloc] initWithViewController:viewController];
     
     [registrar addMethodCallDelegate:instance channel:channel];
@@ -57,6 +57,15 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         result(nil);
     } else if ([@"stopLoading" isEqualToString:call.method]) {
         [self stopLoading];
+        result(nil);
+    } else if ([@"back" isEqualToString:call.method]) {
+        [self back];
+        result(nil);
+    } else if ([@"forward" isEqualToString:call.method]) {
+        [self forward];
+        result(nil);
+    } else if ([@"reload" isEqualToString:call.method]) {
+        [self reload];
         result(nil);
     } else {
         result(FlutterMethodNotImplemented);
@@ -202,6 +211,21 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 - (void)stopLoading {
     if (self.webview != nil) {
         [self.webview stopLoading];
+    }
+}
+- (void)back {
+    if (self.webview != nil) {
+        [self.webview goBack];
+    }
+}
+- (void)forward {
+    if (self.webview != nil) {
+        [self.webview goForward];
+    }
+}
+- (void)reload {
+    if (self.webview != nil) {
+        [self.webview reload];
     }
 }
 
