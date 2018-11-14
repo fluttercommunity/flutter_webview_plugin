@@ -14,6 +14,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  final flutterWebviewPlugin = new FlutterWebviewPlugin();
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -30,6 +32,29 @@ class MyApp extends StatelessWidget {
               ),
               withZoom: true,
               withLocalStorage: true,
+              bottomNavigationBar: BottomAppBar(
+                  child: Row(
+                children: <Widget>[
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios),
+                    onPressed: () {
+                      flutterWebviewPlugin.goBack();
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_forward_ios),
+                    onPressed: () {
+                      flutterWebviewPlugin.goForward();
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.autorenew),
+                    onPressed: () {
+                      flutterWebviewPlugin.reload();
+                    },
+                  ),
+                ],
+              )),
             )
       },
     );
