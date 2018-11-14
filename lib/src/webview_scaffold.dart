@@ -21,6 +21,8 @@ class WebviewScaffold extends StatefulWidget {
   final bool withLocalStorage;
   final bool withLocalUrl;
   final bool scrollBar;
+  final bool hidden;
+  final Widget initialChild;
 
   final Map<String, String> headers;
 
@@ -40,7 +42,9 @@ class WebviewScaffold extends StatefulWidget {
       this.withZoom,
       this.withLocalStorage,
       this.withLocalUrl,
-      this.scrollBar})
+      this.scrollBar,
+      this.hidden = false,
+      this.initialChild})
       : super(key: key);
 
   @override
@@ -51,11 +55,20 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   final webviewReference = new FlutterWebviewPlugin();
   Rect _rect;
   Timer _resizeTimer;
+  StreamSubscription<WebViewStateChanged> _onStateChanged;
 
   @override
   void initState() {
     super.initState();
     webviewReference.close();
+
+    if (widget.hidden) {
+      _onStateChanged = webviewReference.onStateChanged.listen((WebViewStateChanged state) {
+        if (state.type == WebViewState.finishLoad) {
+          webviewReference.show();
+        }
+      });
+    }
   }
 
   @override
@@ -63,6 +76,9 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     super.dispose();
     _resizeTimer?.cancel();
     webviewReference.close();
+    if (widget.hidden) {
+      _onStateChanged.cancel();
+    }
     webviewReference.dispose();
   }
 
@@ -101,9 +117,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
             }
           }
         },
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: widget.initialChild ?? const Center(child: const CircularProgressIndicator()),
       ),
     );
   }
@@ -115,7 +129,7 @@ class _WebviewPlaceholder extends SingleChildRenderObjectWidget {
     @required this.onRectChanged,
     Widget child,
   }) : super(key: key, child: child);
-
+  
   final ValueChanged<Rect> onRectChanged;
 
   @override
@@ -124,7 +138,7 @@ class _WebviewPlaceholder extends SingleChildRenderObjectWidget {
       onRectChanged: onRectChanged,
     );
   }
-
+  
   @override
   void updateRenderObject(BuildContext context, _WebviewPlaceholderRender renderObject) {
     renderObject..onRectChanged = onRectChanged;
