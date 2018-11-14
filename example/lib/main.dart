@@ -14,6 +14,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  final flutterWebviewPlugin = new FlutterWebviewPlugin();
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -37,6 +39,29 @@ class MyApp extends StatelessWidget {
                   child: Text('Waiting.....'),
                 ),
               ),
+              bottomNavigationBar: BottomAppBar(
+                  child: Row(
+                children: <Widget>[
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios),
+                    onPressed: () {
+                      flutterWebviewPlugin.goBack();
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_forward_ios),
+                    onPressed: () {
+                      flutterWebviewPlugin.goForward();
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.autorenew),
+                    onPressed: () {
+                      flutterWebviewPlugin.reload();
+                    },
+                  ),
+                ],
+              )),
             )
       },
     );
@@ -168,77 +193,76 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: new AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: new Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          new Container(
-            padding: const EdgeInsets.all(24.0),
-            child: new TextField(controller: _urlCtrl),
-          ),
-          new RaisedButton(
-            onPressed: () {
-              flutterWebviewPlugin.launch(selectedUrl,
-                  rect: new Rect.fromLTWH(
-                      0.0, 0.0, MediaQuery.of(context).size.width, 300.0),
-                  userAgent: kAndroidUserAgent);
-            },
-            child: const Text('Open Webview (rect)'),
-          ),
-          new RaisedButton(
-            onPressed: () {
-              flutterWebviewPlugin.launch(selectedUrl, hidden: true);
-            },
-            child: const Text('Open "hidden" Webview'),
-          ),
-          new RaisedButton(
-            onPressed: () {
-              flutterWebviewPlugin.launch(selectedUrl);
-            },
-            child: const Text('Open Fullscreen Webview'),
-          ),
-          new RaisedButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed('/widget');
-            },
-            child: const Text('Open widget webview'),
-          ),
-          new Container(
-            padding: const EdgeInsets.all(24.0),
-            child: new TextField(controller: _codeCtrl),
-          ),
-          new RaisedButton(
-            onPressed: () {
-              final future =
-                  flutterWebviewPlugin.evalJavascript(_codeCtrl.text);
-              future.then((String result) {
-                setState(() {
-                  _history.add('eval: $result');
+      body: SingleChildScrollView(
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            new Container(
+              padding: const EdgeInsets.all(24.0),
+              child: new TextField(controller: _urlCtrl),
+            ),
+            new RaisedButton(
+              onPressed: () {
+                flutterWebviewPlugin.launch(selectedUrl,
+                    rect: new Rect.fromLTWH(0.0, 0.0, MediaQuery.of(context).size.width, 300.0), userAgent: kAndroidUserAgent);
+              },
+              child: const Text('Open Webview (rect)'),
+            ),
+            new RaisedButton(
+              onPressed: () {
+                flutterWebviewPlugin.launch(selectedUrl, hidden: true);
+              },
+              child: const Text('Open "hidden" Webview'),
+            ),
+            new RaisedButton(
+              onPressed: () {
+                flutterWebviewPlugin.launch(selectedUrl);
+              },
+              child: const Text('Open Fullscreen Webview'),
+            ),
+            new RaisedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/widget');
+              },
+              child: const Text('Open widget webview'),
+            ),
+            new Container(
+              padding: const EdgeInsets.all(24.0),
+              child: new TextField(controller: _codeCtrl),
+            ),
+            new RaisedButton(
+              onPressed: () {
+                final future = flutterWebviewPlugin.evalJavascript(_codeCtrl.text);
+                future.then((String result) {
+                  setState(() {
+                    _history.add('eval: $result');
+                  });
                 });
-              });
-            },
-            child: const Text('Eval some javascript'),
-          ),
-          new RaisedButton(
-            onPressed: () {
-              setState(() {
-                _history.clear();
-              });
-              flutterWebviewPlugin.close();
-            },
-            child: const Text('Close'),
-          ),
-          new RaisedButton(
-            onPressed: () {
-              flutterWebviewPlugin.getCookies().then((m) {
+              },
+              child: const Text('Eval some javascript'),
+            ),
+            new RaisedButton(
+              onPressed: () {
                 setState(() {
-                  _history.add('cookies: $m');
+                  _history.clear();
                 });
-              });
-            },
-            child: const Text('Cookies'),
-          ),
-          new Text(_history.join('\n'))
-        ],
+                flutterWebviewPlugin.close();
+              },
+              child: const Text('Close'),
+            ),
+            new RaisedButton(
+              onPressed: () {
+                flutterWebviewPlugin.getCookies().then((m) {
+                  setState(() {
+                    _history.add('cookies: $m');
+                  });
+                });
+              },
+              child: const Text('Cookies'),
+            ),
+            new Text(_history.join('\n'))
+          ],
+        ),
       ),
     );
   }
