@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -193,11 +194,19 @@ class WebviewManager {
         webView.clearFormData();
     }
 
-    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, Map<String, String> headers, boolean withZoom, boolean withLocalStorage, boolean scrollBar) {
+    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, Map<String, String> headers, boolean withZoom, boolean withLocalStorage, boolean scrollBar, boolean supportMultipleWindows, boolean appCacheEnabled) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
         webView.getSettings().setDomStorageEnabled(withLocalStorage);
+        webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(supportMultipleWindows);
+        webView.getSettings().setSupportMultipleWindows(supportMultipleWindows);
+        webView.getSettings().setAppCacheEnabled(appCacheEnabled);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Log.d("WebviewManager", "Mixed Content enabled");
+            webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+        }
 
         if (clearCache) {
             clearCache();
@@ -224,6 +233,10 @@ class WebviewManager {
         } else {
             webView.loadUrl(url);
         }
+    }
+
+    void reloadUrl(String url) {
+        webView.loadUrl(url);
     }
 
     void close(MethodCall call, MethodChannel.Result result) {
