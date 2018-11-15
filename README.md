@@ -126,6 +126,8 @@ flutterWebviewPlugin.launch(url,
 - `Stream<Null>` onDestroy
 - `Stream<String>` onUrlChanged
 - `Stream<WebViewStateChanged>` onStateChanged
+- `Stream<double>` onScrollXChanged
+- `Stream<double>` onScrollYChanged
 - `Stream<String>` onError
 
 **_Don't forget to dispose webview_**
@@ -162,6 +164,10 @@ Future<Map<String, dynamic>> getCookies();
 ```
 
 ```dart
+Future<Null> cleanCookies();
+```
+
+```dart
 Future<Null> resize(Rect rect);
 ```
 
@@ -176,3 +182,24 @@ Future<Null> hide();
 ```dart
 Future<Null> reloadUrl(String url);
 ```
+
+```dart
+Future<Null> close();
+```
+
+```dart
+Future<Null> reload();
+```
+
+```dart
+Future<Null> goBack();
+```
+
+```dart
+Future<Null> goForward();
+```
+
+```dart
+Future<Null> stopLoading();
+```
+
