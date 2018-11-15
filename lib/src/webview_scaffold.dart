@@ -22,6 +22,7 @@ class WebviewScaffold extends StatefulWidget {
   final bool withZoom;
   final bool withLocalStorage;
   final bool withLocalUrl;
+  final bool allowFileURLs;
   final bool scrollBar;
   final bool hidden;
   final Widget initialChild;
@@ -48,7 +49,9 @@ class WebviewScaffold extends StatefulWidget {
       this.withLocalUrl,
       this.scrollBar,
       this.hidden = false,
-      this.initialChild})
+      this.initialChild,
+      this.allowFileURLs,
+      })
       : super(key: key);
 
   @override
@@ -111,6 +114,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
               scrollBar: widget.scrollBar,
               supportMultipleWindows: widget.supportMultipleWindows,
               appCacheEnabled: widget.appCacheEnabled,
+              allowFileURLs: widget.allowFileURLs,
             );
           } else {
             if (_rect != value) {

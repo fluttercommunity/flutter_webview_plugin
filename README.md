@@ -1,11 +1,10 @@
-[![pub package](https://img.shields.io/pub/v/flutter_webview_plugin.svg)](https://pub.dartlang.org/packages/flutter_webview_plugin) 
-
+[![pub package](https://img.shields.io/pub/v/flutter_webview_plugin.svg)](https://pub.dartlang.org/packages/flutter_webview_plugin)
 
 # flutter_webview_plugin
 
 Plugin that allows Flutter to communicate with a native WebView.
 
-***Warning:***
+**_Warning:_**
 The webview is not integrated in the widget tree, it is a native view on top of the flutter view.
 you won't be able to use snackbars, dialogs ...
 
@@ -21,11 +20,11 @@ For help getting started with Flutter, view our online [documentation](http://fl
 new MaterialApp(
       routes: {
         "/": (_) => new WebviewScaffold(
-              url: "https://www.google.com",
-              appBar: new AppBar(
-                title: new Text("Widget webview"),
-              ),
-            )
+          url: "https://www.google.com",
+          appBar: new AppBar(
+            title: new Text("Widget webview"),
+          ),
+        ),
       },
     );
 ```
@@ -44,20 +43,20 @@ return new MaterialApp(
   routes: {
     '/': (_) => const MyHomePage(title: 'Flutter WebView Demo'),
     '/widget': (_) => new WebviewScaffold(
-          url: selectedUrl,
-          appBar: new AppBar(
-            title: const Text('Widget webview'),
-          ),
-          withZoom: true,
-          withLocalStorage: true,
-          hidden: true,
-          initialChild: Container(
-            color: Colors.redAccent,
-            child: const Center(
-              child: Text('Waiting.....'),
-            ),
-          ),
-        )
+      url: selectedUrl,
+      appBar: new AppBar(
+        title: const Text('Widget webview'),
+      ),
+      withZoom: true,
+      withLocalStorage: true,
+      hidden: true,
+      initialChild: Container(
+        color: Colors.redAccent,
+        child: const Center(
+          child: Text('Waiting.....'),
+        ),
+      ),
+    ),
   },
 );
 ```
@@ -66,11 +65,12 @@ return new MaterialApp(
 so you can take control of the webview from anywhere in the app
 
 listen for events
+
 ```dart
 final flutterWebviewPlugin = new FlutterWebviewPlugin();
 
 flutterWebviewPlugin.onUrlChanged.listen((String url) {
-  
+
 });
 ```
 
@@ -111,12 +111,14 @@ flutterWebviewPlugin.close();
 final flutterWebviewPlugin = new FlutterWebviewPlugin();  
 
 flutterWebviewPlugin.launch(url,
-                  fullScreen: false,
-                  rect: new Rect.fromLTWH(
-                      0.0, 
-                      0.0, 
-                      MediaQuery.of(context).size.width, 
-                      300.0));
+  fullScreen: false,
+  rect: new Rect.fromLTWH(
+    0.0,
+    0.0,
+    MediaQuery.of(context).size.width,
+    300.0,
+  ),
+);
 ```
 
 ### Webview Events
@@ -126,41 +128,51 @@ flutterWebviewPlugin.launch(url,
 - `Stream<WebViewStateChanged>` onStateChanged
 - `Stream<String>` onError
 
-***Don't forget to dispose webview***
+**_Don't forget to dispose webview_**
 `flutterWebviewPlugin.dispose()`
 
 ### Webview Functions
 
 ```dart
-Future<Null> launch(String url,
-         {Map<String, String> headers: null,
-         bool withJavascript: true,
-         bool clearCache: false,
-         bool clearCookies: false,
-         bool hidden: false,
-         bool enableAppScheme: true,
-         Rect rect: null,
-         String userAgent: null,
-         bool withZoom: false,
-         bool withLocalStorage: true,
-         bool withLocalUrl: true,
-         bool scrollBar: true});
+Future<Null> launch(String url, {
+   Map<String, String> headers: null,
+   bool withJavascript: true,
+   bool clearCache: false,
+   bool clearCookies: false,
+   bool hidden: false,
+   bool enableAppScheme: true,
+   Rect rect: null,
+   String userAgent: null,
+   bool withZoom: false,
+   bool withLocalStorage: true,
+   bool withLocalUrl: true,
+   bool scrollBar: true,
+   bool supportMultipleWindows: false,
+   bool appCacheEnabled: false,
+   bool allowFileURLs: false,
+});
 ```
+
 ```dart
 Future<String> evalJavascript(String code);
 ```
+
 ```dart
 Future<Map<String, dynamic>> getCookies();
 ```
+
 ```dart
 Future<Null> resize(Rect rect);
 ```
+
 ```dart
 Future<Null> show();
 ```
+
 ```dart
 Future<Null> hide();
 ```
+
 ```dart
 Future<Null> reloadUrl(String url);
 ```
