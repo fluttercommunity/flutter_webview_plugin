@@ -1,3 +1,18 @@
+# 0.3.0
+
+- Fixes rect capture issue. Ensures WebView remains in the correct place on screen even when keyboard appears.
+- Fixed iOS crash issue with Flutter `>= 0.10.2`.
+- Added new `clearCookies` feature.
+- Added support for `hidden` and `initialChild` feature to show page loading view.
+- Added supportMultipleWindows: enables Multiple Window Support on Android.
+- Added appCacheEnabled: enables Application Caches API on Android.
+- Added allowFileURLs: allows `file://` local file URLs.
+- iOS Now supports: `reload`, `goBack`, and `goForward`.
+- iOS Bug fix `didFailNavigation` #77
+- Updated Android `compileSdkVersion` to `27` matching offical Flutter plugins.
+- Fixed Android `reloadUrl` so settings are not cleared.
+- Enabled compatible `Mixed Content Mode` on Android.
+
 # 0.2.1
 
 - Added webview scrolling listener
@@ -57,10 +72,10 @@
     - state change event
     - embed in rectangle or fullscreen if null
     - hidden webview
-    
+
 - Android
     - adding Activity in manifest is not needed anymore
-    
+
 - Add `WebviewScaffold`
 
 # 0.0.9
