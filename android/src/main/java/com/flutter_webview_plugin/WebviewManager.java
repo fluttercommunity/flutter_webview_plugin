@@ -40,31 +40,28 @@ class WebviewManager {
         public boolean handleResult(int requestCode, int resultCode, Intent intent){
             boolean handled = false;
             if(Build.VERSION.SDK_INT >= 21){
-                Uri[] results = null;
-                // check result
-                if(resultCode == Activity.RESULT_OK){
-                    if(requestCode == FILECHOOSER_RESULTCODE){
-                        if(mUploadMessageArray != null){
-                            String dataString = intent.getDataString();
-                            if(dataString != null){
-                                results = new Uri[]{Uri.parse(dataString)};
-                            }
+                if(requestCode == FILECHOOSER_RESULTCODE){
+                    Uri[] results = null;
+                    if(resultCode == Activity.RESULT_OK){
+                        String dataString = intent.getDataString();
+                        if(dataString != null){
+                            results = new Uri[]{ Uri.parse(dataString) };
                         }
-                        handled = true;
                     }
+                    if(mUploadMessageArray != null){
+                        mUploadMessageArray.onReceiveValue(results);
+                        mUploadMessageArray = null;
+                    }
+                    handled = true;
                 }
-                if (mUploadMessageArray != null){
-                    mUploadMessageArray.onReceiveValue(results);
-                }
-                mUploadMessageArray = null;
             }else {
                 if (requestCode == FILECHOOSER_RESULTCODE) {
-                    if (null != mUploadMessage) {
-                        Uri result = intent == null || resultCode != RESULT_OK ? null
-                                : intent.getData();
-                        if (mUploadMessageArray != null){
-                            mUploadMessageArray.onReceiveValue(results);
-                        }
+                	Uri result = null;
+                    if (resultCode == RESULT_OK && intent != null) {
+                        result = intent.getData();
+                    }
+                    if (mUploadMessage != null) {
+                        mUploadMessage.onReceiveValue(result);
                         mUploadMessage = null;
                     }
                     handled = true;
@@ -195,30 +192,30 @@ class WebviewManager {
     }
 
     void openUrl(
-            boolean withJavascript, 
-            boolean clearCache, 
-            boolean hidden, 
-            boolean clearCookies, 
-            String userAgent, 
-            String url, 
-            Map<String, String> headers, 
-            boolean withZoom, 
-            boolean withLocalStorage, 
-            boolean scrollBar, 
-            boolean supportMultipleWindows, 
-            boolean appCacheEnabled, 
-            boolean allowFileURLs, 
+            boolean withJavascript,
+            boolean clearCache,
+            boolean hidden,
+            boolean clearCookies,
+            String userAgent,
+            String url,
+            Map<String, String> headers,
+            boolean withZoom,
+            boolean withLocalStorage,
+            boolean scrollBar,
+            boolean supportMultipleWindows,
+            boolean appCacheEnabled,
+            boolean allowFileURLs
     ) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
         webView.getSettings().setDomStorageEnabled(withLocalStorage);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(supportMultipleWindows);
-      
+
         webView.getSettings().setSupportMultipleWindows(supportMultipleWindows);
-      
+
         webView.getSettings().setAppCacheEnabled(appCacheEnabled);
-      
+
         webView.getSettings().setAllowFileAccessFromFileURLs(allowFileURLs);
         webView.getSettings().setAllowUniversalAccessFromFileURLs(allowFileURLs);
 
@@ -241,7 +238,7 @@ class WebviewManager {
         if (userAgent != null) {
             webView.getSettings().setUserAgentString(userAgent);
         }
-      
+
         if(!scrollBar){
             webView.setVerticalScrollBarEnabled(false);
         }
@@ -286,7 +283,7 @@ class WebviewManager {
             }
         });
     }
-    /** 
+    /**
     * Reloads the Webview.
     */
     void reload(MethodCall call, MethodChannel.Result result) {
@@ -294,7 +291,7 @@ class WebviewManager {
             webView.reload();
         }
     }
-    /** 
+    /**
     * Navigates back on the Webview.
     */
     void back(MethodCall call, MethodChannel.Result result) {
@@ -302,7 +299,7 @@ class WebviewManager {
             webView.goBack();
         }
     }
-    /** 
+    /**
     * Navigates forward on the Webview.
     */
     void forward(MethodCall call, MethodChannel.Result result) {
@@ -314,13 +311,13 @@ class WebviewManager {
     void resize(FrameLayout.LayoutParams params) {
         webView.setLayoutParams(params);
     }
-    /** 
+    /**
     * Checks if going back on the Webview is possible.
     */
     boolean canGoBack() {
         return webView.canGoBack();
     }
-    /** 
+    /**
     * Checks if going forward on the Webview is possible.
     */
     boolean canGoForward() {
