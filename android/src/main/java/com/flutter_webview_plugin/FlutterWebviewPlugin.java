@@ -74,8 +74,8 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             case "stopLoading":
                 stopLoading(call, result);
                 break;
-            case "cleanCookie":
-                cleanCookie(call, result);
+            case "cleanCookies":
+                cleanCookies(call, result);
                 break;
             default:
                 result.notImplemented();
@@ -216,7 +216,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         }
     }
 
-    private void cleanCookie(MethodCall call, final MethodChannel.Result result) {
+    private void cleanCookies(MethodCall call, final MethodChannel.Result result) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().removeAllCookies(new ValueCallback<Boolean>() {
                 @Override

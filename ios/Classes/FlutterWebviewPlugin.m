@@ -58,8 +58,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else if ([@"stopLoading" isEqualToString:call.method]) {
         [self stopLoading];
         result(nil);
-    } else if ([@"cleanCookie" isEqualToString:call.method]) {
-        [self cleanCookie];
+    } else if ([@"cleanCookies" isEqualToString:call.method]) {
+        [self cleanCookies];
     } else if ([@"back" isEqualToString:call.method]) {
         [self back];
         result(nil);
@@ -229,7 +229,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     }
 }
 
-- (void)cleanCookie {
+- (void)cleanCookies {
     [[NSURLSession sharedSession] resetWithCompletionHandler:^{
         }];
 }
