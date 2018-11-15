@@ -58,6 +58,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else if ([@"stopLoading" isEqualToString:call.method]) {
         [self stopLoading];
         result(nil);
+    } else if ([@"cleanCookie" isEqualToString:call.method]) {
+        [self cleanCookie];
     } else if ([@"back" isEqualToString:call.method]) {
         [self back];
         result(nil);
@@ -81,35 +83,33 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     NSString *userAgent = call.arguments[@"userAgent"];
     NSNumber *withZoom = call.arguments[@"withZoom"];
     NSNumber *scrollBar = call.arguments[@"scrollBar"];
-    
+
     if (clearCache != (id)[NSNull null] && [clearCache boolValue]) {
         [[NSURLCache sharedURLCache] removeAllCachedResponses];
     }
-    
+
     if (clearCookies != (id)[NSNull null] && [clearCookies boolValue]) {
         [[NSURLSession sharedSession] resetWithCompletionHandler:^{
         }];
     }
-    
+
     if (userAgent != (id)[NSNull null]) {
         [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": userAgent}];
     }
-    
+
     CGRect rc;
-    if (rect != nil) {
+    if (rect != (id)[NSNull null]) {
         rc = [self parseRect:rect];
     } else {
         rc = self.viewController.view.bounds;
     }
-    
+
     self.webview = [[WKWebView alloc] initWithFrame:rc];
     self.webview.navigationDelegate = self;
     self.webview.scrollView.delegate = self;
     self.webview.hidden = [hidden boolValue];
     self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
     self.webview.scrollView.showsVerticalScrollIndicator = [scrollBar boolValue];
-
-
 
     _enableZoom = [withZoom boolValue];
 
@@ -147,11 +147,11 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
             } else {
                 NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
                 NSDictionary *headers = call.arguments[@"headers"];
-                
+
                 if (headers != nil) {
                     [request setAllHTTPHeaderFields:headers];
                 }
-                
+
                 [self.webview loadRequest:request];
             }
         }
@@ -227,6 +227,11 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     if (self.webview != nil) {
         [self.webview reload];
     }
+}
+
+- (void)cleanCookie {
+    [[NSURLSession sharedSession] resetWithCompletionHandler:^{
+        }];
 }
 
 #pragma mark -- WkWebView Delegate
