@@ -176,8 +176,8 @@ class FlutterWebviewPlugin {
     await _channel.invokeMethod('reloadUrl', args);
   }
 
-  // Clean cookie on WebView
-  Future cleanCookie() async => _channel.invokeMethod('cleanCookie');
+  // Clean cookies on WebView
+  Future cleanCookies() async => _channel.invokeMethod('cleanCookies');
 
   // Stops current loading process
   Future stopLoading() => _channel.invokeMethod("stopLoading");
@@ -209,8 +209,8 @@ class FlutterWebviewPlugin {
 
     if (cookiesString?.isNotEmpty == true) {
       cookiesString.split(';').forEach((String cookie) {
-        final splited = cookie.split('=');
-        cookies[splited[0]] = splited[1];
+        final split = cookie.split('=');
+        cookies[split[0]] = split[1];
       });
     }
 
