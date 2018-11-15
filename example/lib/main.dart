@@ -10,59 +10,62 @@ const kAndroidUserAgent =
 String selectedUrl = 'https://flutter.io';
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final flutterWebviewPlugin = new FlutterWebviewPlugin();
+  final flutterWebViewPlugin = FlutterWebviewPlugin();
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Flutter WebView Demo',
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       routes: {
         '/': (_) => const MyHomePage(title: 'Flutter WebView Demo'),
-        '/widget': (_) => new WebviewScaffold(
-              url: selectedUrl,
-              appBar: new AppBar(
-                title: const Text('Widget webview'),
+        '/widget': (_) {
+          return WebviewScaffold(
+            url: selectedUrl,
+            appBar: AppBar(
+              title: const Text('Widget WebView'),
+            ),
+            withZoom: true,
+            withLocalStorage: true,
+            hidden: true,
+            initialChild: Container(
+              color: Colors.redAccent,
+              child: const Center(
+                child: Text('Waiting.....'),
               ),
-              withZoom: true,
-              withLocalStorage: true,
-              hidden: true,
-              initialChild: Container(
-                color: Colors.redAccent,
-                child: const Center(
-                  child: Text('Waiting.....'),
-                ),
-              ),
-              bottomNavigationBar: BottomAppBar(
-                  child: Row(
+            ),
+            bottomNavigationBar: BottomAppBar(
+              child: Row(
                 children: <Widget>[
                   IconButton(
                     icon: const Icon(Icons.arrow_back_ios),
                     onPressed: () {
-                      flutterWebviewPlugin.goBack();
+                      flutterWebViewPlugin.goBack();
                     },
                   ),
                   IconButton(
                     icon: const Icon(Icons.arrow_forward_ios),
                     onPressed: () {
-                      flutterWebviewPlugin.goForward();
+                      flutterWebViewPlugin.goForward();
                     },
                   ),
                   IconButton(
                     icon: const Icon(Icons.autorenew),
                     onPressed: () {
-                      flutterWebviewPlugin.reload();
+                      flutterWebViewPlugin.reload();
                     },
                   ),
                 ],
-              )),
-            )
+              ),
+            ),
+          );
+        },
       },
     );
   }
@@ -74,12 +77,12 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   // Instance of WebView plugin
-  final flutterWebviewPlugin = new FlutterWebviewPlugin();
+  final flutterWebViewPlugin = FlutterWebviewPlugin();
 
   // On destroy stream
   StreamSubscription _onDestroy;
@@ -96,12 +99,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   StreamSubscription<double> _onScrollXChanged;
 
-  final _urlCtrl = new TextEditingController(text: selectedUrl);
+  final _urlCtrl = TextEditingController(text: selectedUrl);
 
-  final _codeCtrl =
-      new TextEditingController(text: 'window.navigator.userAgent');
+  final _codeCtrl = TextEditingController(text: 'window.navigator.userAgent');
 
-  final _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final _history = [];
 
@@ -109,23 +111,22 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    flutterWebviewPlugin.close();
+    flutterWebViewPlugin.close();
 
     _urlCtrl.addListener(() {
       selectedUrl = _urlCtrl.text;
     });
 
     // Add a listener to on destroy WebView, so you can make came actions.
-    _onDestroy = flutterWebviewPlugin.onDestroy.listen((_) {
+    _onDestroy = flutterWebViewPlugin.onDestroy.listen((_) {
       if (mounted) {
         // Actions like show a info toast.
-        _scaffoldKey.currentState.showSnackBar(
-            const SnackBar(content: const Text('Webview Destroyed')));
+        _scaffoldKey.currentState.showSnackBar(const SnackBar(content: const Text('Webview Destroyed')));
       }
     });
 
     // Add a listener to on url changed
-    _onUrlChanged = flutterWebviewPlugin.onUrlChanged.listen((String url) {
+    _onUrlChanged = flutterWebViewPlugin.onUrlChanged.listen((String url) {
       if (mounted) {
         setState(() {
           _history.add('onUrlChanged: $url');
@@ -133,27 +134,23 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    _onScrollYChanged =
-        flutterWebviewPlugin.onScrollYChanged.listen((double y) {
+    _onScrollYChanged = flutterWebViewPlugin.onScrollYChanged.listen((double y) {
       if (mounted) {
         setState(() {
-          _history.add("Scroll in  Y Direction: $y");
+          _history.add('Scroll in Y Direction: $y');
         });
       }
     });
 
-    _onScrollXChanged =
-        flutterWebviewPlugin.onScrollXChanged.listen((double x) {
+    _onScrollXChanged = flutterWebViewPlugin.onScrollXChanged.listen((double x) {
       if (mounted) {
         setState(() {
-          _history.add("Scroll in  X Direction: $x");
+          _history.add('Scroll in X Direction: $x');
         });
       }
     });
 
-    _onStateChanged =
-        flutterWebviewPlugin.onStateChanged.listen((WebViewStateChanged state) {
-
+    _onStateChanged = flutterWebViewPlugin.onStateChanged.listen((WebViewStateChanged state) {
       if (mounted) {
         setState(() {
           _history.add('onStateChanged: ${state.type} ${state.url}');
@@ -161,8 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    _onHttpError =
-        flutterWebviewPlugin.onHttpError.listen((WebViewHttpError error) {
+    _onHttpError = flutterWebViewPlugin.onHttpError.listen((WebViewHttpError error) {
       if (mounted) {
         setState(() {
           _history.add('onHttpError: ${error.code} ${error.url}');
@@ -181,58 +177,61 @@ class _MyHomePageState extends State<MyHomePage> {
     _onScrollXChanged.cancel();
     _onScrollYChanged.cancel();
 
-    flutterWebviewPlugin.dispose();
+    flutterWebViewPlugin.dispose();
 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       key: _scaffoldKey,
-      appBar: new AppBar(
+      appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
       body: SingleChildScrollView(
-        child: new Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            new Container(
+            Container(
               padding: const EdgeInsets.all(24.0),
-              child: new TextField(controller: _urlCtrl),
+              child: TextField(controller: _urlCtrl),
             ),
-            new RaisedButton(
+            RaisedButton(
               onPressed: () {
-                flutterWebviewPlugin.launch(selectedUrl,
-                    rect: new Rect.fromLTWH(0.0, 0.0, MediaQuery.of(context).size.width, 300.0), userAgent: kAndroidUserAgent);
+                flutterWebViewPlugin.launch(
+                  selectedUrl,
+                  rect: Rect.fromLTWH(0.0, 0.0, MediaQuery.of(context).size.width, 300.0),
+                  userAgent: kAndroidUserAgent,
+                );
               },
               child: const Text('Open Webview (rect)'),
             ),
-            new RaisedButton(
+            RaisedButton(
               onPressed: () {
-                flutterWebviewPlugin.launch(selectedUrl, hidden: true);
+                flutterWebViewPlugin.launch(selectedUrl, hidden: true);
               },
               child: const Text('Open "hidden" Webview'),
             ),
-            new RaisedButton(
+            RaisedButton(
               onPressed: () {
-                flutterWebviewPlugin.launch(selectedUrl);
+                flutterWebViewPlugin.launch(selectedUrl);
               },
               child: const Text('Open Fullscreen Webview'),
             ),
-            new RaisedButton(
+            RaisedButton(
               onPressed: () {
                 Navigator.of(context).pushNamed('/widget');
               },
               child: const Text('Open widget webview'),
             ),
-            new Container(
+            Container(
               padding: const EdgeInsets.all(24.0),
-              child: new TextField(controller: _codeCtrl),
+              child: TextField(controller: _codeCtrl),
             ),
-            new RaisedButton(
+            RaisedButton(
               onPressed: () {
-                final future = flutterWebviewPlugin.evalJavascript(_codeCtrl.text);
+                final future = flutterWebViewPlugin.evalJavascript(_codeCtrl.text);
                 future.then((String result) {
                   setState(() {
                     _history.add('eval: $result');
@@ -241,18 +240,18 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('Eval some javascript'),
             ),
-            new RaisedButton(
+            RaisedButton(
               onPressed: () {
                 setState(() {
                   _history.clear();
                 });
-                flutterWebviewPlugin.close();
+                flutterWebViewPlugin.close();
               },
               child: const Text('Close'),
             ),
-            new RaisedButton(
+            RaisedButton(
               onPressed: () {
-                flutterWebviewPlugin.getCookies().then((m) {
+                flutterWebViewPlugin.getCookies().then((m) {
                   setState(() {
                     _history.add('cookies: $m');
                   });
@@ -260,7 +259,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('Cookies'),
             ),
-            new Text(_history.join('\n'))
+            Text(_history.join('\n'))
           ],
         ),
       ),

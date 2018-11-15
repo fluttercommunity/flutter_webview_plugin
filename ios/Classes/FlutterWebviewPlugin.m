@@ -14,10 +14,10 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     channel = [FlutterMethodChannel
                methodChannelWithName:CHANNEL_NAME
                binaryMessenger:[registrar messenger]];
-    
+
     UIViewController *viewController = [UIApplication sharedApplication].delegate.window.rootViewController;
     FlutterWebviewPlugin* instance = [[FlutterWebviewPlugin alloc] initWithViewController:viewController];
-    
+
     [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -48,7 +48,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         result(nil);
     } else if ([@"reloadUrl" isEqualToString:call.method]) {
         [self reloadUrl:call];
-        result(nil);	
+        result(nil);
     } else if ([@"show" isEqualToString:call.method]) {
         [self show];
         result(nil);

@@ -7,8 +7,34 @@ import 'package:flutter/rendering.dart';
 import 'base.dart';
 
 class WebviewScaffold extends StatefulWidget {
+
+  const WebviewScaffold({
+    Key key,
+    this.appBar,
+    @required this.url,
+    this.headers,
+    this.withJavascript,
+    this.supportMultipleWindows,
+    this.appCacheEnabled,
+    this.clearCache,
+    this.clearCookies,
+    this.enableAppScheme,
+    this.userAgent,
+    this.primary = true,
+    this.persistentFooterButtons,
+    this.bottomNavigationBar,
+    this.withZoom,
+    this.withLocalStorage,
+    this.withLocalUrl,
+    this.scrollBar,
+    this.hidden = false,
+    this.initialChild,
+    this.allowFileURLs,
+  }) : super(key: key);
+
   final PreferredSizeWidget appBar;
   final String url;
+  final Map<String, String> headers;
   final bool withJavascript;
   final bool supportMultipleWindows;
   final bool appCacheEnabled;
@@ -22,44 +48,17 @@ class WebviewScaffold extends StatefulWidget {
   final bool withZoom;
   final bool withLocalStorage;
   final bool withLocalUrl;
-  final bool allowFileURLs;
   final bool scrollBar;
   final bool hidden;
   final Widget initialChild;
-
-  final Map<String, String> headers;
-
-  const WebviewScaffold(
-      {Key key,
-      this.appBar,
-      @required this.url,
-      this.headers,
-      this.withJavascript,
-      this.supportMultipleWindows,
-      this.appCacheEnabled,
-      this.clearCache,
-      this.clearCookies,
-      this.enableAppScheme,
-      this.userAgent,
-      this.primary = true,
-      this.persistentFooterButtons,
-      this.bottomNavigationBar,
-      this.withZoom,
-      this.withLocalStorage,
-      this.withLocalUrl,
-      this.scrollBar,
-      this.hidden = false,
-      this.initialChild,
-      this.allowFileURLs,
-      })
-      : super(key: key);
+  final bool allowFileURLs;
 
   @override
-  _WebviewScaffoldState createState() => new _WebviewScaffoldState();
+  _WebviewScaffoldState createState() => _WebviewScaffoldState();
 }
 
 class _WebviewScaffoldState extends State<WebviewScaffold> {
-  final webviewReference = new FlutterWebviewPlugin();
+  final webviewReference = FlutterWebviewPlugin();
   Rect _rect;
   Timer _resizeTimer;
   StreamSubscription<WebViewStateChanged> _onStateChanged;
@@ -139,7 +138,7 @@ class _WebviewPlaceholder extends SingleChildRenderObjectWidget {
     @required this.onRectChanged,
     Widget child,
   }) : super(key: key, child: child);
-  
+
   final ValueChanged<Rect> onRectChanged;
 
   @override
@@ -148,7 +147,7 @@ class _WebviewPlaceholder extends SingleChildRenderObjectWidget {
       onRectChanged: onRectChanged,
     );
   }
-  
+
   @override
   void updateRenderObject(BuildContext context, _WebviewPlaceholderRender renderObject) {
     renderObject..onRectChanged = onRectChanged;
@@ -156,14 +155,14 @@ class _WebviewPlaceholder extends SingleChildRenderObjectWidget {
 }
 
 class _WebviewPlaceholderRender extends RenderProxyBox {
-  ValueChanged<Rect> _callback;
-  Rect _rect;
-
   _WebviewPlaceholderRender({
     RenderBox child,
     ValueChanged<Rect> onRectChanged,
   })  : _callback = onRectChanged,
         super(child);
+
+  ValueChanged<Rect> _callback;
+  Rect _rect;
 
   Rect get rect => _rect;
 
