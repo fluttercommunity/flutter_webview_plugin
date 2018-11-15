@@ -151,34 +151,34 @@ class FlutterWebviewPlugin {
 
   /// Close the Webview
   /// Will trigger the [onDestroy] event
-  Future close() => _channel.invokeMethod('close');
+  Future<Null> close() async => await _channel.invokeMethod('close');
 
   /// Reloads the WebView.
-  Future reload() => _channel.invokeMethod('reload');
+  Future<Null> reload() async => await _channel.invokeMethod('reload');
 
   /// Navigates back on the Webview.
-  Future goBack() => _channel.invokeMethod('back');
+  Future<Null> goBack() async => await _channel.invokeMethod('back');
 
   /// Navigates forward on the Webview.
-  Future goForward() => _channel.invokeMethod('forward');
+  Future<Null> goForward() async => await _channel.invokeMethod('forward');
 
   // Hides the webview
-  Future hide() => _channel.invokeMethod('hide');
+  Future<Null> hide() async => await _channel.invokeMethod('hide');
 
   // Shows the webview
-  Future show() => _channel.invokeMethod('show');
+  Future<Null> show() async => await _channel.invokeMethod('show');
 
   // Reload webview with a url
-  Future reloadUrl(String url) async {
+  Future<Null> reloadUrl(String url) async {
     final args = <String, String>{'url': url};
     await _channel.invokeMethod('reloadUrl', args);
   }
 
   // Clean cookies on WebView
-  Future cleanCookies() async => _channel.invokeMethod('cleanCookies');
+  Future<Null> cleanCookies() async => await _channel.invokeMethod('cleanCookies');
 
   // Stops current loading process
-  Future stopLoading() => _channel.invokeMethod('stopLoading');
+  Future<Null> stopLoading() async => await _channel.invokeMethod('stopLoading');
 
   /// Close all Streams
   void dispose() {

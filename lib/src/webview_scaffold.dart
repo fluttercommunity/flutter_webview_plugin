@@ -14,8 +14,6 @@ class WebviewScaffold extends StatefulWidget {
     @required this.url,
     this.headers,
     this.withJavascript,
-    this.supportMultipleWindows,
-    this.appCacheEnabled,
     this.clearCache,
     this.clearCookies,
     this.enableAppScheme,
@@ -27,6 +25,8 @@ class WebviewScaffold extends StatefulWidget {
     this.withLocalStorage,
     this.withLocalUrl,
     this.scrollBar,
+    this.supportMultipleWindows,
+    this.appCacheEnabled,
     this.hidden = false,
     this.initialChild,
     this.allowFileURLs,
@@ -36,8 +36,6 @@ class WebviewScaffold extends StatefulWidget {
   final String url;
   final Map<String, String> headers;
   final bool withJavascript;
-  final bool supportMultipleWindows;
-  final bool appCacheEnabled;
   final bool clearCache;
   final bool clearCookies;
   final bool enableAppScheme;
@@ -49,6 +47,8 @@ class WebviewScaffold extends StatefulWidget {
   final bool withLocalStorage;
   final bool withLocalUrl;
   final bool scrollBar;
+  final bool supportMultipleWindows;
+  final bool appCacheEnabled;
   final bool hidden;
   final Widget initialChild;
   final bool allowFileURLs;
