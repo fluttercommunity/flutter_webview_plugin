@@ -15,7 +15,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                methodChannelWithName:CHANNEL_NAME
                binaryMessenger:[registrar messenger]];
     
-    UIViewController *viewController = (UIViewController *)registrar.messenger;
+    UIViewController *viewController = [UIApplication sharedApplication].delegate.window.rootViewController;
     FlutterWebviewPlugin* instance = [[FlutterWebviewPlugin alloc] initWithViewController:viewController];
     
     [registrar addMethodCallDelegate:instance channel:channel];
@@ -55,6 +55,20 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else if ([@"hide" isEqualToString:call.method]) {
         [self hide];
         result(nil);
+    } else if ([@"stopLoading" isEqualToString:call.method]) {
+        [self stopLoading];
+        result(nil);
+    } else if ([@"cleanCookie" isEqualToString:call.method]) {
+        [self cleanCookie];
+    } else if ([@"back" isEqualToString:call.method]) {
+        [self back];
+        result(nil);
+    } else if ([@"forward" isEqualToString:call.method]) {
+        [self forward];
+        result(nil);
+    } else if ([@"reload" isEqualToString:call.method]) {
+        [self reload];
+        result(nil);
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -69,33 +83,33 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     NSString *userAgent = call.arguments[@"userAgent"];
     NSNumber *withZoom = call.arguments[@"withZoom"];
     NSNumber *scrollBar = call.arguments[@"scrollBar"];
-    
+
     if (clearCache != (id)[NSNull null] && [clearCache boolValue]) {
         [[NSURLCache sharedURLCache] removeAllCachedResponses];
     }
-    
+
     if (clearCookies != (id)[NSNull null] && [clearCookies boolValue]) {
         [[NSURLSession sharedSession] resetWithCompletionHandler:^{
         }];
     }
-    
+
     if (userAgent != (id)[NSNull null]) {
         [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": userAgent}];
     }
-    
+
     CGRect rc;
-    if (rect != nil) {
+    if (rect != (id)[NSNull null]) {
         rc = [self parseRect:rect];
     } else {
         rc = self.viewController.view.bounds;
     }
-    
+
     self.webview = [[WKWebView alloc] initWithFrame:rc];
     self.webview.navigationDelegate = self;
     self.webview.scrollView.delegate = self;
     self.webview.hidden = [hidden boolValue];
-    self.webview.showsHorizontalScrollIndicator = [scrollBar boolValue];
-    self.webView.showsVerticalScrollIndicator = [scrollBar boolValue];
+    self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
+    self.webview.scrollView.showsVerticalScrollIndicator = [scrollBar boolValue];
 
     _enableZoom = [withZoom boolValue];
 
@@ -111,6 +125,14 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                       [[rect valueForKey:@"height"] doubleValue]);
 }
 
+- (void) scrollViewDidScroll:(UIScrollView *)scrollView {
+    id xDirection = @{@"xDirection": @(scrollView.contentOffset.x) };
+    [channel invokeMethod:@"onScrollXChanged" arguments:xDirection];
+
+    id yDirection = @{@"yDirection": @(scrollView.contentOffset.y) };
+    [channel invokeMethod:@"onScrollYChanged" arguments:yDirection];
+}
+
 - (void)navigate:(FlutterMethodCall*)call {
     if (self.webview != nil) {
             NSString *url = call.arguments[@"url"];
@@ -123,7 +145,13 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                     @throw @"not available on version earlier than ios 9.0";
                 }
             } else {
-                NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+                NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+                NSDictionary *headers = call.arguments[@"headers"];
+
+                if (headers != nil) {
+                    [request setAllHTTPHeaderFields:headers];
+                }
+
                 [self.webview loadRequest:request];
             }
         }
@@ -180,6 +208,31 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         self.webview.hidden = true;
     }
 }
+- (void)stopLoading {
+    if (self.webview != nil) {
+        [self.webview stopLoading];
+    }
+}
+- (void)back {
+    if (self.webview != nil) {
+        [self.webview goBack];
+    }
+}
+- (void)forward {
+    if (self.webview != nil) {
+        [self.webview goForward];
+    }
+}
+- (void)reload {
+    if (self.webview != nil) {
+        [self.webview reload];
+    }
+}
+
+- (void)cleanCookie {
+    [[NSURLSession sharedSession] resetWithCompletionHandler:^{
+        }];
+}
 
 #pragma mark -- WkWebView Delegate
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
@@ -207,6 +260,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     }
 }
 
+
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
     [channel invokeMethod:@"onState" arguments:@{@"type": @"startLoad", @"url": webView.URL.absoluteString}];
 }
@@ -220,6 +274,15 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                                   message:error.localizedDescription
                                   details:error.localizedFailureReason];
     [channel invokeMethod:@"onError" arguments:data];
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
+    if ([navigationResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSHTTPURLResponse * response = (NSHTTPURLResponse *)navigationResponse.response;
+
+        [channel invokeMethod:@"onHttpError" arguments:@{@"code": [NSString stringWithFormat:@"%ld", response.statusCode], @"url": webView.URL.absoluteString}];
+    }
+    decisionHandler(WKNavigationResponsePolicyAllow);
 }
 
 #pragma mark -- UIScrollViewDelegate

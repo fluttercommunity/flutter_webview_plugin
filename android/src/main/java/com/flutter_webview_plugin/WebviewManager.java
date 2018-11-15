@@ -12,9 +12,13 @@ import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -49,14 +53,18 @@ class WebviewManager {
                         handled = true;
                     }
                 }
-                mUploadMessageArray.onReceiveValue(results);
+                if (mUploadMessageArray != null){
+                    mUploadMessageArray.onReceiveValue(results);
+                }
                 mUploadMessageArray = null;
             }else {
                 if (requestCode == FILECHOOSER_RESULTCODE) {
                     if (null != mUploadMessage) {
                         Uri result = intent == null || resultCode != RESULT_OK ? null
                                 : intent.getData();
-                        mUploadMessage.onReceiveValue(result);
+                        if (mUploadMessageArray != null){
+                            mUploadMessageArray.onReceiveValue(results);
+                        }
                         mUploadMessage = null;
                     }
                     handled = true;
@@ -72,7 +80,7 @@ class WebviewManager {
     ResultHandler resultHandler;
 
     WebviewManager(final Activity activity) {
-        this.webView = new WebView(activity);
+        this.webView = new ObservableWebView(activity);
         this.activity = activity;
         this.resultHandler = new ResultHandler();
         WebViewClient webViewClient = new BrowserClient();
@@ -92,6 +100,17 @@ class WebviewManager {
                 }
 
                 return false;
+            }
+        });
+
+        ((ObservableWebView) webView).setOnScrollChangedCallback(new ObservableWebView.OnScrollChangedCallback(){
+            public void onScroll(int x, int y, int oldx, int oldy){
+                Map<String, Object> yDirection = new HashMap<>();
+                yDirection.put("yDirection", (double)y);
+                FlutterWebviewPlugin.channel.invokeMethod("onScrollYChanged", yDirection);
+                Map<String, Object> xDirection = new HashMap<>();
+                xDirection.put("xDirection", (double)x);
+                FlutterWebviewPlugin.channel.invokeMethod("onScrollXChanged", xDirection);
             }
         });
 
@@ -177,21 +196,35 @@ class WebviewManager {
 
     void openUrl(
             boolean withJavascript, 
-            boolean clearCache,
+            boolean clearCache, 
             boolean hidden, 
-            boolean clearCookies,
+            boolean clearCookies, 
             String userAgent, 
             String url, 
+            Map<String, String> headers, 
             boolean withZoom, 
-            boolean withLocalStorage,
-            boolean scrollBar,
-            boolean allowFileURLs) {
+            boolean withLocalStorage, 
+            boolean scrollBar, 
+            boolean supportMultipleWindows, 
+            boolean appCacheEnabled, 
+            boolean allowFileURLs, 
+    ) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
         webView.getSettings().setDomStorageEnabled(withLocalStorage);
+        webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(supportMultipleWindows);
+      
+        webView.getSettings().setSupportMultipleWindows(supportMultipleWindows);
+      
+        webView.getSettings().setAppCacheEnabled(appCacheEnabled);
+      
         webView.getSettings().setAllowFileAccessFromFileURLs(allowFileURLs);
         webView.getSettings().setAllowUniversalAccessFromFileURLs(allowFileURLs);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+        }
 
         if (clearCache) {
             clearCache();
@@ -208,11 +241,19 @@ class WebviewManager {
         if (userAgent != null) {
             webView.getSettings().setUserAgentString(userAgent);
         }
-
+      
         if(!scrollBar){
             webView.setVerticalScrollBarEnabled(false);
         }
 
+        if (headers != null) {
+            webView.loadUrl(url, headers);
+        } else {
+            webView.loadUrl(url);
+        }
+    }
+
+    void reloadUrl(String url) {
         webView.loadUrl(url);
     }
 
@@ -293,6 +334,12 @@ class WebviewManager {
     void show(MethodCall call, MethodChannel.Result result) {
         if (webView != null) {
             webView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    void stopLoading(MethodCall call, MethodChannel.Result result){
+        if (webView != null){
+            webView.stopLoading();
         }
     }
 }
