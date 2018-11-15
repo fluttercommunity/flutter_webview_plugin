@@ -84,6 +84,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 }
 
 - (void)initWebview:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+    NSString *url = call.arguments[@"url"];
     NSNumber *clearCache = call.arguments[@"clearCache"];
     NSNumber *clearCookies = call.arguments[@"clearCookies"];
     NSNumber *hidden = call.arguments[@"hidden"];
@@ -91,6 +92,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     _enableAppScheme = call.arguments[@"enableAppScheme"];
     NSString *userAgent = call.arguments[@"userAgent"];
     NSNumber *withZoom = call.arguments[@"withZoom"];
+    NSArray *cookies = call.arguments[@"cookies"];
     NSNumber *scrollBar = call.arguments[@"scrollBar"];
     NSNumber *withJavascript = call.arguments[@"withJavascript"];
     _invalidUrlRegex = call.arguments[@"invalidUrlRegex"];
@@ -134,30 +136,52 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
     configuration.userContentController = userContentController;
-    self.webview = [[WKWebView alloc] initWithFrame:rc configuration:configuration];
-    self.webview.UIDelegate = self;
-    self.webview.navigationDelegate = self;
-    self.webview.scrollView.delegate = self;
-    self.webview.hidden = [hidden boolValue];
-    self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
-    self.webview.scrollView.showsVerticalScrollIndicator = [scrollBar boolValue];
-    
-    [self.webview addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:NULL];
+    WKWebsiteDataStore* store = [WKWebsiteDataStore nonPersistentDataStore];
 
-    WKPreferences* preferences = [[self.webview configuration] preferences];
-    if ([withJavascript boolValue]) {
-        [preferences setJavaScriptEnabled:YES];
-    } else {
-        [preferences setJavaScriptEnabled:NO];
+    dispatch_group_t group = dispatch_group_create();
+
+    if (cookies != nil) {
+        NSURL* parsedUrl = [NSURL URLWithString:url];
+        NSString* cookieString = [cookies componentsJoinedByString: @", "];
+        NSDictionary* fakeHeaders = @{@"Set-Cookie": cookieString};
+        NSArray* cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:fakeHeaders forURL:parsedUrl];
+
+        for(NSHTTPCookie *cookie in cookies) {
+            dispatch_group_enter(group);
+            [store.httpCookieStore setCookie:cookie completionHandler:^{
+                dispatch_group_leave(group);
+            }];
+        };
     }
 
-    _enableZoom = [withZoom boolValue];
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        configuration.websiteDataStore = store;
 
-    UIViewController* presentedViewController = self.viewController.presentedViewController;
-    UIViewController* currentViewController = presentedViewController != nil ? presentedViewController : self.viewController;
-    [currentViewController.view addSubview:self.webview];
+        self.webview = [[WKWebView alloc] initWithFrame:rc configuration:configuration];
+        self.webview.UIDelegate = self;
+        self.webview.navigationDelegate = self;
+        self.webview.scrollView.delegate = self;
+        self.webview.hidden = [hidden boolValue];
+        self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
+        self.webview.scrollView.showsVerticalScrollIndicator = [scrollBar boolValue];
+    
+        [self.webview addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:NULL];
 
-    [self navigate:call];
+        WKPreferences* preferences = [[self.webview configuration] preferences];
+        if ([withJavascript boolValue]) {
+            [preferences setJavaScriptEnabled:YES];
+        } else {
+            [preferences setJavaScriptEnabled:NO];
+        }
+
+        _enableZoom = [withZoom boolValue];
+
+        UIViewController* presentedViewController = self.viewController.presentedViewController;
+        UIViewController* currentViewController = presentedViewController != nil ? presentedViewController : self.viewController;
+        [currentViewController.view addSubview:self.webview];
+
+        [self navigate:call];
+    });
 }
 
 - (CGRect)parseRect:(NSDictionary *)rect {
