@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -109,7 +110,9 @@ class FlutterWebviewPlugin {
       bool withLocalUrl,
       bool scrollBar,
       bool supportMultipleWindows,
-      bool appCacheEnabled}) async {
+      bool appCacheEnabled,
+      bool allowFileURLs,
+    }) async {
     final args = <String, dynamic>{
       'url': url,
       'withJavascript': withJavascript ?? true,
@@ -123,7 +126,8 @@ class FlutterWebviewPlugin {
       'withLocalUrl': withLocalUrl ?? false,
       'scrollBar': scrollBar ?? true,
       'supportMultipleWindows': supportMultipleWindows ?? false,
-      'appCacheEnabled': appCacheEnabled ?? false
+      'appCacheEnabled': appCacheEnabled ?? false,
+      "allowFileURLs": allowFileURLs ?? false,
     };
 
     if (headers != null) {

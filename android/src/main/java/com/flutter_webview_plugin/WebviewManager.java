@@ -194,17 +194,35 @@ class WebviewManager {
         webView.clearFormData();
     }
 
-    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent, String url, Map<String, String> headers, boolean withZoom, boolean withLocalStorage, boolean scrollBar, boolean supportMultipleWindows, boolean appCacheEnabled) {
+    void openUrl(
+            boolean withJavascript, 
+            boolean clearCache, 
+            boolean hidden, 
+            boolean clearCookies, 
+            String userAgent, 
+            String url, 
+            Map<String, String> headers, 
+            boolean withZoom, 
+            boolean withLocalStorage, 
+            boolean scrollBar, 
+            boolean supportMultipleWindows, 
+            boolean appCacheEnabled, 
+            boolean allowFileURLs, 
+    ) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
         webView.getSettings().setDomStorageEnabled(withLocalStorage);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(supportMultipleWindows);
+      
         webView.getSettings().setSupportMultipleWindows(supportMultipleWindows);
+      
         webView.getSettings().setAppCacheEnabled(appCacheEnabled);
+      
+        webView.getSettings().setAllowFileAccessFromFileURLs(allowFileURLs);
+        webView.getSettings().setAllowUniversalAccessFromFileURLs(allowFileURLs);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Log.d("WebviewManager", "Mixed Content enabled");
             webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         }
 

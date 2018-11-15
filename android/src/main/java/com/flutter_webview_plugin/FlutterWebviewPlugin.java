@@ -96,6 +96,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         boolean appCacheEnabled = call.argument("appCacheEnabled");
         Map<String, String> headers = call.argument("headers");
         boolean scrollBar = call.argument("scrollBar");
+        boolean allowFileURLs = call.argument("allowFileURLs");
 
         if (webViewManager == null || webViewManager.closed == true) {
             webViewManager = new WebviewManager(activity);
@@ -116,7 +117,8 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
                 withLocalStorage,
                 scrollBar,
                 supportMultipleWindows,
-                appCacheEnabled
+                appCacheEnabled,
+                allowFileURLs
         );
         result.success(null);
     }
