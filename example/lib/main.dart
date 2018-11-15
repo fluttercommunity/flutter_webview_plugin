@@ -9,9 +9,7 @@ const kAndroidUserAgent =
 
 String selectedUrl = 'https://flutter.io';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   final flutterWebViewPlugin = FlutterWebviewPlugin();

@@ -1,4 +1,4 @@
-group 'com.yourcompany.flutter_webview_plugin'
+group 'com.flutter_webview_plugin'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -25,7 +25,6 @@ android {
 
     defaultConfig {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        minSdkVersion 16
     }
     lintOptions {
         disable 'InvalidPackage'
