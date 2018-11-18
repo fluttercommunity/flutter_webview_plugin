@@ -42,7 +42,7 @@ class WebviewManager {
             if(Build.VERSION.SDK_INT >= 21){
                 if(requestCode == FILECHOOSER_RESULTCODE){
                     Uri[] results = null;
-                    if(resultCode == Activity.RESULT_OK){
+                    if(resultCode == Activity.RESULT_OK && intent != null){
                         String dataString = intent.getDataString();
                         if(dataString != null){
                             results = new Uri[]{ Uri.parse(dataString) };
