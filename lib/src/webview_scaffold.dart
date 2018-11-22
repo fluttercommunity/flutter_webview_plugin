@@ -104,6 +104,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
               withJavascript: widget.withJavascript,
               clearCache: widget.clearCache,
               clearCookies: widget.clearCookies,
+              hidden: widget.hidden,
               enableAppScheme: widget.enableAppScheme,
               userAgent: widget.userAgent,
               rect: _rect,
