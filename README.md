@@ -208,6 +208,4 @@ Future<Null> goForward();
 
 ```dart
 Future<Null> stopLoading();
-
-Future<Null> linkBridge();
 ```

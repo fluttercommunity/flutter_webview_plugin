@@ -215,6 +215,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   rect: Rect.fromLTWH(
                       0.0, 0.0, MediaQuery.of(context).size.width, 300.0),
                   userAgent: kAndroidUserAgent,
+                  enableMessaging: true,
                 );
               },
               child: const Text('Open Webview (rect)'),
@@ -240,6 +241,12 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               padding: const EdgeInsets.all(24.0),
               child: TextField(controller: _codeCtrl),
+            ),
+            RaisedButton(
+              onPressed: () {
+                flutterWebViewPlugin.postMessage('hello from flutter');
+              },
+              child: const Text('postMessage to WebView'),
             ),
             RaisedButton(
               onPressed: () {
