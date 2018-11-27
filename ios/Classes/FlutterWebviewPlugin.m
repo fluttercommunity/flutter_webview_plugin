@@ -110,6 +110,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     self.webview.hidden = [hidden boolValue];
     self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
     self.webview.scrollView.showsVerticalScrollIndicator = [scrollBar boolValue];
+    
+    [self.webview addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:NULL];
 
     _enableZoom = [withZoom boolValue];
 
@@ -178,11 +180,20 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     }
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if ([keyPath isEqualToString:@"estimatedProgress"] && object == self.webview) {
+        [channel invokeMethod:@"onProgressChanged" arguments:@{@"progress": @(self.webview.estimatedProgress)}];
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
 - (void)closeWebView {
     if (self.webview != nil) {
         [self.webview stopLoading];
         [self.webview removeFromSuperview];
         self.webview.navigationDelegate = nil;
+        [self.webview removeObserver:self forKeyPath:@"estimatedProgress"];
         self.webview = nil;
 
         // manually trigger onDestroy

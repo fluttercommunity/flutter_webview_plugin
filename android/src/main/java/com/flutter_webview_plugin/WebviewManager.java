@@ -170,6 +170,13 @@ class WebviewManager {
                 activity.startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
                 return true;
             }
+
+            @Override
+            public void onProgressChanged(WebView view, int progress) {
+                Map<String, Object> args = new HashMap<>();
+                args.put("progress", progress / 100.0);
+                FlutterWebviewPlugin.channel.invokeMethod("onProgressChanged", args);
+            }
         });
     }
 
