@@ -145,14 +145,33 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                     @throw @"not available on version earlier than ios 9.0";
                 }
             } else {
-                NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
                 NSDictionary *headers = call.arguments[@"headers"];
 
-                if (headers != nil) {
-                    [request setAllHTTPHeaderFields:headers];
+                if ([url rangeOfString:@"?"].location == NSNotFound) {
+                    // There were no query parameters, build request as usual.
+                    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+                    if (headers != nil) {
+                        [request setAllHTTPHeaderFields:headers];
+                    }
+                    
+                    [self.webview loadRequest:request];
+                } else {
+                    // Query parameters found, build components for NSURL.
+                    NSArray *parameters = [url componentsSeparatedByString:@"?"];
+                    NSString *componentsURL = parameters[0];
+                    NSArray *splitParamaters = [parameters[1] componentsSeparatedByString:@"="];
+                    NSString *name = splitParamaters[0];
+                    NSString *value = splitParamaters[1];
+                    NSURLComponents *components = [NSURLComponents componentsWithString:componentsURL];
+                    NSURLQueryItem *queryItem = [NSURLQueryItem queryItemWithName:name value:value];
+                    components.queryItems = @[ queryItem ];
+                    NSURL *queryUrl = components.URL;
+                    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:queryUrl];
+                    if (headers != nil) {
+                        [request setAllHTTPHeaderFields:headers];
+                    }
+                    [self.webview loadRequest:request];
                 }
-
-                [self.webview loadRequest:request];
             }
         }
 }
