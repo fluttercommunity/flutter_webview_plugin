@@ -85,7 +85,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     if (widget.hidden) {
       _onStateChanged.cancel();
     }
-    webviewReference.dispose();
+    //webviewReference.dispose();
   }
 
   @override
