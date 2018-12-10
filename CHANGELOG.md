@@ -1,3 +1,7 @@
+# 0.3.1
+
+- Added `useTransparentBackground` feature for Add2App use cases when the native WebView appears behind the Scaffold
+
 # 0.3.0
 
 - Fixes rect capture issue. Ensures WebView remains in the correct place on screen even when keyboard appears.
