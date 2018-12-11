@@ -30,7 +30,7 @@ class WebviewScaffold extends StatefulWidget {
     this.hidden = false,
     this.initialChild,
     this.allowFileURLs,
-    this.useTransparentBackground,
+    this.useTransparentBackground = false,
   }) : super(key: key);
 
   final PreferredSizeWidget appBar;
@@ -94,8 +94,9 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widget.appBar,
-      backgroundColor:
-          widget.useTransparentBackground ? Colors.transparent : Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: widget.useTransparentBackground
+          ? Colors.transparent
+          : Theme.of(context).scaffoldBackgroundColor,
       persistentFooterButtons: widget.persistentFooterButtons,
       bottomNavigationBar: widget.bottomNavigationBar,
       body: _WebviewPlaceholder(
