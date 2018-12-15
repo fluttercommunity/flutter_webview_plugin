@@ -254,7 +254,7 @@ class WebviewManager {
             webView.loadUrl(url);
         }
 
-        if (messagingEnabled) {
+        if (enableMessaging) {
             enableMessaging();
         }
 
