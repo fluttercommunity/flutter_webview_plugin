@@ -30,6 +30,7 @@ class WebviewScaffold extends StatefulWidget {
     this.hidden = false,
     this.initialChild,
     this.allowFileURLs,
+    this.withScaffold = true,
   }) : super(key: key);
 
   final PreferredSizeWidget appBar;
@@ -52,7 +53,7 @@ class WebviewScaffold extends StatefulWidget {
   final bool hidden;
   final Widget initialChild;
   final bool allowFileURLs;
-
+  final bool withScaffold;
   @override
   _WebviewScaffoldState createState() => _WebviewScaffoldState();
 }
@@ -90,7 +91,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+   return widget.withScaffold?Scaffold(
       appBar: widget.appBar,
       persistentFooterButtons: widget.persistentFooterButtons,
       bottomNavigationBar: widget.bottomNavigationBar,
@@ -127,8 +128,44 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
             }
           }
         },
-        child: widget.initialChild ?? const Center(child: const CircularProgressIndicator()),
+        child: widget.initialChild ??
+            const Center(child: const CircularProgressIndicator()),
       ),
+    ): _WebviewPlaceholder(
+      onRectChanged: (Rect value) {
+        if (_rect == null) {
+          _rect = value;
+          webviewReference.launch(
+            widget.url,
+            headers: widget.headers,
+            withJavascript: widget.withJavascript,
+            clearCache: widget.clearCache,
+            clearCookies: widget.clearCookies,
+            hidden: widget.hidden,
+            enableAppScheme: widget.enableAppScheme,
+            userAgent: widget.userAgent,
+            rect: _rect,
+            withZoom: widget.withZoom,
+            withLocalStorage: widget.withLocalStorage,
+            withLocalUrl: widget.withLocalUrl,
+            scrollBar: widget.scrollBar,
+            supportMultipleWindows: widget.supportMultipleWindows,
+            appCacheEnabled: widget.appCacheEnabled,
+            allowFileURLs: widget.allowFileURLs,
+          );
+        } else {
+          if (_rect != value) {
+            _rect = value;
+            _resizeTimer?.cancel();
+            _resizeTimer = Timer(const Duration(milliseconds: 250), () {
+              // avoid resizing to fast when build is called multiple time
+              webviewReference.resize(_rect);
+            });
+          }
+        }
+      },
+      child: widget.initialChild ??
+          const Center(child: const CircularProgressIndicator()),
     );
   }
 }
