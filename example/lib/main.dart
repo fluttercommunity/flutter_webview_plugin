@@ -201,6 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   selectedUrl,
                   rect: Rect.fromLTWH(0.0, 0.0, MediaQuery.of(context).size.width, 300.0),
                   userAgent: kAndroidUserAgent,
+                  invalidUrlRegex: r'^(https).+(twitter)',
                 );
               },
               child: const Text('Open Webview (rect)'),
