@@ -4,11 +4,14 @@ authors:
 - Hadrien Lejard <hadrien.lejard@gmail.com>
 - Toufik Zitouni <toufiksapps@gmail.com>
 - Pedia <kpedia@163.com>
+- Simon Lightfoot <simon@devangels.london>
+- Rafal Wachol <gorudonu@gmail.com>
 homepage: https://github.com/dart-flitter/flutter_webview_plugin
-version: 0.2.1+2
+version: 0.3.0+2
+maintainer: Simon Lightfoot (@slightfoot)
 
 environment:
-  sdk: ">=2.0.0-dev <3.0.0"
+  sdk: ">=2.0.0 <3.0.0"
 
 flutter:
   plugin:
