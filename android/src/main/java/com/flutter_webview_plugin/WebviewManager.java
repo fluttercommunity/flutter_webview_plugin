@@ -204,6 +204,7 @@ class WebviewManager {
             boolean supportMultipleWindows,
             boolean appCacheEnabled,
             boolean allowFileURLs,
+            boolean useWideViewPort,
             String invalidUrlRegex
     ) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
@@ -218,6 +219,8 @@ class WebviewManager {
 
         webView.getSettings().setAllowFileAccessFromFileURLs(allowFileURLs);
         webView.getSettings().setAllowUniversalAccessFromFileURLs(allowFileURLs);
+
+        webView.getSettings().setUseWideViewPort(useWideViewPort);
 
         webViewClient.updateInvalidUrlRegex(invalidUrlRegex);
 
