@@ -113,6 +113,7 @@ class FlutterWebviewPlugin {
     bool supportMultipleWindows,
     bool appCacheEnabled,
     bool allowFileURLs,
+    bool useWideViewPort,
     String invalidUrlRegex,
   }) async {
     final args = <String, dynamic>{
@@ -130,6 +131,7 @@ class FlutterWebviewPlugin {
       'supportMultipleWindows': supportMultipleWindows ?? false,
       'appCacheEnabled': appCacheEnabled ?? false,
       'allowFileURLs': allowFileURLs ?? false,
+      'useWideViewPort': useWideViewPort ?? false,
       'invalidUrlRegex': invalidUrlRegex,
     };
 
