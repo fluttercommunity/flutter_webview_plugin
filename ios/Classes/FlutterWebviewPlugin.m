@@ -246,7 +246,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
 - (bool)checkInvalidUrl:(NSURL*)url {
   NSString* urlString = url != nil ? [url absoluteString] : nil;
-  if (_invalidUrlRegex && urlString) {
+  if (_invalidUrlRegex != [NSNull null] && urlString != nil) {
     NSError* error = NULL;
     NSRegularExpression* regex =
         [NSRegularExpression regularExpressionWithPattern:_invalidUrlRegex
