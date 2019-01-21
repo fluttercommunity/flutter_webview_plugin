@@ -6,10 +6,7 @@ import 'package:flutter/services.dart';
 
 const _kChannel = 'flutter_webview_plugin';
 
-// TODO: more general state for iOS/android
 enum WebViewState { shouldStart, startLoad, finishLoad }
-
-// TODO: use an id by webview to be able to manage multiple webview
 
 /// Singleton class that communicate with a Webview Instance
 class FlutterWebviewPlugin {
