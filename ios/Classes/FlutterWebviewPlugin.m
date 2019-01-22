@@ -103,8 +103,12 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else {
         rc = self.viewController.view.bounds;
     }
-
-    self.webview = [[WKWebView alloc] initWithFrame:rc];
+    WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
+    WKPreferences *preferences = [[WKPreferences alloc] init];
+    preferences.javaScriptEnabled = YES;
+    preferences.javaScriptCanOpenWindowsAutomatically = YES;
+    config.preferences = preferences;
+    self.webview = [[WKWebView alloc] initWithFrame:rc configuration:config];
     self.webview.navigationDelegate = self;
     self.webview.UIDelegate = self;
     self.webview.scrollView.delegate = self;
