@@ -1,6 +1,8 @@
 package com.flutter_webview_plugin;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -14,8 +16,35 @@ import java.util.Map;
  */
 
 public class BrowserClient extends WebViewClient {
+    boolean enableAppScheme = false;
+
     public BrowserClient() {
         super();
+    }
+
+    public void setEnableAppScheme(boolean enableAppScheme) {
+        this.enableAppScheme = enableAppScheme;
+    }
+
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        view.loadUrl(url);
+
+        if(url.indexOf("http",0) == 0 ||
+                url.indexOf("https",0) == 0){
+            view.loadUrl(url);
+            return super.shouldOverrideUrlLoading(view, url);
+        }
+        if(enableAppScheme) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                view.getContext().startActivity(intent);
+                return true;
+            } catch (Exception e) {
+                return true;
+            }
+        }
+        return true;
     }
 
     @Override

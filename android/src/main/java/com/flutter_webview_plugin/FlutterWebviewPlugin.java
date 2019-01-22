@@ -90,6 +90,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         boolean withJavascript = call.argument("withJavascript");
         boolean clearCache = call.argument("clearCache");
         boolean clearCookies = call.argument("clearCookies");
+        boolean enableAppScheme = call.argument("enableAppScheme");
         boolean withZoom = call.argument("withZoom");
         boolean withLocalStorage = call.argument("withLocalStorage");
         boolean supportMultipleWindows = call.argument("supportMultipleWindows");
@@ -103,7 +104,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         }
 
         FrameLayout.LayoutParams params = buildLayoutParams(call);
-
+        ((BrowserClient)webViewManager.webViewClient).setEnableAppScheme(enableAppScheme);
         activity.addContentView(webViewManager.webView, params);
 
         webViewManager.openUrl(withJavascript,
