@@ -30,6 +30,7 @@ class WebviewScaffold extends StatefulWidget {
     this.hidden = false,
     this.initialChild,
     this.allowFileURLs,
+    this.resizeToAvoidBottomPadding = true,
   }) : super(key: key);
 
   final PreferredSizeWidget appBar;
@@ -52,6 +53,7 @@ class WebviewScaffold extends StatefulWidget {
   final bool hidden;
   final Widget initialChild;
   final bool allowFileURLs;
+  final bool resizeToAvoidBottomPadding;
 
   @override
   _WebviewScaffoldState createState() => _WebviewScaffoldState();
@@ -92,6 +94,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widget.appBar,
+      resizeToAvoidBottomPadding: widget.resizeToAvoidBottomPadding,
       persistentFooterButtons: widget.persistentFooterButtons,
       bottomNavigationBar: widget.bottomNavigationBar,
       body: _WebviewPlaceholder(
