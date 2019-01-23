@@ -3,7 +3,7 @@
 static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
 // UIWebViewDelegate
-@interface FlutterWebviewPlugin() <WKNavigationDelegate, UIScrollViewDelegate> {
+@interface FlutterWebviewPlugin() <WKNavigationDelegate, UIScrollViewDelegate, WKUIDelegate> {
     BOOL _enableAppScheme;
     BOOL _enableZoom;
 }
@@ -103,9 +103,14 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else {
         rc = self.viewController.view.bounds;
     }
-
-    self.webview = [[WKWebView alloc] initWithFrame:rc];
+    WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
+    WKPreferences *preferences = [[WKPreferences alloc] init];
+    preferences.javaScriptEnabled = YES;
+    preferences.javaScriptCanOpenWindowsAutomatically = YES;
+    config.preferences = preferences;
+    self.webview = [[WKWebView alloc] initWithFrame:rc configuration:config];
     self.webview.navigationDelegate = self;
+    self.webview.UIDelegate = self;
     self.webview.scrollView.delegate = self;
     self.webview.hidden = [hidden boolValue];
     self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
@@ -145,14 +150,39 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                     @throw @"not available on version earlier than ios 9.0";
                 }
             } else {
-                NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+                //if ([url rangeOfString:@"?"].location == NSNotFound) {
+                  // break;
+                //} else {
+
+               // }
                 NSDictionary *headers = call.arguments[@"headers"];
 
-                if (headers != nil) {
-                    [request setAllHTTPHeaderFields:headers];
+                if ([url rangeOfString:@"?"].location == NSNotFound) {
+                    NSLog(@"No query parameters found");
+                    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+                    if (headers != nil) {
+                        [request setAllHTTPHeaderFields:headers];
+                    }
+                    
+                    [self.webview loadRequest:request];
+                } else {
+                    NSArray *parameters = [url componentsSeparatedByString:@"?"];
+                    NSString *componentsURL = parameters[0];
+                    NSArray *splitParamaters = [parameters[1] componentsSeparatedByString:@"="];
+                    NSString *name = splitParamaters[0];
+                    NSString *value = splitParamaters[1];
+                    NSURLComponents *components = [NSURLComponents componentsWithString:componentsURL];
+                    NSURLQueryItem *queryItem = [NSURLQueryItem queryItemWithName:name value:value];
+                    components.queryItems = @[ queryItem ];
+                    NSURL *queryUrl = components.URL;
+                    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:queryUrl];
+                    if (headers != nil) {
+                        [request setAllHTTPHeaderFields:headers];
+                    }
+                    [self.webview loadRequest:request];
                 }
 
-                [self.webview loadRequest:request];
+
             }
         }
 }
@@ -183,6 +213,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         [self.webview stopLoading];
         [self.webview removeFromSuperview];
         self.webview.navigationDelegate = nil;
+        self.webview.UIDelegate = nil;
         self.webview = nil;
 
         // manually trigger onDestroy
@@ -235,6 +266,19 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 }
 
 #pragma mark -- WkWebView Delegate
+
+- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:
+(WKWebViewConfiguration
+*)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
+     UIApplication *application = [UIApplication sharedApplication];
+    if (@available(iOS 10.0, *)) {
+        [application openURL:navigationAction.request.URL options:@{} completionHandler:nil];
+    } else {
+        // You're screwed
+    }
+     return nil;
+}
+
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
     decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
 
@@ -260,6 +304,18 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     }
 }
 
+- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler
+{
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:message
+                                                                             message:nil
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"OK"
+                                                        style:UIAlertActionStyleCancel
+                                                      handler:^(UIAlertAction *action) {
+                                                          completionHandler();
+                                                      }]];
+    [self.viewController presentViewController:alertController animated:YES completion:^{}];
+}
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
     [channel invokeMethod:@"onState" arguments:@{@"type": @"startLoad", @"url": webView.URL.absoluteString}];
