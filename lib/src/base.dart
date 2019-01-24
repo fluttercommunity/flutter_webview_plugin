@@ -101,6 +101,8 @@ class FlutterWebviewPlugin {
     bool clearCookies,
     bool hidden,
     bool enableAppScheme,
+    bool isPost,
+    Map<String, dynamic> body,
     Rect rect,
     String userAgent,
     bool withZoom,
@@ -118,6 +120,7 @@ class FlutterWebviewPlugin {
       'hidden': hidden ?? false,
       'clearCookies': clearCookies ?? false,
       'enableAppScheme': enableAppScheme ?? true,
+      'isPost': isPost ?? false,
       'userAgent': userAgent,
       'withZoom': withZoom ?? false,
       'withLocalStorage': withLocalStorage ?? true,
@@ -130,6 +133,10 @@ class FlutterWebviewPlugin {
 
     if (headers != null) {
       args['headers'] = headers;
+    }
+
+    if (isPost != false && body != null) {
+      args['body'] = body;
     }
 
     if (rect != null) {
