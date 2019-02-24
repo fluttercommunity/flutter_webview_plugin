@@ -97,6 +97,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         Map<String, String> headers = call.argument("headers");
         boolean scrollBar = call.argument("scrollBar");
         boolean allowFileURLs = call.argument("allowFileURLs");
+        boolean geolocationEnabled = call.argument("geolocationEnabled");
 
         if (webViewManager == null || webViewManager.closed == true) {
             webViewManager = new WebviewManager(activity);
@@ -118,7 +119,8 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
                 scrollBar,
                 supportMultipleWindows,
                 appCacheEnabled,
-                allowFileURLs
+                allowFileURLs,
+                geolocationEnabled
         );
         result.success(null);
     }
