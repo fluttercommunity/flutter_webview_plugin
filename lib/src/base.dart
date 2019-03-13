@@ -110,6 +110,7 @@ class FlutterWebviewPlugin {
     bool supportMultipleWindows,
     bool appCacheEnabled,
     bool allowFileURLs,
+    bool geolocationEnabled,
   }) async {
     final args = <String, dynamic>{
       'url': url,
@@ -126,6 +127,7 @@ class FlutterWebviewPlugin {
       'supportMultipleWindows': supportMultipleWindows ?? false,
       'appCacheEnabled': appCacheEnabled ?? false,
       'allowFileURLs': allowFileURLs ?? false,
+      'geolocationEnabled': geolocationEnabled ?? false,
     };
 
     if (headers != null) {
