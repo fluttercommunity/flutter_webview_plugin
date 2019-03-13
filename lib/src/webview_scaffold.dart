@@ -94,6 +94,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widget.appBar,
+      resizeToAvoidBottomInset: false,
       persistentFooterButtons: widget.persistentFooterButtons,
       bottomNavigationBar: widget.bottomNavigationBar,
       body: _WebviewPlaceholder(
