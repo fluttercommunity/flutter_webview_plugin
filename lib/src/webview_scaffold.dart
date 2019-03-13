@@ -65,10 +65,18 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   Timer _resizeTimer;
   StreamSubscription<WebViewStateChanged> _onStateChanged;
 
+  var _onDestroy;
+
   @override
   void initState() {
     super.initState();
     webviewReference.close();
+
+    _onDestroy = webviewReference.onDestroy.listen((_) {
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    });
 
     if (widget.hidden) {
       _onStateChanged = webviewReference.onStateChanged.listen((WebViewStateChanged state) {
@@ -82,6 +90,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   @override
   void dispose() {
     super.dispose();
+    _onDestroy?.cancel();
     _resizeTimer?.cancel();
     webviewReference.close();
     if (widget.hidden) {
