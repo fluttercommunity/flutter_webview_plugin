@@ -33,3 +33,6 @@ android {
         disable 'InvalidPackage'
     }
 }
+dependencies {
+    compile "com.android.support:support-v4:22.1.0"
+}
