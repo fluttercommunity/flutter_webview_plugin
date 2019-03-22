@@ -60,6 +60,10 @@ class WebviewManager {
                         }else if(fileUri != null){
                             results = new Uri[]{ fileUri };
                         }
+                    }else{
+                        if(fileUri != null){
+                            results = new Uri[]{ fileUri };
+                        }
                     }
                     if(mUploadMessageArray != null){
                         mUploadMessageArray.onReceiveValue(results);
