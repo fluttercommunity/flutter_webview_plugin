@@ -24,18 +24,20 @@ import io.flutter.plugin.common.PluginRegistry;
 public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener {
     private Activity activity;
     private WebviewManager webViewManager;
+    private Context context;
     static MethodChannel channel;
     private static final String CHANNEL_NAME = "flutter_webview_plugin";
 
     public static void registerWith(PluginRegistry.Registrar registrar) {
         channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-        final FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity());
+        final FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity(),registrar.activeContext());
         registrar.addActivityResultListener(instance);
         channel.setMethodCallHandler(instance);
     }
 
-    private FlutterWebviewPlugin(Activity activity) {
+    private FlutterWebviewPlugin(Activity activity, Context context) {
         this.activity = activity;
+        this.context = context;
     }
 
     @Override
@@ -100,7 +102,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         boolean geolocationEnabled = call.argument("geolocationEnabled");
 
         if (webViewManager == null || webViewManager.closed == true) {
-            webViewManager = new WebviewManager(activity);
+            webViewManager = new WebviewManager(activity, context);
         }
 
         FrameLayout.LayoutParams params = buildLayoutParams(call);
