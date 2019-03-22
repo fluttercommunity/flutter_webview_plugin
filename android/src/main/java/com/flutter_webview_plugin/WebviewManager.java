@@ -53,16 +53,15 @@ class WebviewManager {
             if(Build.VERSION.SDK_INT >= 21){
                 if(requestCode == FILECHOOSER_RESULTCODE){
                     Uri[] results = null;
-                    if(resultCode == Activity.RESULT_OK && intent != null){
-                        String dataString = intent.getDataString();
-                        if(dataString != null){
-                            results = new Uri[]{ Uri.parse(dataString) };
-                        }else if(fileUri != null){
-                            results = new Uri[]{ fileUri };
-                        }
-                    }else{
+                    if(resultCode == Activity.RESULT_OK){
                         if(fileUri != null){
                             results = new Uri[]{ fileUri };
+                        }
+                        if(intent != null){
+                            String dataString = intent.getDataString();
+                            if(dataString != null){
+                                results = new Uri[]{ Uri.parse(dataString) };
+                            }
                         }
                     }
                     if(mUploadMessageArray != null){
