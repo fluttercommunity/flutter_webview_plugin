@@ -124,7 +124,9 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
     _enableZoom = [withZoom boolValue];
 
-    [self.viewController.view addSubview:self.webview];
+    UIViewController* presentedViewController = self.viewController.presentedViewController;
+    UIViewController* currentViewController = presentedViewController != nil ? presentedViewController : self.viewController;
+    [currentViewController.view addSubview:self.webview];
 
     [self navigate:call];
 }
