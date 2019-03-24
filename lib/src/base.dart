@@ -115,6 +115,7 @@ class FlutterWebviewPlugin {
     bool allowFileURLs,
     bool useWideViewPort,
     String invalidUrlRegex,
+    bool geolocationEnabled,
   }) async {
     final args = <String, dynamic>{
       'url': url,
@@ -133,6 +134,7 @@ class FlutterWebviewPlugin {
       'allowFileURLs': allowFileURLs ?? false,
       'useWideViewPort': useWideViewPort ?? false,
       'invalidUrlRegex': invalidUrlRegex,
+      'geolocationEnabled': geolocationEnabled ?? false,
     };
 
     if (headers != null) {
