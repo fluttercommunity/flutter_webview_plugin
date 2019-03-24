@@ -99,6 +99,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         boolean allowFileURLs = call.argument("allowFileURLs");
         boolean useWideViewPort = call.argument("useWideViewPort");
         String invalidUrlRegex = call.argument("invalidUrlRegex");
+        boolean geolocationEnabled = call.argument("geolocationEnabled");
 
         if (webViewManager == null || webViewManager.closed == true) {
             webViewManager = new WebviewManager(activity);
@@ -122,7 +123,8 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
                 appCacheEnabled,
                 allowFileURLs,
                 useWideViewPort,
-                invalidUrlRegex
+                invalidUrlRegex,
+                geolocationEnabled
         );
         result.success(null);
     }
@@ -151,6 +153,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         if (webViewManager != null) {
             webViewManager.stopLoading(call, result);
         }
+        result.success(null);
     }
 
     private void close(MethodCall call, MethodChannel.Result result) {
@@ -167,6 +170,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         if (webViewManager != null) {
             webViewManager.back(call, result);
         }
+        result.success(null);
     }
 
     /**
@@ -176,6 +180,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         if (webViewManager != null) {
             webViewManager.forward(call, result);
         }
+        result.success(null);
     }
 
     /**
@@ -185,6 +190,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         if (webViewManager != null) {
             webViewManager.reload(call, result);
         }
+        result.success(null);
     }
 
     private void reloadUrl(MethodCall call, MethodChannel.Result result) {
@@ -192,6 +198,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             String url = call.argument("url");
             webViewManager.reloadUrl(url);
         }
+        result.success(null);
     }
 
     private void eval(MethodCall call, final MethodChannel.Result result) {
@@ -212,12 +219,14 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         if (webViewManager != null) {
             webViewManager.hide(call, result);
         }
+        result.success(null);
     }
 
     private void show(MethodCall call, final MethodChannel.Result result) {
         if (webViewManager != null) {
             webViewManager.show(call, result);
         }
+        result.success(null);
     }
 
     private void cleanCookies(MethodCall call, final MethodChannel.Result result) {

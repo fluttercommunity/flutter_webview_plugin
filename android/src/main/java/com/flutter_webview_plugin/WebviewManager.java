@@ -9,6 +9,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
+import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -205,7 +206,8 @@ class WebviewManager {
             boolean appCacheEnabled,
             boolean allowFileURLs,
             boolean useWideViewPort,
-            String invalidUrlRegex
+            String invalidUrlRegex,
+            boolean geolocationEnabled
     ) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
@@ -224,6 +226,16 @@ class WebviewManager {
 
         webViewClient.updateInvalidUrlRegex(invalidUrlRegex);
 
+        if (geolocationEnabled) {
+            webView.getSettings().setGeolocationEnabled(true);
+            webView.setWebChromeClient(new WebChromeClient() {
+                @Override
+                public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                    callback.invoke(origin, true, false);
+                }
+            });
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         }
@@ -233,7 +245,7 @@ class WebviewManager {
         }
 
         if (hidden) {
-            webView.setVisibility(View.INVISIBLE);
+            webView.setVisibility(View.GONE);
         }
 
         if (clearCookies) {
@@ -330,7 +342,7 @@ class WebviewManager {
     }
     void hide(MethodCall call, MethodChannel.Result result) {
         if (webView != null) {
-            webView.setVisibility(View.INVISIBLE);
+            webView.setVisibility(View.GONE);
         }
     }
     void show(MethodCall call, MethodChannel.Result result) {
