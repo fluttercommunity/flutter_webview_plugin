@@ -34,5 +34,5 @@ android {
     }
 }
 dependencies {
-    compile "com.android.support:support-v4:22.1.0"
+    implementation group: 'com.android.support', name: 'support-v4', version: '27.0.0'
 }
