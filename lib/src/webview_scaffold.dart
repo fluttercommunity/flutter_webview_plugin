@@ -30,6 +30,7 @@ class WebviewScaffold extends StatefulWidget {
     this.hidden = false,
     this.initialChild,
     this.allowFileURLs,
+    this.resizeToAvoidBottomInset = false,
     this.invalidUrlRegex,
     this.geolocationEnabled
   }) : super(key: key);
@@ -54,6 +55,7 @@ class WebviewScaffold extends StatefulWidget {
   final bool hidden;
   final Widget initialChild;
   final bool allowFileURLs;
+  final bool resizeToAvoidBottomInset;
   final String invalidUrlRegex;
   final bool geolocationEnabled;
 
@@ -105,7 +107,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widget.appBar,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
       persistentFooterButtons: widget.persistentFooterButtons,
       bottomNavigationBar: widget.bottomNavigationBar,
       body: _WebviewPlaceholder(
