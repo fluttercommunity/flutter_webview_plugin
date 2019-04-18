@@ -15,7 +15,7 @@ apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     lintOptions {
         disable 'InvalidPackage'
@@ -25,6 +25,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.yourcompany.flutter_webview_plugin_example"
+        minSdkVersion 16
     }
 
     buildTypes {
@@ -41,7 +42,7 @@ flutter {
 }
 
 dependencies {
-    androidTestImplementation 'com.android.support:support-annotations:27.0.0'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'androidx.annotation:annotation:1.0.2'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.1.1'
 }

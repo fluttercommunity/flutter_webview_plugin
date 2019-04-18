@@ -1,3 +1,21 @@
+# 0.3.3
+
+- BREAKING CHANGE - AndroidX support
+
+# 0.3.2
+
+- enable Javascript in iOS, support abort loading specific URLs
+- add resizeToAvoidBottomInset to WebviewScaffold; #301
+
+# 0.3.1
+
+- Add support for geolocation Android
+- fix No269: Can't load target="_blank" links on iOS
+- fix: reloadUrl will not return Future
+- Fix height of keyboard
+- Fix Hide/Show WebView
+- hotfix widget back to initialChild after webview is tapped on Android
+
 # 0.3.0
 
 - Fixes rect capture issue. Ensures WebView remains in the correct place on screen even when keyboard appears.

@@ -2,7 +2,6 @@ package com.flutter_webview_plugin;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -16,7 +15,6 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
@@ -90,6 +88,7 @@ class WebviewManager {
     boolean closed = false;
     WebView webView;
     Activity activity;
+    BrowserClient webViewClient;
     ResultHandler resultHandler;
     Context context;
 
@@ -98,7 +97,7 @@ class WebviewManager {
         this.activity = activity;
         this.context = context;
         this.resultHandler = new ResultHandler();
-        WebViewClient webViewClient = new BrowserClient();
+        webViewClient = new BrowserClient();
         webView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -308,6 +307,8 @@ class WebviewManager {
             boolean supportMultipleWindows,
             boolean appCacheEnabled,
             boolean allowFileURLs,
+            boolean useWideViewPort,
+            String invalidUrlRegex,
             boolean geolocationEnabled
     ) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
@@ -322,6 +323,10 @@ class WebviewManager {
 
         webView.getSettings().setAllowFileAccessFromFileURLs(allowFileURLs);
         webView.getSettings().setAllowUniversalAccessFromFileURLs(allowFileURLs);
+
+        webView.getSettings().setUseWideViewPort(useWideViewPort);
+
+        webViewClient.updateInvalidUrlRegex(invalidUrlRegex);
 
         if (geolocationEnabled) {
             webView.getSettings().setGeolocationEnabled(true);
