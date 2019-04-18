@@ -101,7 +101,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     }
 
     CGRect rc;
-    if (rect != (id)[NSNull null]) {
+    if (rect != nil) {
         rc = [self parseRect:rect];
     } else {
         rc = self.viewController.view.bounds;
