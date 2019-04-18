@@ -99,6 +99,8 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         Map<String, String> headers = call.argument("headers");
         boolean scrollBar = call.argument("scrollBar");
         boolean allowFileURLs = call.argument("allowFileURLs");
+        boolean useWideViewPort = call.argument("useWideViewPort");
+        String invalidUrlRegex = call.argument("invalidUrlRegex");
         boolean geolocationEnabled = call.argument("geolocationEnabled");
 
         if (webViewManager == null || webViewManager.closed == true) {
@@ -122,6 +124,8 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
                 supportMultipleWindows,
                 appCacheEnabled,
                 allowFileURLs,
+                useWideViewPort,
+                invalidUrlRegex,
                 geolocationEnabled
         );
         result.success(null);
