@@ -67,10 +67,7 @@ class WebviewManager {
                         } else if (videoUri != null && getFileSize(videoUri) > 0) {
                             results = new Uri[] { videoUri };
                         } else if (intent != null) {
-                            String dataString = intent.getDataString();
-                            if(dataString != null){
-                                results = new Uri[]{ Uri.parse(dataString) };
-                            }
+                            results = getSelectedFiles(intent);
                         }
                     }
                     if(mUploadMessageArray != null){
@@ -94,6 +91,26 @@ class WebviewManager {
             }
             return handled;
         }
+    }
+
+    private Uri[] getSelectedFiles(Intent data) {
+        // we have one files selected
+        if (data.getData() != null) {
+            String dataString = data.getDataString();
+            if(dataString != null){
+                return new Uri[]{ Uri.parse(dataString) };
+            }
+        }
+        // we have multiple files selected
+        if (data.getClipData() != null) {
+            final int numSelectedFiles = data.getClipData().getItemCount();
+            Uri[] result = new Uri[numSelectedFiles];
+            for (int i = 0; i < numSelectedFiles; i++) {
+                result[i] = data.getClipData().getItemAt(i).getUri();
+            }
+            return result;
+        }
+        return null;
     }
 
     boolean closed = false;
