@@ -17,7 +17,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -200,7 +200,6 @@ class WebviewManager {
 
                 Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
                 chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
-                chooserIntent.putExtra(Intent.EXTRA_TITLE, "Image Chooser");
                 chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
                 activity.startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
                 return true;
@@ -225,7 +224,6 @@ class WebviewManager {
         try {
             capturedFile = createCapturedFile(prefix, suffix);
         } catch (IOException e) {
-            Log.e("CREATE FILE", "Error occurred while creating the File", e);
             e.printStackTrace();
         }
         return FileProvider.getUriForFile(context, packageName + ".fileprovider", capturedFile);
