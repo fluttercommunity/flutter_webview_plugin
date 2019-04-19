@@ -46,5 +46,5 @@ android {
     }
 }
 dependencies {
-    implementation group: 'com.android.support', name: 'support-v4', version: '27.0.0'
+    implementation group: 'androidx.appcompat', name: 'appcompat', version: '1.0.0'
 }
