@@ -18,6 +18,8 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.provider.MediaStore;
 import androidx.core.content.FileProvider;
+import android.database.Cursor;
+import android.provider.OpenableColumns;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -43,6 +45,14 @@ class WebviewManager {
     private ValueCallback<Uri[]> mUploadMessageArray;
     private final static int FILECHOOSER_RESULTCODE=1;
     private Uri fileUri;
+    private Uri videoUri;
+
+    private long getFileSize(Uri fileUri) {
+        Cursor returnCursor = context.getContentResolver().query(fileUri, null, null, null, null);
+        returnCursor.moveToFirst();
+        int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+        return returnCursor.getLong(sizeIndex);
+    }
 
     @TargetApi(7)
     class ResultHandler {
@@ -51,11 +61,12 @@ class WebviewManager {
             if(Build.VERSION.SDK_INT >= 21){
                 if(requestCode == FILECHOOSER_RESULTCODE){
                     Uri[] results = null;
-                    if(resultCode == Activity.RESULT_OK){
-                        if(fileUri != null){
-                            results = new Uri[]{ fileUri };
-                        }
-                        if(intent != null){
+                    if (resultCode == Activity.RESULT_OK) {
+                        if (fileUri != null && getFileSize(fileUri) > 0) {
+                            results = new Uri[] { fileUri };
+                        } else if (videoUri != null && getFileSize(videoUri) > 0) {
+                            results = new Uri[] { videoUri };
+                        } else if (intent != null) {
                             String dataString = intent.getDataString();
                             if(dataString != null){
                                 results = new Uri[]{ Uri.parse(dataString) };
@@ -176,6 +187,8 @@ class WebviewManager {
 
                 final String[] acceptTypes = getSafeAcceptedTypes(fileChooserParams);
                 List<Intent> intentList = new ArrayList<Intent>();
+                fileUri = null;
+                videoUri = null;
                 if (acceptsImages(acceptTypes)) {
                     Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     fileUri = getOutputFilename(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -184,13 +197,15 @@ class WebviewManager {
                 }
                 if (acceptsVideo(acceptTypes)) {
                     Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-                    fileUri = getOutputFilename(MediaStore.ACTION_VIDEO_CAPTURE);
-                    takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+                    videoUri = getOutputFilename(MediaStore.ACTION_VIDEO_CAPTURE);
+                    takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
                     intentList.add(takeVideoIntent);
                 }
                 Intent contentSelectionIntent;
                 if (Build.VERSION.SDK_INT >= 21) {
+                    final boolean allowMultiple = fileChooserParams.getMode() == FileChooserParams.MODE_OPEN_MULTIPLE;
                     contentSelectionIntent = fileChooserParams.createIntent();
+                    contentSelectionIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
                 } else {
                     contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
                     contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
