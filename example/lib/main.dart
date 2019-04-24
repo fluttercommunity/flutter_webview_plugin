@@ -93,6 +93,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   StreamSubscription<WebViewHttpError> _onHttpError;
 
+  StreamSubscription<double> _onProgressChanged;
+
   StreamSubscription<double> _onScrollYChanged;
 
   StreamSubscription<double> _onScrollXChanged;
@@ -132,6 +134,14 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
+    _onProgressChanged = flutterWebViewPlugin.onProgressChanged.listen((double progress) {
+      if (mounted) {
+        setState(() {
+          _history.add("onProgressChanged: $progress");
+        });
+      }
+    });
+    
     _onScrollYChanged = flutterWebViewPlugin.onScrollYChanged.listen((double y) {
       if (mounted) {
         setState(() {
@@ -172,6 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _onUrlChanged.cancel();
     _onStateChanged.cancel();
     _onHttpError.cancel();
+    _onProgressChanged.cancel();
     _onScrollXChanged.cancel();
     _onScrollYChanged.cancel();
 
