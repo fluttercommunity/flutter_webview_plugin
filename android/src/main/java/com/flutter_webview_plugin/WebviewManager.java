@@ -339,7 +339,9 @@ class WebviewManager {
             String url,
             Map<String, String> headers,
             boolean withZoom,
+            boolean displayZoomControls,
             boolean withLocalStorage,
+            boolean withOverviewMode,
             boolean scrollBar,
             boolean supportMultipleWindows,
             boolean appCacheEnabled,
@@ -351,7 +353,9 @@ class WebviewManager {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
+        webView.getSettings().setDisplayZoomControls(displayZoomControls);
         webView.getSettings().setDomStorageEnabled(withLocalStorage);
+        webView.getSettings().setLoadWithOverviewMode(withOverviewMode);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(supportMultipleWindows);
 
         webView.getSettings().setSupportMultipleWindows(supportMultipleWindows);
