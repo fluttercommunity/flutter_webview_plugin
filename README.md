@@ -156,6 +156,9 @@ Future<Null> launch(String url, {
    bool supportMultipleWindows: false,
    bool appCacheEnabled: false,
    bool allowFileURLs: false,
+   bool displayZoomControls: false,
+   bool useWideViewPort: false,
+   bool withOverviewMode: false,
 });
 ```
 
