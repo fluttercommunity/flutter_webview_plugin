@@ -69,21 +69,33 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   Timer _resizeTimer;
   StreamSubscription<WebViewStateChanged> _onStateChanged;
 
-  var _onDestroy;
+  var _onBack;
 
   @override
   void initState() {
     super.initState();
     webviewReference.close();
 
-    _onDestroy = webviewReference.onDestroy.listen((_) {
-      if (mounted) {
+    _onBack = webviewReference.onBack.listen((_) {
+      if (!mounted) return;
+
+      final route = ModalRoute.of(context);
+
+      // Close the native widget only if the back operation was not veto'd
+      // by the [WillPopScope] widget or similar.
+      final handler = () => webviewReference.close();
+      route?.addScopedWillPopCallback(handler);
+      try {
+        // Perform the 'back' operation.
         Navigator.of(context).pop();
+      } finally {
+        route?.removeScopedWillPopCallback(handler);
       }
     });
 
     if (widget.hidden) {
-      _onStateChanged = webviewReference.onStateChanged.listen((WebViewStateChanged state) {
+      _onStateChanged =
+          webviewReference.onStateChanged.listen((WebViewStateChanged state) {
         if (state.type == WebViewState.finishLoad) {
           webviewReference.show();
         }
@@ -94,7 +106,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   @override
   void dispose() {
     super.dispose();
-    _onDestroy?.cancel();
+    _onBack?.cancel();
     _resizeTimer?.cancel();
     webviewReference.close();
     if (widget.hidden) {
