@@ -76,20 +76,11 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     super.initState();
     webviewReference.close();
 
-    _onBack = webviewReference.onBack.listen((_) {
+    _onBack = webviewReference.onBack.listen((_) async {
       if (!mounted) return;
 
-      final route = ModalRoute.of(context);
-
-      // Close the native widget only if the back operation was not veto'd
-      // by the [WillPopScope] widget or similar.
-      final handler = () => webviewReference.close();
-      route?.addScopedWillPopCallback(handler);
-      try {
-        // Perform the 'back' operation.
-        Navigator.of(context).pop();
-      } finally {
-        route?.removeScopedWillPopCallback(handler);
+      if (await Navigator.maybePop(context)) {
+        webviewReference.close();
       }
     });
 
