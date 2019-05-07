@@ -69,21 +69,30 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   Timer _resizeTimer;
   StreamSubscription<WebViewStateChanged> _onStateChanged;
 
-  var _onDestroy;
+  var _onBack;
 
   @override
   void initState() {
     super.initState();
     webviewReference.close();
 
-    _onDestroy = webviewReference.onDestroy.listen((_) {
-      if (mounted) {
-        Navigator.of(context).pop();
+    _onBack = webviewReference.onBack.listen((_) async {
+      if (!mounted) return;
+
+      // Equivalent of Navigator.maybePop(), except that [webviewReference]
+      // is closed when the pop goes ahead. Whether the pop was performed
+      // can't be determined from the return value of Navigator.maybePop().
+      final route = ModalRoute.of(context);
+      final pop = await route?.willPop();
+      if (pop == RoutePopDisposition.pop) {
+        webviewReference.close();
+        Navigator.pop(context);
       }
     });
 
     if (widget.hidden) {
-      _onStateChanged = webviewReference.onStateChanged.listen((WebViewStateChanged state) {
+      _onStateChanged =
+          webviewReference.onStateChanged.listen((WebViewStateChanged state) {
         if (state.type == WebViewState.finishLoad) {
           webviewReference.show();
         }
@@ -94,7 +103,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   @override
   void dispose() {
     super.dispose();
-    _onDestroy?.cancel();
+    _onBack?.cancel();
     _resizeTimer?.cancel();
     webviewReference.close();
     if (widget.hidden) {
