@@ -135,7 +135,7 @@ class WebviewManager {
                             if (webView.canGoBack()) {
                                 webView.goBack();
                             } else {
-                                close();
+                                FlutterWebviewPlugin.channel.invokeMethod("onBack", null);
                             }
                             return true;
                     }

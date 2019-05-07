@@ -23,6 +23,7 @@ class FlutterWebviewPlugin {
 
   final _channel = const MethodChannel(_kChannel);
 
+  final _onBack = StreamController<Null>.broadcast();
   final _onDestroy = StreamController<Null>.broadcast();
   final _onUrlChanged = StreamController<String>.broadcast();
   final _onStateChanged = StreamController<WebViewStateChanged>.broadcast();
@@ -33,6 +34,9 @@ class FlutterWebviewPlugin {
 
   Future<Null> _handleMessages(MethodCall call) async {
     switch (call.method) {
+      case 'onBack':
+        _onBack.add(null);
+        break;
       case 'onDestroy':
         _onDestroy.add(null);
         break;
@@ -63,6 +67,9 @@ class FlutterWebviewPlugin {
 
   /// Listening the OnDestroy LifeCycle Event for Android
   Stream<Null> get onDestroy => _onDestroy.stream;
+
+  /// Listening the back key press Event for Android
+  Stream<Null> get onBack => _onBack.stream;
 
   /// Listening url changed
   Stream<String> get onUrlChanged => _onUrlChanged.stream;
