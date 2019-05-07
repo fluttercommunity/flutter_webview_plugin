@@ -79,8 +79,14 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     _onBack = webviewReference.onBack.listen((_) async {
       if (!mounted) return;
 
-      if (await Navigator.maybePop(context)) {
+      // Equivalent of Navigator.maybePop(), except that [webviewReference]
+      // is closed when the pop goes ahead. Whether the pop was performed
+      // can't be determined from the return value of Navigator.maybePop().
+      final route = ModalRoute.of(context);
+      final pop = await route?.willPop();
+      if (pop == RoutePopDisposition.pop) {
         webviewReference.close();
+        Navigator.pop(context);
       }
     });
 
