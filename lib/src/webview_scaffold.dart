@@ -84,8 +84,8 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
       final pop = await _topMostRoute.willPop();
       if (pop == RoutePopDisposition.pop) {
         // Close the webview if it's on the route at the top of the stack.
-        final isEditorOnTopMostRoute = _topMostRoute == ModalRoute.of(context);
-        if (isEditorOnTopMostRoute) {
+        final isOnTopMostRoute = _topMostRoute == ModalRoute.of(context);
+        if (isOnTopMostRoute) {
           webviewReference.close();
         }
         Navigator.pop(context);
