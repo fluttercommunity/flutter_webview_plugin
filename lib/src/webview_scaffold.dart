@@ -79,13 +79,15 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     _onBack = webviewReference.onBack.listen((_) async {
       if (!mounted) return;
 
-      // Equivalent of Navigator.maybePop(), except that [webviewReference]
-      // is closed when the pop goes ahead. Whether the pop was performed
-      // can't be determined from the return value of Navigator.maybePop().
-      final route = ModalRoute.of(context);
-      final pop = await route?.willPop();
+      // The willPop/pop pair here is equivalent to Navigator.maybePop(),
+      // which is what's called from the flutter back button handler.
+      final pop = await _topMostRoute.willPop();
       if (pop == RoutePopDisposition.pop) {
-        webviewReference.close();
+        // Close the webview if it's on the route at the top of the stack.
+        final isEditorOnTopMostRoute = _topMostRoute == ModalRoute.of(context);
+        if (isEditorOnTopMostRoute) {
+          webviewReference.close();
+        }
         Navigator.pop(context);
       }
     });
@@ -98,6 +100,16 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
         }
       });
     }
+  }
+
+  /// Equivalent to [Navigator.of(context)._history.last].
+  Route<dynamic> get _topMostRoute {
+    var topMost;
+    Navigator.popUntil(context, (route) {
+      topMost = route;
+      return true;
+    });
+    return topMost;
   }
 
   @override
