@@ -64,6 +64,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else if ([@"back" isEqualToString:call.method]) {
         [self back];
         result(nil);
+    } else if ([@"canGoBack" isEqualToString:call.method]) {
+        result([NSNumber numberWithBool:self.webview.canGoBack]);
     } else if ([@"forward" isEqualToString:call.method]) {
         [self forward];
         result(nil);

@@ -61,6 +61,9 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             case "back":
                 back(call, result);
                 break;
+            case "canGoBack":
+                canGoBack(call, result);
+                break;
             case "forward":
                 forward(call, result);
                 break;
@@ -171,6 +174,13 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     private void back(MethodCall call, MethodChannel.Result result) {
         if (webViewManager != null) {
             webViewManager.back(call, result);
+        }
+        result.success(null);
+    }
+
+    private void canGoBack(MethodCall call, MethodChannel.Result result) {
+        if (webViewManager != null) {
+            result.success(webViewManager.canGoBack());
         }
         result.success(null);
     }
