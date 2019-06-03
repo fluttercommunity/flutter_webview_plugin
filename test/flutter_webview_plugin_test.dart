@@ -12,6 +12,7 @@ void main() {
     webview = new FlutterWebviewPlugin.private(methodChannel);
   });
 
+
   group('Method channel invoke', () {
     test('Should invoke close', () async {
       webview.close();
