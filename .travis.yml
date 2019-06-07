@@ -20,6 +20,7 @@ matrix:
     #     - pub global activate flutter_plugin_tools
     #   script:
     #     - ./script/incremental_build.sh analyze
+     # Job 2) Run dart unit tests
     - os: linux
       env:
         - SHARD=Format+Test

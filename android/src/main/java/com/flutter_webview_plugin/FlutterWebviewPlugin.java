@@ -35,7 +35,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         channel.setMethodCallHandler(instance);
     }
 
-    private FlutterWebviewPlugin(Activity activity, Context context) {
+    FlutterWebviewPlugin(Activity activity, Context context) {
         this.activity = activity;
         this.context = context;
     }
