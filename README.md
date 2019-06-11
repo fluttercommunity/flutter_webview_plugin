@@ -16,6 +16,23 @@ you won't be able to use snackbars, dialogs ...
 
 For help getting started with Flutter, view our online [documentation](http://flutter.io/).
 
+#### iOS
+
+In order for plugin to work correctly, you need to add new key to `ios/Runner/Info.plist`
+
+```xml
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+    <key>NSAllowsArbitraryLoadsInWebContent</key>
+    <true/>
+</dict>
+```
+
+`NSAllowsArbitraryLoadsInWebContent` is for iOS 10+ and `NSAllowsArbitraryLoads` for iOS 9.
+
+
 ### How it works
 
 #### Launch WebView Fullscreen with Flutter navigation
