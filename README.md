@@ -10,7 +10,7 @@ Plugin that allows Flutter to communicate with a native WebView.
 
 **_Warning:_**
 The webview is not integrated in the widget tree, it is a native view on top of the flutter view.
-you won't be able to use snackbars, dialogs ...
+You won't be able see snackbars, dialogs, or other flutter widgets that would overlap with the region of the screen taken up by the webview.
 
 ## Getting Started
 
@@ -141,6 +141,25 @@ flutterWebviewPlugin.launch(url,
   ),
 );
 ```
+
+#### Injecting custom code into the webview
+Use `flutterWebviewPlugin.evalJavaScript(String code)`. This function must be run after the page has finished loading (i.e. listen to `onStateChanged` for events where state is `finishLoad`).
+
+If you have a large amount of JavaScript to embed, use an asset file. Add the asset file to `pubspec.yaml`, then call the function like:
+
+```dart
+Future<String> loadJS(String name) async {
+  var givenJS = rootBundle.loadString('assets/$name.js');
+  return givenJS.then((String js) {
+    flutterWebViewPlugin.onStateChanged.listen((viewState) async {
+      if (viewState.type == WebViewState.finishLoad) {
+        flutterWebViewPlugin.evalJavascript(js);
+      }
+    });
+  });
+}
+```
+
 
 ### Webview Events
 
