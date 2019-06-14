@@ -59,7 +59,7 @@ matrix:
             - libstdc++6
             - fonts-droid
       before_script:
-        - ./script/before_build_apks.sh
+        - ./scripts/before_build_apks.sh
         - export ANDROID_HOME=`pwd`/android-sdk
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
         - export FLUTTER_HOME=`pwd`/flutter
