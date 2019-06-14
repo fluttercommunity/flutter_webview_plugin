@@ -1,29 +1,25 @@
 package com.flutter_webview_plugin;
 
 import android.app.Activity;
-import android.content.Context;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.robolectric.RobolectricTestRunner;
 
+import io.flutter.plugin.common.ErrorLogResult;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
-import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 
-@RunWith(RobolectricTestRunner.class)
 public class FlutterWebviewPluginTest {
 
     @Mock
     Activity mockActivity;
-    @Mock
+
     MethodCall mockMethodCall;
-    @Mock
     MethodChannel.Result mockResult;
 
     @Spy
@@ -35,13 +31,11 @@ public class FlutterWebviewPluginTest {
     }
 
     @Test
-    public void sampleTest() {
-        assertEquals(true, true);
-    }
-
-    @Test
-    public void shouldDo() {
-        flutterWebviewPlugin.onMethodCall(null, null);
+    public void shouldInvokeClose() {
+        mockMethodCall = new MethodCall("close", null);
+        mockResult = new ErrorLogResult("");
+        flutterWebviewPlugin.onMethodCall(mockMethodCall, mockResult);
+        verify(flutterWebviewPlugin).close(mockMethodCall, mockResult);
 
     }
 }

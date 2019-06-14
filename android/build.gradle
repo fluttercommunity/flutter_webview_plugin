@@ -56,7 +56,15 @@ dependencies {
 
 	testImplementation 'junit:junit:4.12'
     testImplementation 'androidx.test:core:1.2.0'
-    testImplementation 'org.robolectric:robolectric:4.3'
 
-    testImplementation 'org.mockito:mockito-core:1.10.19'
+//    When running unit tests for project, gradle needs to have flutter.jar in path
+//    since there's no FLUTTER_HOME variable, we need to pass flutterPath from console with command:
+//    ./gradlew test -DflutterPath=/Users/rafal.wachol/Utils/flutter
+//
+//    while develop you can set path to this jar explicitly so IDE won't complain
+    if(System.getProperty('flutterPath')) {
+        testImplementation files(System.getProperty('flutterPath') + '/bin/cache/artifacts/engine/android-x64/flutter.jar')
+    }
+
+    testImplementation 'org.mockito:mockito-inline:2.28.2'
 }
