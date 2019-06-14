@@ -62,9 +62,10 @@ matrix:
         - ./script/before_build_apks.sh
         - export ANDROID_HOME=`pwd`/android-sdk
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+        - export FLUTTER_HOME=`pwd`/flutter
       script:
-        - ./script/incremental_build.sh build-examples --apk
-        - ./script/incremental_build.sh java-test  # must come after apk build
+        - cd example/android
+        - ./gradlew test -DflutterPath=$FLUTTER_HOME
     # # Job 3.2) Build example APKs and run Java tests, shard 2/2
     # - os: linux
     #   env:
