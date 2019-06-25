@@ -8,6 +8,7 @@ const kAndroidUserAgent =
     'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36';
 
 String selectedUrl = 'https://flutter.io';
+String messageUrl = 'your_server/index.html';
 
 void main() => runApp(MyApp());
 
@@ -99,6 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   StreamSubscription<double> _onScrollXChanged;
 
+  StreamSubscription<String> _onMessage;
+
   final _urlCtrl = TextEditingController(text: selectedUrl);
 
   final _codeCtrl = TextEditingController(text: 'window.navigator.userAgent');
@@ -173,6 +176,14 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     });
+
+    _onMessage = flutterWebViewPlugin.onPostMessage.listen((msg) {
+      if (mounted) {
+        setState(() {
+          _history.add('message: $msg');
+        });
+      }
+    });
   }
 
   @override
@@ -185,6 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _onProgressChanged.cancel();
     _onScrollXChanged.cancel();
     _onScrollYChanged.cancel();
+    _onMessage.cancel();
 
     flutterWebViewPlugin.dispose();
 
@@ -216,6 +228,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               },
               child: const Text('Open Webview (rect)'),
+            ),
+            RaisedButton(
+              onPressed: () {
+                flutterWebViewPlugin.launch(
+                  messageUrl,
+                  rect: Rect.fromLTWH(0.0, 0.0, MediaQuery.of(context).size.width, 300.0),
+                  invalidUrlRegex: r'^(https).+(twitter)', // prevent redirecting to twitter when user click on its icon in flutter website
+                );
+              },
+              child: const Text('Open Webview (message demo)'),
             ),
             RaisedButton(
               onPressed: () {

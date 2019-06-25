@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <button id="button" style="background-color:#158461;height:30px;">send to flutter</button>
+    
+    <script>
+        function sendData(data) {
+            if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)){
+                window.webkit.messageHandlers.Native.postMessage(data);
+            }else{
+                if (window.Android && window.Android.postMessage) {
+                    Android.postMessage(data);
+                }
+            }
+        }
+    
+        window.onload = function () {
+            document.getElementById('button').onclick = function () {
+                sendData(JSON.stringify({ action: 'log', data: '1234' }));
+            }
+        }
+    </script>
+</body>
+</html>

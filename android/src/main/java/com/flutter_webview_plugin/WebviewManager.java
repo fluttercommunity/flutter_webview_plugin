@@ -10,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -244,6 +245,8 @@ class WebviewManager {
                 FlutterWebviewPlugin.channel.invokeMethod("onProgressChanged", args);
             }
         });
+
+        webView.addJavascriptInterface(new WebAppInterface(), "Android");
     }
 
     private Uri getOutputFilename(String intentType) {
@@ -493,6 +496,15 @@ class WebviewManager {
     void stopLoading(MethodCall call, MethodChannel.Result result){
         if (webView != null){
             webView.stopLoading();
+        }
+    }
+
+    public class WebAppInterface {
+        @JavascriptInterface
+        public void postMessage(String value){
+            Map<String, String> postMessageMap = new HashMap<>();
+            postMessageMap.put("postMessage", value);
+            FlutterWebviewPlugin.channel.invokeMethod("onPostMessage", postMessageMap);
         }
     }
 }
