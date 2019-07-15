@@ -200,6 +200,7 @@ class FlutterWebviewPlugin {
     cookiesString
       .replaceAll('"', '')
       .split('; ')
+      .where((c) => c.isNotEmpty)
       .forEach((cookie) => 
                cookies[cookie.split('=').first] = cookie.split('=').last
               );
