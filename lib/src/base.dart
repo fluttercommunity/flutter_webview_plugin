@@ -130,6 +130,7 @@ class FlutterWebviewPlugin {
     bool useWideViewPort,
     String invalidUrlRegex,
     bool geolocationEnabled,
+    bool debuggingEnabled,
   }) async {
     final args = <String, dynamic>{
       'url': url,
@@ -149,6 +150,7 @@ class FlutterWebviewPlugin {
       'useWideViewPort': useWideViewPort ?? false,
       'invalidUrlRegex': invalidUrlRegex,
       'geolocationEnabled': geolocationEnabled ?? false,
+      'debuggingEnabled': debuggingEnabled ?? false,
     };
 
     if (headers != null) {
