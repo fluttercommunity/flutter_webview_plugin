@@ -22,6 +22,9 @@ import androidx.core.content.FileProvider;
 import android.database.Cursor;
 import android.provider.OpenableColumns;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -502,9 +505,15 @@ class WebviewManager {
     public class WebAppInterface {
         @JavascriptInterface
         public void postMessage(String value){
-            Map<String, String> postMessageMap = new HashMap<>();
+            final Map<String, String> postMessageMap = new HashMap<>();
             postMessageMap.put("postMessage", value);
-            FlutterWebviewPlugin.channel.invokeMethod("onPostMessage", postMessageMap);
+            final Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    FlutterWebviewPlugin.channel.invokeMethod("onPostMessage", postMessageMap);
+                }
+            });
         }
     }
 }
