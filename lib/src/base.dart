@@ -106,6 +106,10 @@ class FlutterWebviewPlugin {
   ///     It is always enabled in UIWebView of iOS and  can not be disabled.
   /// - [withLocalUrl]: allow url as a local path
   ///     Allow local files on iOs > 9.0
+  /// - [localUrlScope]: allowed folder for local paths
+  ///     iOS only.
+  ///     If null and withLocalUrl is true, then it will use the url as the scope,
+  ///     allowing only itself to be read.
   /// - [scrollBar]: enable or disable scrollbar
   /// - [supportMultipleWindows] enable multiple windows support in Android
   /// - [invalidUrlRegex] is the regular expression of URLs that web view shouldn't load.
@@ -123,6 +127,7 @@ class FlutterWebviewPlugin {
     bool withZoom,
     bool withLocalStorage,
     bool withLocalUrl,
+    String localUrlScope,
     bool scrollBar,
     bool supportMultipleWindows,
     bool appCacheEnabled,
@@ -143,6 +148,7 @@ class FlutterWebviewPlugin {
       'withZoom': withZoom ?? false,
       'withLocalStorage': withLocalStorage ?? true,
       'withLocalUrl': withLocalUrl ?? false,
+      'localUrlScope': localUrlScope,
       'scrollBar': scrollBar ?? true,
       'supportMultipleWindows': supportMultipleWindows ?? false,
       'appCacheEnabled': appCacheEnabled ?? false,
