@@ -243,6 +243,10 @@ class WebviewManager {
                 args.put("progress", progress / 100.0);
                 FlutterWebviewPlugin.channel.invokeMethod("onProgressChanged", args);
             }
+
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                callback.invoke(origin, true, false);
+            }
         });
     }
 
@@ -339,7 +343,9 @@ class WebviewManager {
             String url,
             Map<String, String> headers,
             boolean withZoom,
+            boolean displayZoomControls,
             boolean withLocalStorage,
+            boolean withOverviewMode,
             boolean scrollBar,
             boolean supportMultipleWindows,
             boolean appCacheEnabled,
@@ -352,7 +358,9 @@ class WebviewManager {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
+        webView.getSettings().setDisplayZoomControls(displayZoomControls);
         webView.getSettings().setDomStorageEnabled(withLocalStorage);
+        webView.getSettings().setLoadWithOverviewMode(withOverviewMode);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(supportMultipleWindows);
 
         webView.getSettings().setSupportMultipleWindows(supportMultipleWindows);
@@ -371,12 +379,6 @@ class WebviewManager {
 
         if (geolocationEnabled) {
             webView.getSettings().setGeolocationEnabled(true);
-            webView.setWebChromeClient(new WebChromeClient() {
-                @Override
-                public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                    callback.invoke(origin, true, false);
-                }
-            });
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
