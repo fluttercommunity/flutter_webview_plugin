@@ -204,7 +204,13 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     private void reloadUrl(MethodCall call, MethodChannel.Result result) {
         if (webViewManager != null) {
             String url = call.argument("url");
-            webViewManager.reloadUrl(url);
+            Map<String, String> headers = call.argument("headers");
+            if (headers != null) {
+                webViewManager.reloadUrl(url, headers);
+            } else {
+                webViewManager.reloadUrl(url);
+            }
+
         }
         result.success(null);
     }

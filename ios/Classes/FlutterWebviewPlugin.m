@@ -92,8 +92,18 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     }
 
     if (clearCookies != (id)[NSNull null] && [clearCookies boolValue]) {
-        [[NSURLSession sharedSession] resetWithCompletionHandler:^{
-        }];
+        if (@available(iOS 9.0, *)) {
+            NSSet *websiteDataTypes
+            = [NSSet setWithArray:@[
+                                    WKWebsiteDataTypeCookies,
+                                    ]];
+            NSDate *dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+            
+            [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:websiteDataTypes modifiedSince:dateFrom completionHandler:^{
+            }];
+        } else {
+            // Fallback on earlier versions
+        }
     }
 
     if (userAgent != (id)[NSNull null]) {
@@ -217,7 +227,13 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 - (void)reloadUrl:(FlutterMethodCall*)call {
     if (self.webview != nil) {
 		NSString *url = call.arguments[@"url"];
-		NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+		NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+        NSDictionary *headers = call.arguments[@"headers"];
+        
+        if (headers != nil) {
+            [request setAllHTTPHeaderFields:headers];
+        }
+        
         [self.webview loadRequest:request];
     }
 }
