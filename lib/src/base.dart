@@ -115,6 +115,10 @@ class FlutterWebviewPlugin {
   /// - [invalidUrlRegex] is the regular expression of URLs that web view shouldn't load.
   /// For example, when webview is redirected to a specific URL, you want to intercept
   /// this process by stopping loading this URL and replacing webview by another screen.
+  ///   Android only settings:
+  /// - [displayZoomControls]: display zoom controls on webview
+  /// - [withOverviewMode]: enable overview mode for Android webview ( setLoadWithOverviewMode )
+  /// - [useWideViewPort]: use wide viewport for Android webview ( setUseWideViewPort )
   Future<Null> launch(String url, {
     Map<String, String> headers,
     bool withJavascript,
@@ -125,9 +129,11 @@ class FlutterWebviewPlugin {
     Rect rect,
     String userAgent,
     bool withZoom,
+    bool displayZoomControls,
     bool withLocalStorage,
     bool withLocalUrl,
     String localUrlScope,
+    bool withOverviewMode,
     bool scrollBar,
     bool supportMultipleWindows,
     bool appCacheEnabled,
@@ -146,6 +152,7 @@ class FlutterWebviewPlugin {
       'enableAppScheme': enableAppScheme ?? true,
       'userAgent': userAgent,
       'withZoom': withZoom ?? false,
+      'displayZoomControls': displayZoomControls ?? false,
       'withLocalStorage': withLocalStorage ?? true,
       'withLocalUrl': withLocalUrl ?? false,
       'localUrlScope': localUrlScope,
@@ -156,6 +163,7 @@ class FlutterWebviewPlugin {
       'useWideViewPort': useWideViewPort ?? false,
       'invalidUrlRegex': invalidUrlRegex,
       'geolocationEnabled': geolocationEnabled ?? false,
+      'withOverviewMode': withOverviewMode ?? false,
       'debuggingEnabled': debuggingEnabled ?? false,
     };
 
