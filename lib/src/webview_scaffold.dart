@@ -35,7 +35,8 @@ class WebviewScaffold extends StatefulWidget {
     this.allowFileURLs,
     this.resizeToAvoidBottomInset = false,
     this.invalidUrlRegex,
-    this.geolocationEnabled
+    this.geolocationEnabled,
+    this.debuggingEnabled = false,
   }) : super(key: key);
 
   final PreferredSizeWidget appBar;
@@ -64,6 +65,7 @@ class WebviewScaffold extends StatefulWidget {
   final bool geolocationEnabled;
   final bool withOverviewMode;
   final bool useWideViewPort;
+  final bool debuggingEnabled;
 
   @override
   _WebviewScaffoldState createState() => _WebviewScaffoldState();
@@ -75,21 +77,32 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   Timer _resizeTimer;
   StreamSubscription<WebViewStateChanged> _onStateChanged;
 
-  var _onDestroy;
+  var _onBack;
 
   @override
   void initState() {
     super.initState();
     webviewReference.close();
 
-    _onDestroy = webviewReference.onDestroy.listen((_) {
-      if (mounted) {
-        Navigator.of(context).pop();
+    _onBack = webviewReference.onBack.listen((_) async {
+      if (!mounted) return;
+
+      // The willPop/pop pair here is equivalent to Navigator.maybePop(),
+      // which is what's called from the flutter back button handler.
+      final pop = await _topMostRoute.willPop();
+      if (pop == RoutePopDisposition.pop) {
+        // Close the webview if it's on the route at the top of the stack.
+        final isOnTopMostRoute = _topMostRoute == ModalRoute.of(context);
+        if (isOnTopMostRoute) {
+          webviewReference.close();
+        }
+        Navigator.pop(context);
       }
     });
 
     if (widget.hidden) {
-      _onStateChanged = webviewReference.onStateChanged.listen((WebViewStateChanged state) {
+      _onStateChanged =
+          webviewReference.onStateChanged.listen((WebViewStateChanged state) {
         if (state.type == WebViewState.finishLoad) {
           webviewReference.show();
         }
@@ -97,10 +110,20 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     }
   }
 
+  /// Equivalent to [Navigator.of(context)._history.last].
+  Route<dynamic> get _topMostRoute {
+    var topMost;
+    Navigator.popUntil(context, (route) {
+      topMost = route;
+      return true;
+    });
+    return topMost;
+  }
+
   @override
   void dispose() {
     super.dispose();
-    _onDestroy?.cancel();
+    _onBack?.cancel();
     _resizeTimer?.cancel();
     webviewReference.close();
     if (widget.hidden) {
@@ -141,7 +164,8 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
               appCacheEnabled: widget.appCacheEnabled,
               allowFileURLs: widget.allowFileURLs,
               invalidUrlRegex: widget.invalidUrlRegex,
-              geolocationEnabled: widget.geolocationEnabled
+              geolocationEnabled: widget.geolocationEnabled,
+              debuggingEnabled: widget.debuggingEnabled,
             );
           } else {
             if (_rect != value) {

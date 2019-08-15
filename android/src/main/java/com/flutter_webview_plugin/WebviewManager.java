@@ -135,7 +135,7 @@ class WebviewManager {
                             if (webView.canGoBack()) {
                                 webView.goBack();
                             } else {
-                                close();
+                                FlutterWebviewPlugin.channel.invokeMethod("onBack", null);
                             }
                             return true;
                     }
@@ -243,6 +243,10 @@ class WebviewManager {
                 args.put("progress", progress / 100.0);
                 FlutterWebviewPlugin.channel.invokeMethod("onProgressChanged", args);
             }
+
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                callback.invoke(origin, true, false);
+            }
         });
     }
 
@@ -348,7 +352,8 @@ class WebviewManager {
             boolean allowFileURLs,
             boolean useWideViewPort,
             String invalidUrlRegex,
-            boolean geolocationEnabled
+            boolean geolocationEnabled,
+            boolean debuggingEnabled
     ) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
@@ -366,17 +371,14 @@ class WebviewManager {
         webView.getSettings().setAllowUniversalAccessFromFileURLs(allowFileURLs);
 
         webView.getSettings().setUseWideViewPort(useWideViewPort);
-
+        
+        // Handle debugging
+        webView.setWebContentsDebuggingEnabled(debuggingEnabled);
+        
         webViewClient.updateInvalidUrlRegex(invalidUrlRegex);
 
         if (geolocationEnabled) {
             webView.getSettings().setGeolocationEnabled(true);
-            webView.setWebChromeClient(new WebChromeClient() {
-                @Override
-                public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                    callback.invoke(origin, true, false);
-                }
-            });
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
