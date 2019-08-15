@@ -193,6 +193,7 @@ Future<Null> launch(String url, {
    bool withZoom: false,
    bool withLocalStorage: true,
    bool withLocalUrl: true,
+   String localUrlScope: null,
    bool scrollBar: true,
    bool supportMultipleWindows: false,
    bool appCacheEnabled: false,
