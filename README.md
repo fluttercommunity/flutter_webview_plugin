@@ -10,6 +10,9 @@ Plugin that allows Flutter to communicate with a native WebView.
 The webview is not integrated in the widget tree, it is a native view on top of the flutter view.
 You won't be able see snackbars, dialogs, or other flutter widgets that would overlap with the region of the screen taken up by the webview.
 
+The getSafeAcceptedType() function is available only for minimum SDK of 21.
+eval() function only supports SDK of 19 or greater for evaluating Javascript.
+
 ## Getting Started
 
 For help getting started with Flutter, view our online [documentation](http://flutter.io/).
