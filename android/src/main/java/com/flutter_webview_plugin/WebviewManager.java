@@ -373,8 +373,10 @@ class WebviewManager {
         webView.getSettings().setUseWideViewPort(useWideViewPort);
         
         // Handle debugging
-        webView.setWebContentsDebuggingEnabled(debuggingEnabled);
-        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            webView.setWebContentsDebuggingEnabled(debuggingEnabled);
+        }
+
         webViewClient.updateInvalidUrlRegex(invalidUrlRegex);
 
         if (geolocationEnabled) {
@@ -414,6 +416,10 @@ class WebviewManager {
 
     void reloadUrl(String url) {
         webView.loadUrl(url);
+    }
+
+    void reloadUrl(String url, Map<String, String> headers) {
+        webView.loadUrl(url, headers);
     }
 
     void close(MethodCall call, MethodChannel.Result result) {
