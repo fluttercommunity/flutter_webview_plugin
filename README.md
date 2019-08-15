@@ -161,6 +161,10 @@ Future<String> loadJS(String name) async {
 }
 ```
 
+### Accessing local files in the file system
+Set the `withLocalUrl` option to true in the launch function or in the Webview scaffold to enable support for local URLs.
+
+Note that, on iOS, the `localUrlScope` option also needs to be set in the Webview scaffold to the local path where file access should be allowed, otherwise, only the requested file will be allowed, resulting in so subresources being loaded. This option is ignored on Android.
 
 ### Webview Events
 
