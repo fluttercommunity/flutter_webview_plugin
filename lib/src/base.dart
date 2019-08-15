@@ -202,8 +202,11 @@ class FlutterWebviewPlugin {
   Future<Null> show() async => await _channel.invokeMethod('show');
 
   // Reload webview with a url
-  Future<Null> reloadUrl(String url) async {
-    final args = <String, String>{'url': url};
+  Future<Null> reloadUrl(String url, {Map<String, String> headers}) async {
+    final args = <String, dynamic>{'url': url};
+    if (headers != null) {
+      args['headers'] = headers;
+    }
     await _channel.invokeMethod('reloadUrl', args);
   }
 
