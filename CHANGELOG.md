@@ -1,3 +1,8 @@
+# 0.3.7
+
+- Added reloading url with headers
+- Added support for reloading url with headers
+
 # 0.3.6
 
 - Allow web contents debugging in Chrome
