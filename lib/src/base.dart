@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'javascript_message.dart';
+
 const _kChannel = 'flutter_webview_plugin';
 
 // TODO: more general state for iOS/android
@@ -31,7 +33,7 @@ class FlutterWebviewPlugin {
   final _onScrollYChanged = StreamController<double>.broadcast();
   final _onProgressChanged = new StreamController<double>.broadcast();
   final _onHttpError = StreamController<WebViewHttpError>.broadcast();
-  final _onPostMessage = StreamController<Map<String, String>>.broadcast();
+  final _onPostMessage = StreamController<JavascriptMessage>.broadcast();
 
   Future<Null> _handleMessages(MethodCall call) async {
     switch (call.method) {
@@ -65,7 +67,9 @@ class FlutterWebviewPlugin {
             WebViewHttpError(call.arguments['code'], call.arguments['url']));
         break;
       case 'javascriptChannelMessage':
-        _onPostMessage.add(call.arguments);
+        final JavascriptMessage javascriptMessage = JavascriptMessage(
+            call.arguments['channel'], call.arguments['message']);
+        _onPostMessage.add(javascriptMessage);
         break;
     }
   }
@@ -95,7 +99,7 @@ class FlutterWebviewPlugin {
 
   Stream<WebViewHttpError> get onHttpError => _onHttpError.stream;
 
-  Stream<Map<String, String>> get onPostMessage => _onPostMessage.stream;
+  Stream<JavascriptMessage> get onPostMessage => _onPostMessage.stream;
 
   /// Start the Webview with [url]
   /// - [headers] specify additional HTTP headers
