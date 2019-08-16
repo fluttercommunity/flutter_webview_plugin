@@ -7,7 +7,9 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 const kAndroidUserAgent =
     'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36';
 
-String selectedUrl = 'https://flutter.io';
+String selectedUrl = 'https://damp-coast-35782.herokuapp.com';
+
+const List<String> jsChannels = ['Print'];
 
 void main() => runApp(MyApp());
 
@@ -26,6 +28,7 @@ class MyApp extends StatelessWidget {
         '/widget': (_) {
           return WebviewScaffold(
             url: selectedUrl,
+            javascriptChannels: jsChannels,
             appBar: AppBar(
               title: const Text('Widget WebView'),
             ),
@@ -99,6 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   StreamSubscription<double> _onScrollXChanged;
 
+  StreamSubscription<JavascriptMessage> _onPostMessage;
+
   final _urlCtrl = TextEditingController(text: selectedUrl);
 
   final _codeCtrl = TextEditingController(text: 'window.navigator.userAgent');
@@ -121,7 +126,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _onDestroy = flutterWebViewPlugin.onDestroy.listen((_) {
       if (mounted) {
         // Actions like show a info toast.
-        _scaffoldKey.currentState.showSnackBar(const SnackBar(content: const Text('Webview Destroyed')));
+        _scaffoldKey.currentState.showSnackBar(
+            const SnackBar(content: const Text('Webview Destroyed')));
       }
     });
 
@@ -134,15 +140,17 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    _onProgressChanged = flutterWebViewPlugin.onProgressChanged.listen((double progress) {
+    _onProgressChanged =
+        flutterWebViewPlugin.onProgressChanged.listen((double progress) {
       if (mounted) {
         setState(() {
           _history.add("onProgressChanged: $progress");
         });
       }
     });
-    
-    _onScrollYChanged = flutterWebViewPlugin.onScrollYChanged.listen((double y) {
+
+    _onScrollYChanged =
+        flutterWebViewPlugin.onScrollYChanged.listen((double y) {
       if (mounted) {
         setState(() {
           _history.add('Scroll in Y Direction: $y');
@@ -150,7 +158,8 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    _onScrollXChanged = flutterWebViewPlugin.onScrollXChanged.listen((double x) {
+    _onScrollXChanged =
+        flutterWebViewPlugin.onScrollXChanged.listen((double x) {
       if (mounted) {
         setState(() {
           _history.add('Scroll in X Direction: $x');
@@ -158,7 +167,8 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    _onStateChanged = flutterWebViewPlugin.onStateChanged.listen((WebViewStateChanged state) {
+    _onStateChanged =
+        flutterWebViewPlugin.onStateChanged.listen((WebViewStateChanged state) {
       if (mounted) {
         setState(() {
           _history.add('onStateChanged: ${state.type} ${state.url}');
@@ -166,10 +176,20 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    _onHttpError = flutterWebViewPlugin.onHttpError.listen((WebViewHttpError error) {
+    _onHttpError =
+        flutterWebViewPlugin.onHttpError.listen((WebViewHttpError error) {
       if (mounted) {
         setState(() {
           _history.add('onHttpError: ${error.code} ${error.url}');
+        });
+      }
+    });
+
+    _onPostMessage =
+        flutterWebViewPlugin.onPostMessage.listen((JavascriptMessage message) {
+      if (mounted) {
+        setState(() {
+          _history.add('onPostMessage: ${message.channel} ${message.message}');
         });
       }
     });
@@ -185,6 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _onProgressChanged.cancel();
     _onScrollXChanged.cancel();
     _onScrollYChanged.cancel();
+    _onPostMessage.cancel();
 
     flutterWebViewPlugin.dispose();
 
@@ -210,9 +231,11 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 flutterWebViewPlugin.launch(
                   selectedUrl,
-                  rect: Rect.fromLTWH(0.0, 0.0, MediaQuery.of(context).size.width, 300.0),
+                  rect: Rect.fromLTWH(
+                      0.0, 0.0, MediaQuery.of(context).size.width, 300.0),
                   userAgent: kAndroidUserAgent,
-                  invalidUrlRegex: r'^(https).+(twitter)', // prevent redirecting to twitter when user click on its icon in flutter website
+                  invalidUrlRegex:
+                      r'^(https).+(twitter)', // prevent redirecting to twitter when user click on its icon in flutter website
                 );
               },
               child: const Text('Open Webview (rect)'),
@@ -241,7 +264,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             RaisedButton(
               onPressed: () {
-                final future = flutterWebViewPlugin.evalJavascript(_codeCtrl.text);
+                final future =
+                    flutterWebViewPlugin.evalJavascript(_codeCtrl.text);
                 future.then((String result) {
                   setState(() {
                     _history.add('eval: $result');
