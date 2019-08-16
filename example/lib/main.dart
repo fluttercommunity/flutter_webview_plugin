@@ -144,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
         flutterWebViewPlugin.onProgressChanged.listen((double progress) {
       if (mounted) {
         setState(() {
-          _history.add("onProgressChanged: $progress");
+          _history.add('onProgressChanged: $progress');
         });
       }
     });
