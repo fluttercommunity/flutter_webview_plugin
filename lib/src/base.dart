@@ -31,6 +31,7 @@ class FlutterWebviewPlugin {
   final _onScrollYChanged = StreamController<double>.broadcast();
   final _onProgressChanged = new StreamController<double>.broadcast();
   final _onHttpError = StreamController<WebViewHttpError>.broadcast();
+  final _onPostMessage = StreamController<Map<String, String>>.broadcast();
 
   Future<Null> _handleMessages(MethodCall call) async {
     switch (call.method) {
@@ -49,8 +50,8 @@ class FlutterWebviewPlugin {
       case 'onScrollYChanged':
         _onScrollYChanged.add(call.arguments['yDirection']);
         break;
-      case "onProgressChanged":
-        _onProgressChanged.add(call.arguments["progress"]);
+      case 'onProgressChanged':
+        _onProgressChanged.add(call.arguments['progress']);
         break;
       case 'onState':
         _onStateChanged.add(
@@ -60,7 +61,11 @@ class FlutterWebviewPlugin {
         );
         break;
       case 'onHttpError':
-        _onHttpError.add(WebViewHttpError(call.arguments['code'], call.arguments['url']));
+        _onHttpError.add(
+            WebViewHttpError(call.arguments['code'], call.arguments['url']));
+        break;
+      case 'javascriptChannelMessage':
+        _onPostMessage.add(call.arguments);
         break;
     }
   }
@@ -90,6 +95,8 @@ class FlutterWebviewPlugin {
 
   Stream<WebViewHttpError> get onHttpError => _onHttpError.stream;
 
+  Stream<Map<String, String>> get onPostMessage => _onPostMessage.stream;
+
   /// Start the Webview with [url]
   /// - [headers] specify additional HTTP headers
   /// - [withJavascript] enable Javascript or not for the Webview
@@ -115,8 +122,10 @@ class FlutterWebviewPlugin {
   /// - [displayZoomControls]: display zoom controls on webview
   /// - [withOverviewMode]: enable overview mode for Android webview ( setLoadWithOverviewMode )
   /// - [useWideViewPort]: use wide viewport for Android webview ( setUseWideViewPort )
-  Future<Null> launch(String url, {
+  Future<Null> launch(
+    String url, {
     Map<String, String> headers,
+    List<String> javascriptChannelNames,
     bool withJavascript,
     bool clearCache,
     bool clearCookies,
@@ -165,6 +174,10 @@ class FlutterWebviewPlugin {
       args['headers'] = headers;
     }
 
+    if (javascriptChannelNames != null) {
+      args['javascriptChannelNames'] = javascriptChannelNames;
+    }
+
     if (rect != null) {
       args['rect'] = {
         'left': rect.left,
@@ -211,10 +224,12 @@ class FlutterWebviewPlugin {
   }
 
   // Clean cookies on WebView
-  Future<Null> cleanCookies() async => await _channel.invokeMethod('cleanCookies');
+  Future<Null> cleanCookies() async =>
+      await _channel.invokeMethod('cleanCookies');
 
   // Stops current loading process
-  Future<Null> stopLoading() async => await _channel.invokeMethod('stopLoading');
+  Future<Null> stopLoading() async =>
+      await _channel.invokeMethod('stopLoading');
 
   /// Close all Streams
   void dispose() {
@@ -225,6 +240,7 @@ class FlutterWebviewPlugin {
     _onScrollXChanged.close();
     _onScrollYChanged.close();
     _onHttpError.close();
+    _onPostMessage.close();
     _instance = null;
   }
 
