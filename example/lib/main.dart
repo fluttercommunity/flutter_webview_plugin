@@ -252,6 +252,17 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             RaisedButton(
               onPressed: () {
+                final future = flutterWebViewPlugin.evalJavascript('alert("Hello World");');
+                future.then((String result) {
+                  setState(() {
+                    _history.add('eval: $result');
+                  });
+                });
+              },
+              child: const Text('Eval javascript alert()'),
+            ),
+            RaisedButton(
+              onPressed: () {
                 setState(() {
                   _history.clear();
                 });
