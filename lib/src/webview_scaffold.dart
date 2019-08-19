@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_webview_plugin/src/javascript_channel.dart';
 
 import 'base.dart';
 
@@ -42,7 +43,7 @@ class WebviewScaffold extends StatefulWidget {
   final PreferredSizeWidget appBar;
   final String url;
   final Map<String, String> headers;
-  final List<String> javascriptChannels;
+  final Set<JavascriptChannel> javascriptChannels;
   final bool withJavascript;
   final bool clearCache;
   final bool clearCookies;
@@ -86,7 +87,9 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     webviewReference.close();
 
     _onBack = webviewReference.onBack.listen((_) async {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       // The willPop/pop pair here is equivalent to Navigator.maybePop(),
       // which is what's called from the flutter back button handler.
@@ -147,7 +150,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
             webviewReference.launch(
               widget.url,
               headers: widget.headers,
-              javascriptChannelNames: widget.javascriptChannels,
+              javascriptChannels: widget.javascriptChannels,
               withJavascript: widget.withJavascript,
               clearCache: widget.clearCache,
               clearCookies: widget.clearCookies,
