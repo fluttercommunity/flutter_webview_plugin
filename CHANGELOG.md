@@ -1,3 +1,26 @@
+# 0.3.7
+
+- Added reloading url with headers
+- Added support for reloading url with headers
+
+# 0.3.6
+
+- Allow web contents debugging in Chrome
+- Android: allow geolocation and file chooser simultaneously
+- Add min sdk requirement and descriptions
+- fix bug android webview httperror exception
+- Exposes displayZoomControls, withOverviewMode and useWideViewPort settings for Android WebView
+
+# 0.3.5
+
+- Ability to choose from camera or gallery when using
+- Support for webview’s estimated loading progress #255
+- Fix back button handler to be compatible with the WillPopScope widget
+
+# 0.3.4
+
+- WebView always hidden on iOS
+
 # 0.3.3
 
 - BREAKING CHANGE - AndroidX support

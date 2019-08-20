@@ -22,8 +22,12 @@ class WebviewScaffold extends StatefulWidget {
     this.persistentFooterButtons,
     this.bottomNavigationBar,
     this.withZoom,
+    this.displayZoomControls,
     this.withLocalStorage,
     this.withLocalUrl,
+    this.localUrlScope,
+    this.withOverviewMode,
+    this.useWideViewPort,
     this.scrollBar,
     this.supportMultipleWindows,
     this.appCacheEnabled,
@@ -32,7 +36,8 @@ class WebviewScaffold extends StatefulWidget {
     this.allowFileURLs,
     this.resizeToAvoidBottomInset = false,
     this.invalidUrlRegex,
-    this.geolocationEnabled
+    this.geolocationEnabled,
+    this.debuggingEnabled = false,
   }) : super(key: key);
 
   final PreferredSizeWidget appBar;
@@ -47,8 +52,10 @@ class WebviewScaffold extends StatefulWidget {
   final List<Widget> persistentFooterButtons;
   final Widget bottomNavigationBar;
   final bool withZoom;
+  final bool displayZoomControls;
   final bool withLocalStorage;
   final bool withLocalUrl;
+  final String localUrlScope;
   final bool scrollBar;
   final bool supportMultipleWindows;
   final bool appCacheEnabled;
@@ -58,6 +65,9 @@ class WebviewScaffold extends StatefulWidget {
   final bool resizeToAvoidBottomInset;
   final String invalidUrlRegex;
   final bool geolocationEnabled;
+  final bool withOverviewMode;
+  final bool useWideViewPort;
+  final bool debuggingEnabled;
 
   @override
   _WebviewScaffoldState createState() => _WebviewScaffoldState();
@@ -146,14 +156,19 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
               userAgent: widget.userAgent,
               rect: _rect,
               withZoom: widget.withZoom,
+              displayZoomControls: widget.displayZoomControls,
               withLocalStorage: widget.withLocalStorage,
               withLocalUrl: widget.withLocalUrl,
+              localUrlScope: widget.localUrlScope,
+              withOverviewMode: widget.withOverviewMode,
+              useWideViewPort: widget.useWideViewPort,
               scrollBar: widget.scrollBar,
               supportMultipleWindows: widget.supportMultipleWindows,
               appCacheEnabled: widget.appCacheEnabled,
               allowFileURLs: widget.allowFileURLs,
               invalidUrlRegex: widget.invalidUrlRegex,
-              geolocationEnabled: widget.geolocationEnabled
+              geolocationEnabled: widget.geolocationEnabled,
+              debuggingEnabled: widget.debuggingEnabled,
             );
           } else {
             if (_rect != value) {
