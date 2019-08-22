@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_webview_plugin/src/javascript_channel.dart';
 
 import 'javascript_message.dart';
 
@@ -34,6 +35,11 @@ class FlutterWebviewPlugin {
   final _onProgressChanged = new StreamController<double>.broadcast();
   final _onHttpError = StreamController<WebViewHttpError>.broadcast();
   final _onPostMessage = StreamController<JavascriptMessage>.broadcast();
+
+  final Map<String, JavascriptChannel> _javascriptChannels =
+      // ignoring warning as min SDK version doesn't support collection literals yet
+      // ignore: prefer_collection_literals
+      Map<String, JavascriptChannel>();
 
   Future<Null> _handleMessages(MethodCall call) async {
     switch (call.method) {
@@ -67,9 +73,8 @@ class FlutterWebviewPlugin {
             WebViewHttpError(call.arguments['code'], call.arguments['url']));
         break;
       case 'javascriptChannelMessage':
-        final JavascriptMessage javascriptMessage = JavascriptMessage(
+        _handleJavascriptChannelMessage(
             call.arguments['channel'], call.arguments['message']);
-        _onPostMessage.add(javascriptMessage);
         break;
     }
   }
@@ -99,8 +104,6 @@ class FlutterWebviewPlugin {
 
   Stream<WebViewHttpError> get onHttpError => _onHttpError.stream;
 
-  Stream<JavascriptMessage> get onPostMessage => _onPostMessage.stream;
-
   /// Start the Webview with [url]
   /// - [headers] specify additional HTTP headers
   /// - [withJavascript] enable Javascript or not for the Webview
@@ -129,7 +132,7 @@ class FlutterWebviewPlugin {
   Future<Null> launch(
     String url, {
     Map<String, String> headers,
-    List<String> javascriptChannelNames,
+    Set<JavascriptChannel> javascriptChannels,
     bool withJavascript,
     bool clearCache,
     bool clearCookies,
@@ -178,9 +181,20 @@ class FlutterWebviewPlugin {
       args['headers'] = headers;
     }
 
-    if (javascriptChannelNames != null) {
-      args['javascriptChannelNames'] = javascriptChannelNames;
+    _assertJavascriptChannelNamesAreUnique(javascriptChannels);
+
+    if (javascriptChannels != null) {
+      javascriptChannels.forEach((channel) {
+        _javascriptChannels[channel.name] = channel;
+      });
+    } else {
+      if (_javascriptChannels.isNotEmpty) {
+        _javascriptChannels.clear();
+      }
     }
+
+    args['javascriptChannelNames'] =
+        _extractJavascriptChannelNames(javascriptChannels).toList();
 
     if (rect != null) {
       args['rect'] = {
@@ -201,7 +215,10 @@ class FlutterWebviewPlugin {
 
   /// Close the Webview
   /// Will trigger the [onDestroy] event
-  Future<Null> close() async => await _channel.invokeMethod('close');
+  Future<Null> close() async {
+    _javascriptChannels.clear();
+    await _channel.invokeMethod('close');
+  }
 
   /// Reloads the WebView.
   Future<Null> reload() async => await _channel.invokeMethod('reload');
@@ -272,6 +289,29 @@ class FlutterWebviewPlugin {
       'height': rect.height,
     };
     await _channel.invokeMethod('resize', args);
+  }
+
+  Set<String> _extractJavascriptChannelNames(Set<JavascriptChannel> channels) {
+    final Set<String> channelNames = channels == null
+        // ignore: prefer_collection_literals
+        ? Set<String>()
+        : channels.map((JavascriptChannel channel) => channel.name).toSet();
+    return channelNames;
+  }
+
+  void _handleJavascriptChannelMessage(
+      final String channelName, final String message) {
+    _javascriptChannels[channelName]
+        .onMessageReceived(JavascriptMessage(message));
+  }
+
+  void _assertJavascriptChannelNamesAreUnique(
+      final Set<JavascriptChannel> channels) {
+    if (channels == null || channels.isEmpty) {
+      return;
+    }
+
+    assert(_extractJavascriptChannelNames(channels).length == channels.length);
   }
 }
 
