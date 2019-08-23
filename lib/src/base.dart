@@ -194,16 +194,18 @@ class FlutterWebviewPlugin {
   }
 
   Future<Map<String, String>> getCookies() async {
+    final RegExp escapeQuotes = RegExp(r'(?<=").+?(?=")');
+
     var cookiesString = await evalJavascript('document.cookie');
     final cookies = <String, String>{};
 
+    cookiesString = escapeQuotes.allMatches(cookiesString).map((m) => m.group(0)).join('"');
+
     cookiesString
-      .replaceAll('"', '')
       .split('; ')
       .where((c) => c.isNotEmpty)
       .forEach((cookie) => 
-               cookies[cookie.split('=').first] = cookie.split('=').last
-              );
+               cookies[cookie.split('=').first] = cookie.split('=').last);
 
     return cookies;
   }
