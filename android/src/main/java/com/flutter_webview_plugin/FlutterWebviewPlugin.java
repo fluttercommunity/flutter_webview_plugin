@@ -90,6 +90,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         String url = call.argument("url");
         String userAgent = call.argument("userAgent");
         boolean withJavascript = call.argument("withJavascript");
+        boolean withHtmlCallback = call.argument("withHtmlCallback");
         boolean clearCache = call.argument("clearCache");
         boolean clearCookies = call.argument("clearCookies");
         boolean withZoom = call.argument("withZoom");
@@ -115,6 +116,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         activity.addContentView(webViewManager.webView, params);
 
         webViewManager.openUrl(withJavascript,
+                withHtmlCallback,
                 clearCache,
                 hidden,
                 clearCookies,

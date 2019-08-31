@@ -14,6 +14,7 @@ class WebviewScaffold extends StatefulWidget {
     @required this.url,
     this.headers,
     this.withJavascript,
+    this.withHtmlCallback,
     this.clearCache,
     this.clearCookies,
     this.enableAppScheme,
@@ -44,6 +45,7 @@ class WebviewScaffold extends StatefulWidget {
   final String url;
   final Map<String, String> headers;
   final bool withJavascript;
+  final bool withHtmlCallback;
   final bool clearCache;
   final bool clearCookies;
   final bool enableAppScheme;
@@ -148,6 +150,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
             webviewReference.launch(
               widget.url,
               headers: widget.headers,
+              withHtmlCallback: widget.withHtmlCallback,
               withJavascript: widget.withJavascript,
               clearCache: widget.clearCache,
               clearCookies: widget.clearCookies,

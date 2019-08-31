@@ -3,6 +3,7 @@ package com.flutter_webview_plugin;
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.text.TextUtils;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -13,12 +14,15 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.flutter.Log;
+
 /**
  * Created by lejard_h on 20/12/2017.
  */
 
 public class BrowserClient extends WebViewClient {
     private Pattern invalidUrlPattern = null;
+    private boolean isShowHtml;
 
     public BrowserClient() {
         this(null);
@@ -50,7 +54,11 @@ public class BrowserClient extends WebViewClient {
 
     @Override
     public void onPageFinished(WebView view, String url) {
+        if (isShowHtml)
+            view.loadUrl("javascript:window.local_obj.showSource(document.documentElement.outerHTML);void(0)");
+
         super.onPageFinished(view, url);
+
         Map<String, Object> data = new HashMap<>();
         data.put("url", url);
 
@@ -106,6 +114,10 @@ public class BrowserClient extends WebViewClient {
         data.put("url", failingUrl);
         data.put("code", Integer.toString(errorCode));
         FlutterWebviewPlugin.channel.invokeMethod("onHttpError", data);
+    }
+
+    public void setShowHtml(boolean showHtml) {
+        isShowHtml = showHtml;
     }
 
     private boolean checkInvalidUrl(String url) {

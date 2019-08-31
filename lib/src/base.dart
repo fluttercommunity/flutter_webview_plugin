@@ -23,6 +23,7 @@ class FlutterWebviewPlugin {
 
   final _channel = const MethodChannel(_kChannel);
 
+  final _onHtmlCallback = StreamController<String>.broadcast();
   final _onBack = StreamController<Null>.broadcast();
   final _onDestroy = StreamController<Null>.broadcast();
   final _onUrlChanged = StreamController<String>.broadcast();
@@ -34,6 +35,9 @@ class FlutterWebviewPlugin {
 
   Future<Null> _handleMessages(MethodCall call) async {
     switch (call.method) {
+      case 'onHtmlCallback':
+        _onHtmlCallback.add(call.arguments['html']);
+        break;
       case 'onBack':
         _onBack.add(null);
         break;
@@ -60,13 +64,16 @@ class FlutterWebviewPlugin {
         );
         break;
       case 'onHttpError':
-        _onHttpError.add(WebViewHttpError(call.arguments['code'], call.arguments['url']));
+        _onHttpError.add(
+            WebViewHttpError(call.arguments['code'], call.arguments['url']));
         break;
     }
   }
 
   /// Listening the OnDestroy LifeCycle Event for Android
   Stream<Null> get onDestroy => _onDestroy.stream;
+
+  Stream<String> get onHtmlCallback => _onHtmlCallback.stream;
 
   /// Listening the back key press Event for Android
   Stream<Null> get onBack => _onBack.stream;
@@ -119,9 +126,11 @@ class FlutterWebviewPlugin {
   /// - [displayZoomControls]: display zoom controls on webview
   /// - [withOverviewMode]: enable overview mode for Android webview ( setLoadWithOverviewMode )
   /// - [useWideViewPort]: use wide viewport for Android webview ( setUseWideViewPort )
-  Future<Null> launch(String url, {
+  Future<Null> launch(
+    String url, {
     Map<String, String> headers,
     bool withJavascript,
+    bool withHtmlCallback,
     bool clearCache,
     bool clearCookies,
     bool hidden,
@@ -146,6 +155,7 @@ class FlutterWebviewPlugin {
     final args = <String, dynamic>{
       'url': url,
       'withJavascript': withJavascript ?? true,
+      'withHtmlCallback': withHtmlCallback ?? false,
       'clearCache': clearCache ?? false,
       'hidden': hidden ?? false,
       'clearCookies': clearCookies ?? false,
@@ -217,14 +227,17 @@ class FlutterWebviewPlugin {
   }
 
   // Clean cookies on WebView
-  Future<Null> cleanCookies() async => await _channel.invokeMethod('cleanCookies');
+  Future<Null> cleanCookies() async =>
+      await _channel.invokeMethod('cleanCookies');
 
   // Stops current loading process
-  Future<Null> stopLoading() async => await _channel.invokeMethod('stopLoading');
+  Future<Null> stopLoading() async =>
+      await _channel.invokeMethod('stopLoading');
 
   /// Close all Streams
   void dispose() {
     _onDestroy.close();
+    _onHtmlCallback.close();
     _onUrlChanged.close();
     _onStateChanged.close();
     _onProgressChanged.close();
