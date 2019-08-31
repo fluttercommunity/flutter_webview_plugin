@@ -1,6 +1,7 @@
 #import "FlutterWebviewPlugin.h"
 
 static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
+NSNumber *withHtmlCallback;
 
 // UIWebViewDelegate
 @interface FlutterWebviewPlugin() <WKNavigationDelegate, UIScrollViewDelegate, WKUIDelegate> {
@@ -85,6 +86,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     NSNumber *withZoom = call.arguments[@"withZoom"];
     NSNumber *scrollBar = call.arguments[@"scrollBar"];
     NSNumber *withJavascript = call.arguments[@"withJavascript"];
+    withHtmlCallback = call.arguments[@"withHtmlCallback"];
     _invalidUrlRegex = call.arguments[@"invalidUrlRegex"];
 
     if (clearCache != (id)[NSNull null] && [clearCache boolValue]) {
@@ -346,6 +348,12 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+    if ([withHtmlCallback boolValue]) {
+        NSString *jsToGetHtmlSource = @"document.getElementsByTagName('html')[0].innerHTML";
+        [webView evaluateJavaScript:jsToGetHtmlSource completionHandler:^(id result, NSError * _Nullable error) {
+            [channel invokeMethod:@"onHtmlCallback" arguments:@{@"html": result}];
+        }];
+    }
     [channel invokeMethod:@"onState" arguments:@{@"type": @"finishLoad", @"url": webView.URL.absoluteString}];
 }
 
