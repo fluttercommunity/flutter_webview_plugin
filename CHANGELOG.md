@@ -1,3 +1,9 @@
+# 0.3.8
+
+- Fix iOS local URL support (fixes #114)
+- bugfix: Added google() repository to allprojects to satisfy androidx build rules
+- fixed min sdk for android
+
 # 0.3.7
 
 - Added reloading url with headers
