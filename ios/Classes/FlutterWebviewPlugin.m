@@ -92,8 +92,18 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     }
 
     if (clearCookies != (id)[NSNull null] && [clearCookies boolValue]) {
-        [[NSURLSession sharedSession] resetWithCompletionHandler:^{
-        }];
+        if (@available(iOS 9.0, *)) {
+            NSSet *websiteDataTypes
+            = [NSSet setWithArray:@[
+                                    WKWebsiteDataTypeCookies,
+                                    ]];
+            NSDate *dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+            
+            [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:websiteDataTypes modifiedSince:dateFrom completionHandler:^{
+            }];
+        } else {
+            // Fallback on earlier versions
+        }
     }
 
     if (userAgent != (id)[NSNull null]) {
@@ -154,8 +164,15 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
             NSNumber *withLocalUrl = call.arguments[@"withLocalUrl"];
             if ( [withLocalUrl boolValue]) {
                 NSURL *htmlUrl = [NSURL fileURLWithPath:url isDirectory:false];
+                NSString *localUrlScope = call.arguments[@"localUrlScope"];
                 if (@available(iOS 9.0, *)) {
-                    [self.webview loadFileURL:htmlUrl allowingReadAccessToURL:htmlUrl];
+                    if(localUrlScope == nil) {
+                        [self.webview loadFileURL:htmlUrl allowingReadAccessToURL:htmlUrl];
+                    }
+                    else {
+                        NSURL *scopeUrl = [NSURL fileURLWithPath:localUrlScope];
+                        [self.webview loadFileURL:htmlUrl allowingReadAccessToURL:scopeUrl];
+                    }
                 } else {
                     @throw @"not available on version earlier than ios 9.0";
                 }
@@ -217,7 +234,13 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 - (void)reloadUrl:(FlutterMethodCall*)call {
     if (self.webview != nil) {
 		NSString *url = call.arguments[@"url"];
-		NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+		NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+        NSDictionary *headers = call.arguments[@"headers"];
+        
+        if (headers != nil) {
+            [request setAllHTTPHeaderFields:headers];
+        }
+        
         [self.webview loadRequest:request];
     }
 }
@@ -296,7 +319,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     if (_enableAppScheme ||
         ([webView.URL.scheme isEqualToString:@"http"] ||
          [webView.URL.scheme isEqualToString:@"https"] ||
-         [webView.URL.scheme isEqualToString:@"about"])) {
+         [webView.URL.scheme isEqualToString:@"about"] ||
+         [webView.URL.scheme isEqualToString:@"file"])) {
          if (isInvalid) {
             decisionHandler(WKNavigationActionPolicyCancel);
          } else {
