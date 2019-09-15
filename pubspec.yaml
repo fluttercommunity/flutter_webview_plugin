@@ -7,8 +7,8 @@ authors:
 - Simon Lightfoot <simon@devangels.london>
 - Rafal Wachol <gorudonu@gmail.com>
 homepage: https://github.com/dart-flitter/flutter_webview_plugin
-version: 0.3.0+2
-maintainer: Simon Lightfoot (@slightfoot)
+version: 0.3.8
+maintainer: Rafal Wachol (@RafalWachol) 
 
 environment:
   sdk: ">=2.0.0 <3.0.0"
@@ -20,4 +20,9 @@ flutter:
 
 dependencies:
   flutter:
+    sdk: flutter
+
+dev_dependencies:
+  mockito: ^4.1.0
+  flutter_test:
     sdk: flutter

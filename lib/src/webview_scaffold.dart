@@ -22,15 +22,22 @@ class WebviewScaffold extends StatefulWidget {
     this.persistentFooterButtons,
     this.bottomNavigationBar,
     this.withZoom,
+    this.displayZoomControls,
     this.withLocalStorage,
     this.withLocalUrl,
+    this.localUrlScope,
+    this.withOverviewMode,
+    this.useWideViewPort,
     this.scrollBar,
     this.supportMultipleWindows,
     this.appCacheEnabled,
     this.hidden = false,
     this.initialChild,
     this.allowFileURLs,
-    this.geolocationEnabled
+    this.resizeToAvoidBottomInset = false,
+    this.invalidUrlRegex,
+    this.geolocationEnabled,
+    this.debuggingEnabled = false,
   }) : super(key: key);
 
   final PreferredSizeWidget appBar;
@@ -45,15 +52,22 @@ class WebviewScaffold extends StatefulWidget {
   final List<Widget> persistentFooterButtons;
   final Widget bottomNavigationBar;
   final bool withZoom;
+  final bool displayZoomControls;
   final bool withLocalStorage;
   final bool withLocalUrl;
+  final String localUrlScope;
   final bool scrollBar;
   final bool supportMultipleWindows;
   final bool appCacheEnabled;
   final bool hidden;
   final Widget initialChild;
   final bool allowFileURLs;
+  final bool resizeToAvoidBottomInset;
+  final String invalidUrlRegex;
   final bool geolocationEnabled;
+  final bool withOverviewMode;
+  final bool useWideViewPort;
+  final bool debuggingEnabled;
 
   @override
   _WebviewScaffoldState createState() => _WebviewScaffoldState();
@@ -65,21 +79,32 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   Timer _resizeTimer;
   StreamSubscription<WebViewStateChanged> _onStateChanged;
 
-  var _onDestroy;
+  var _onBack;
 
   @override
   void initState() {
     super.initState();
     webviewReference.close();
 
-    _onDestroy = webviewReference.onDestroy.listen((_) {
-      if (mounted) {
-        Navigator.of(context).pop();
+    _onBack = webviewReference.onBack.listen((_) async {
+      if (!mounted) return;
+
+      // The willPop/pop pair here is equivalent to Navigator.maybePop(),
+      // which is what's called from the flutter back button handler.
+      final pop = await _topMostRoute.willPop();
+      if (pop == RoutePopDisposition.pop) {
+        // Close the webview if it's on the route at the top of the stack.
+        final isOnTopMostRoute = _topMostRoute == ModalRoute.of(context);
+        if (isOnTopMostRoute) {
+          webviewReference.close();
+        }
+        Navigator.pop(context);
       }
     });
 
     if (widget.hidden) {
-      _onStateChanged = webviewReference.onStateChanged.listen((WebViewStateChanged state) {
+      _onStateChanged =
+          webviewReference.onStateChanged.listen((WebViewStateChanged state) {
         if (state.type == WebViewState.finishLoad) {
           webviewReference.show();
         }
@@ -87,10 +112,20 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     }
   }
 
+  /// Equivalent to [Navigator.of(context)._history.last].
+  Route<dynamic> get _topMostRoute {
+    var topMost;
+    Navigator.popUntil(context, (route) {
+      topMost = route;
+      return true;
+    });
+    return topMost;
+  }
+
   @override
   void dispose() {
     super.dispose();
-    _onDestroy?.cancel();
+    _onBack?.cancel();
     _resizeTimer?.cancel();
     webviewReference.close();
     if (widget.hidden) {
@@ -103,7 +138,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widget.appBar,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
       persistentFooterButtons: widget.persistentFooterButtons,
       bottomNavigationBar: widget.bottomNavigationBar,
       body: _WebviewPlaceholder(
@@ -121,13 +156,19 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
               userAgent: widget.userAgent,
               rect: _rect,
               withZoom: widget.withZoom,
+              displayZoomControls: widget.displayZoomControls,
               withLocalStorage: widget.withLocalStorage,
               withLocalUrl: widget.withLocalUrl,
+              localUrlScope: widget.localUrlScope,
+              withOverviewMode: widget.withOverviewMode,
+              useWideViewPort: widget.useWideViewPort,
               scrollBar: widget.scrollBar,
               supportMultipleWindows: widget.supportMultipleWindows,
               appCacheEnabled: widget.appCacheEnabled,
               allowFileURLs: widget.allowFileURLs,
-              geolocationEnabled: widget.geolocationEnabled
+              invalidUrlRegex: widget.invalidUrlRegex,
+              geolocationEnabled: widget.geolocationEnabled,
+              debuggingEnabled: widget.debuggingEnabled,
             );
           } else {
             if (_rect != value) {

@@ -24,18 +24,20 @@ import io.flutter.plugin.common.PluginRegistry;
 public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener {
     private Activity activity;
     private WebviewManager webViewManager;
+    private Context context;
     static MethodChannel channel;
     private static final String CHANNEL_NAME = "flutter_webview_plugin";
 
     public static void registerWith(PluginRegistry.Registrar registrar) {
         channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-        final FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity());
+        final FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity(),registrar.activeContext());
         registrar.addActivityResultListener(instance);
         channel.setMethodCallHandler(instance);
     }
 
-    private FlutterWebviewPlugin(Activity activity) {
+    FlutterWebviewPlugin(Activity activity, Context context) {
         this.activity = activity;
+        this.context = context;
     }
 
     @Override
@@ -83,7 +85,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         }
     }
 
-    private void openUrl(MethodCall call, MethodChannel.Result result) {
+     void openUrl(MethodCall call, MethodChannel.Result result) {
         boolean hidden = call.argument("hidden");
         String url = call.argument("url");
         String userAgent = call.argument("userAgent");
@@ -91,16 +93,21 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         boolean clearCache = call.argument("clearCache");
         boolean clearCookies = call.argument("clearCookies");
         boolean withZoom = call.argument("withZoom");
+        boolean displayZoomControls = call.argument("displayZoomControls");
         boolean withLocalStorage = call.argument("withLocalStorage");
+        boolean withOverviewMode = call.argument("withOverviewMode");
         boolean supportMultipleWindows = call.argument("supportMultipleWindows");
         boolean appCacheEnabled = call.argument("appCacheEnabled");
         Map<String, String> headers = call.argument("headers");
         boolean scrollBar = call.argument("scrollBar");
         boolean allowFileURLs = call.argument("allowFileURLs");
+        boolean useWideViewPort = call.argument("useWideViewPort");
+        String invalidUrlRegex = call.argument("invalidUrlRegex");
         boolean geolocationEnabled = call.argument("geolocationEnabled");
+        boolean debuggingEnabled = call.argument("debuggingEnabled");
 
         if (webViewManager == null || webViewManager.closed == true) {
-            webViewManager = new WebviewManager(activity);
+            webViewManager = new WebviewManager(activity, context);
         }
 
         FrameLayout.LayoutParams params = buildLayoutParams(call);
@@ -115,12 +122,17 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
                 url,
                 headers,
                 withZoom,
+                displayZoomControls,
                 withLocalStorage,
+                withOverviewMode,
                 scrollBar,
                 supportMultipleWindows,
                 appCacheEnabled,
                 allowFileURLs,
-                geolocationEnabled
+                useWideViewPort,
+                invalidUrlRegex,
+                geolocationEnabled,
+                debuggingEnabled
         );
         result.success(null);
     }
@@ -152,7 +164,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         result.success(null);
     }
 
-    private void close(MethodCall call, MethodChannel.Result result) {
+    void close(MethodCall call, MethodChannel.Result result) {
         if (webViewManager != null) {
             webViewManager.close(call, result);
             webViewManager = null;
@@ -192,7 +204,13 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     private void reloadUrl(MethodCall call, MethodChannel.Result result) {
         if (webViewManager != null) {
             String url = call.argument("url");
-            webViewManager.reloadUrl(url);
+            Map<String, String> headers = call.argument("headers");
+            if (headers != null) {
+                webViewManager.reloadUrl(url, headers);
+            } else {
+                webViewManager.reloadUrl(url);
+            }
+
         }
         result.success(null);
     }

@@ -1,3 +1,50 @@
+# 0.3.8
+
+- Fix iOS local URL support (fixes #114)
+- bugfix: Added google() repository to allprojects to satisfy androidx build rules
+- fixed min sdk for android
+
+# 0.3.7
+
+- Added reloading url with headers
+- Added support for reloading url with headers
+
+# 0.3.6
+
+- Allow web contents debugging in Chrome
+- Android: allow geolocation and file chooser simultaneously
+- Add min sdk requirement and descriptions
+- fix bug android webview httperror exception
+- Exposes displayZoomControls, withOverviewMode and useWideViewPort settings for Android WebView
+
+# 0.3.5
+
+- Ability to choose from camera or gallery when using
+- Support for webview’s estimated loading progress #255
+- Fix back button handler to be compatible with the WillPopScope widget
+
+# 0.3.4
+
+- WebView always hidden on iOS
+
+# 0.3.3
+
+- BREAKING CHANGE - AndroidX support
+
+# 0.3.2
+
+- enable Javascript in iOS, support abort loading specific URLs
+- add resizeToAvoidBottomInset to WebviewScaffold; #301
+
+# 0.3.1
+
+- Add support for geolocation Android
+- fix No269: Can't load target="_blank" links on iOS
+- fix: reloadUrl will not return Future
+- Fix height of keyboard
+- Fix Hide/Show WebView
+- hotfix widget back to initialChild after webview is tapped on Android
+
 # 0.3.0
 
 - Fixes rect capture issue. Ensures WebView remains in the correct place on screen even when keyboard appears.

@@ -1,6 +1,4 @@
-<img src="https://img.shields.io/badge/Flutter%20Communityflutter__webview__plugin-blue.svg?style=for-the-badge&logo=data:image/png;base64,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" width="800">
-
-[Flutter Community](https://github.com/fluttercommunity/community)
+[![Flutter Community: flutter_webview_plugin](https://fluttercommunity.dev/_github/header/flutter_webview_plugin)](https://github.com/fluttercommunity/community)
 
 # Flutter WebView Plugin
 
@@ -10,11 +8,31 @@ Plugin that allows Flutter to communicate with a native WebView.
 
 **_Warning:_**
 The webview is not integrated in the widget tree, it is a native view on top of the flutter view.
-you won't be able to use snackbars, dialogs ...
+You won't be able see snackbars, dialogs, or other flutter widgets that would overlap with the region of the screen taken up by the webview.
+
+The getSafeAcceptedType() function is available only for minimum SDK of 21.
+eval() function only supports SDK of 19 or greater for evaluating Javascript.
 
 ## Getting Started
 
 For help getting started with Flutter, view our online [documentation](http://flutter.io/).
+
+#### iOS
+
+In order for plugin to work correctly, you need to add new key to `ios/Runner/Info.plist`
+
+```xml
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+    <key>NSAllowsArbitraryLoadsInWebContent</key>
+    <true/>
+</dict>
+```
+
+`NSAllowsArbitraryLoadsInWebContent` is for iOS 10+ and `NSAllowsArbitraryLoads` for iOS 9.
+
 
 ### How it works
 
@@ -125,6 +143,29 @@ flutterWebviewPlugin.launch(url,
 );
 ```
 
+#### Injecting custom code into the webview
+Use `flutterWebviewPlugin.evalJavaScript(String code)`. This function must be run after the page has finished loading (i.e. listen to `onStateChanged` for events where state is `finishLoad`).
+
+If you have a large amount of JavaScript to embed, use an asset file. Add the asset file to `pubspec.yaml`, then call the function like:
+
+```dart
+Future<String> loadJS(String name) async {
+  var givenJS = rootBundle.loadString('assets/$name.js');
+  return givenJS.then((String js) {
+    flutterWebViewPlugin.onStateChanged.listen((viewState) async {
+      if (viewState.type == WebViewState.finishLoad) {
+        flutterWebViewPlugin.evalJavascript(js);
+      }
+    });
+  });
+}
+```
+
+### Accessing local files in the file system
+Set the `withLocalUrl` option to true in the launch function or in the Webview scaffold to enable support for local URLs.
+
+Note that, on iOS, the `localUrlScope` option also needs to be set to a path to a directory. All files inside this folder (or subfolder) will be allowed access. If ommited, only the local file being opened will have access allowed, resulting in no subresources being loaded. This option is ignored on Android.
+
 ### Webview Events
 
 - `Stream<Null>` onDestroy
@@ -152,10 +193,14 @@ Future<Null> launch(String url, {
    bool withZoom: false,
    bool withLocalStorage: true,
    bool withLocalUrl: true,
+   String localUrlScope: null,
    bool scrollBar: true,
    bool supportMultipleWindows: false,
    bool appCacheEnabled: false,
    bool allowFileURLs: false,
+   bool displayZoomControls: false,
+   bool useWideViewPort: false,
+   bool withOverviewMode: false,
 });
 ```
 
