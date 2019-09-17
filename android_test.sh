@@ -1,3 +1,3 @@
 #!/bin/bash
-
-./example/android/gradlew test -DflutterPath=$FLUTTER_HOME
+cd example/android
+./gradlew test -DflutterPath=$FLUTTER_HOME
