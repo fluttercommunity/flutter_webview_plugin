@@ -1,10 +1,6 @@
 name: CI
 
-on:
-  pull_request:
-    branches:
-      - development
-      - master
+on: [push]
 
 jobs:
   test:
@@ -21,4 +17,4 @@ jobs:
           flutter-version: '1.7.8+hotfix.4'
       - run: flutter doctor
       - run: flutter pub get
-      - run: flutter test
+      - run: android_test.sh 

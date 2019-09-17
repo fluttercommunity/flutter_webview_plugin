@@ -17,5 +17,4 @@ jobs:
           flutter-version: '1.7.8+hotfix.4'
       - run: flutter doctor
       - run: flutter pub get
-      - run: android_test.sh 
       - run: flutter test
