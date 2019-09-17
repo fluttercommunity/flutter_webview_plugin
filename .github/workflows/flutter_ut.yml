@@ -1,8 +1,10 @@
+name: Flutter Unit Tests
+
 on: [push]
 
 jobs:
   test:
-    name: Flutter Unit Tests
+    name: Linux Flutter Unit Tests
     runs-on: ubuntu-latest
 
     steps:
