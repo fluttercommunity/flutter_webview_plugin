@@ -1,10 +1,10 @@
-name: CI
+name: Flutter Unit Tests
 
 on: [push]
 
 jobs:
   test:
-    name: Flutter Tests
+    name: Linux Flutter Unit Tests
     runs-on: ubuntu-latest
 
     steps:
