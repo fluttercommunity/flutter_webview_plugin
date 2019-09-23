@@ -8,6 +8,5 @@
 /captures
 PluginRegistry.java
 
-/gradle
-/gradlew
-/gradlew.bat
+.project
+.settings
