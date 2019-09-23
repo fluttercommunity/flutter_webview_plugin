@@ -177,8 +177,15 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
             NSNumber *withLocalUrl = call.arguments[@"withLocalUrl"];
             if ( [withLocalUrl boolValue]) {
                 NSURL *htmlUrl = [NSURL fileURLWithPath:url isDirectory:false];
+                NSString *localUrlScope = call.arguments[@"localUrlScope"];
                 if (@available(iOS 9.0, *)) {
-                    [self.webview loadFileURL:htmlUrl allowingReadAccessToURL:htmlUrl];
+                    if(localUrlScope == nil) {
+                        [self.webview loadFileURL:htmlUrl allowingReadAccessToURL:htmlUrl];
+                    }
+                    else {
+                        NSURL *scopeUrl = [NSURL fileURLWithPath:localUrlScope];
+                        [self.webview loadFileURL:htmlUrl allowingReadAccessToURL:scopeUrl];
+                    }
                 } else {
                     @throw @"not available on version earlier than ios 9.0";
                 }
@@ -325,7 +332,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     if (_enableAppScheme ||
         ([webView.URL.scheme isEqualToString:@"http"] ||
          [webView.URL.scheme isEqualToString:@"https"] ||
-         [webView.URL.scheme isEqualToString:@"about"])) {
+         [webView.URL.scheme isEqualToString:@"about"] ||
+         [webView.URL.scheme isEqualToString:@"file"])) {
          if (isInvalid) {
             decisionHandler(WKNavigationActionPolicyCancel);
          } else {
