@@ -3,16 +3,17 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_webview_plugin/src/javascript_channel.dart';
 
 import 'base.dart';
 
 class WebviewScaffold extends StatefulWidget {
-
   const WebviewScaffold({
     Key key,
     this.appBar,
     @required this.url,
     this.headers,
+    this.javascriptChannels,
     this.withJavascript,
     this.clearCache,
     this.clearCookies,
@@ -43,6 +44,7 @@ class WebviewScaffold extends StatefulWidget {
   final PreferredSizeWidget appBar;
   final String url;
   final Map<String, String> headers;
+  final Set<JavascriptChannel> javascriptChannels;
   final bool withJavascript;
   final bool clearCache;
   final bool clearCookies;
@@ -87,7 +89,9 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     webviewReference.close();
 
     _onBack = webviewReference.onBack.listen((_) async {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       // The willPop/pop pair here is equivalent to Navigator.maybePop(),
       // which is what's called from the flutter back button handler.
@@ -148,6 +152,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
             webviewReference.launch(
               widget.url,
               headers: widget.headers,
+              javascriptChannels: widget.javascriptChannels,
               withJavascript: widget.withJavascript,
               clearCache: widget.clearCache,
               clearCookies: widget.clearCookies,
@@ -181,7 +186,8 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
             }
           }
         },
-        child: widget.initialChild ?? const Center(child: const CircularProgressIndicator()),
+        child: widget.initialChild ??
+            const Center(child: const CircularProgressIndicator()),
       ),
     );
   }
@@ -204,7 +210,8 @@ class _WebviewPlaceholder extends SingleChildRenderObjectWidget {
   }
 
   @override
-  void updateRenderObject(BuildContext context, _WebviewPlaceholderRender renderObject) {
+  void updateRenderObject(
+      BuildContext context, _WebviewPlaceholderRender renderObject) {
     renderObject..onRectChanged = onRectChanged;
   }
 }
