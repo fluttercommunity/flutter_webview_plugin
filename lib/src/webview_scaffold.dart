@@ -26,6 +26,7 @@ class WebviewScaffold extends StatefulWidget {
     this.displayZoomControls,
     this.withLocalStorage,
     this.withLocalUrl,
+    this.localUrlScope,
     this.withOverviewMode,
     this.useWideViewPort,
     this.scrollBar,
@@ -56,6 +57,7 @@ class WebviewScaffold extends StatefulWidget {
   final bool displayZoomControls;
   final bool withLocalStorage;
   final bool withLocalUrl;
+  final String localUrlScope;
   final bool scrollBar;
   final bool supportMultipleWindows;
   final bool appCacheEnabled;
@@ -162,6 +164,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
               displayZoomControls: widget.displayZoomControls,
               withLocalStorage: widget.withLocalStorage,
               withLocalUrl: widget.withLocalUrl,
+              localUrlScope: widget.localUrlScope,
               withOverviewMode: widget.withOverviewMode,
               useWideViewPort: widget.useWideViewPort,
               scrollBar: widget.scrollBar,
