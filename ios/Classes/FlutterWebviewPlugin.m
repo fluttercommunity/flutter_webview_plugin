@@ -1,4 +1,5 @@
 #import "FlutterWebviewPlugin.h"
+#import "JavaScriptChannelHandler.h"
 
 static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
@@ -7,6 +8,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     BOOL _enableAppScheme;
     BOOL _enableZoom;
     NSString* _invalidUrlRegex;
+    NSMutableSet* _javaScriptChannelNames;
 }
 @end
 
@@ -86,6 +88,15 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     NSNumber *scrollBar = call.arguments[@"scrollBar"];
     NSNumber *withJavascript = call.arguments[@"withJavascript"];
     _invalidUrlRegex = call.arguments[@"invalidUrlRegex"];
+    
+    _javaScriptChannelNames = [[NSMutableSet alloc] init];
+    
+    WKUserContentController* userContentController = [[WKUserContentController alloc] init];
+    if ([call.arguments[@"javascriptChannelNames"] isKindOfClass:[NSArray class]]) {
+        NSArray* javaScriptChannelNames = call.arguments[@"javascriptChannelNames"];
+        [_javaScriptChannelNames addObjectsFromArray:javaScriptChannelNames];
+        [self registerJavaScriptChannels:_javaScriptChannelNames controller:userContentController];
+    }
 
     if (clearCache != (id)[NSNull null] && [clearCache boolValue]) {
         [[NSURLCache sharedURLCache] removeAllCachedResponses];
@@ -117,7 +128,9 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         rc = self.viewController.view.bounds;
     }
 
-    self.webview = [[WKWebView alloc] initWithFrame:rc];
+    WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
+    configuration.userContentController = userContentController;
+    self.webview = [[WKWebView alloc] initWithFrame:rc configuration:configuration];
     self.webview.UIDelegate = self;
     self.webview.navigationDelegate = self;
     self.webview.scrollView.delegate = self;
@@ -360,6 +373,23 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         [channel invokeMethod:@"onHttpError" arguments:@{@"code": [NSString stringWithFormat:@"%ld", response.statusCode], @"url": webView.URL.absoluteString}];
     }
     decisionHandler(WKNavigationResponsePolicyAllow);
+}
+
+- (void)registerJavaScriptChannels:(NSSet*)channelNames
+                        controller:(WKUserContentController*)userContentController {
+    for (NSString* channelName in channelNames) {
+        FLTJavaScriptChannel* _channel =
+        [[FLTJavaScriptChannel alloc] initWithMethodChannel: channel
+                                      javaScriptChannelName:channelName];
+        [userContentController addScriptMessageHandler:_channel name:channelName];
+        NSString* wrapperSource = [NSString
+                                   stringWithFormat:@"window.%@ = webkit.messageHandlers.%@;", channelName, channelName];
+        WKUserScript* wrapperScript =
+        [[WKUserScript alloc] initWithSource:wrapperSource
+                               injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+                            forMainFrameOnly:NO];
+        [userContentController addUserScript:wrapperScript];
+    }
 }
 
 #pragma mark -- UIScrollViewDelegate
