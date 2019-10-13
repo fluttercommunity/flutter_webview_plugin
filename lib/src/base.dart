@@ -17,7 +17,7 @@ enum WebViewState { shouldStart, startLoad, finishLoad, abortLoad }
 /// Singleton class that communicate with a Webview Instance
 class FlutterWebviewPlugin {
   factory FlutterWebviewPlugin() {
-    if(_instance == null) {
+    if (_instance == null) {
       const MethodChannel methodChannel = const MethodChannel(_kChannel);
       _instance = FlutterWebviewPlugin.private(methodChannel);
     }
@@ -256,6 +256,9 @@ class FlutterWebviewPlugin {
     }
     await _channel.invokeMethod('reloadUrl', args);
   }
+
+  // Clear cache on WebView
+  Future<Null> clearCache() async => await _channel.invokeMethod('clearCache');
 
   // Clean cookies on WebView
   Future<Null> cleanCookies() async =>

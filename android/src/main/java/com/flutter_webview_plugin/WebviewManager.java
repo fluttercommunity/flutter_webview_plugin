@@ -66,9 +66,9 @@ class WebviewManager {
                     Uri[] results = null;
                     if (resultCode == Activity.RESULT_OK) {
                         if (fileUri != null && getFileSize(fileUri) > 0) {
-                            results = new Uri[]{fileUri};
+                            results = new Uri[] { fileUri };
                         } else if (videoUri != null && getFileSize(videoUri) > 0) {
-                            results = new Uri[]{videoUri};
+                            results = new Uri[] { videoUri };
                         } else if (intent != null) {
                             results = getSelectedFiles(intent);
                         }
@@ -101,7 +101,7 @@ class WebviewManager {
         if (data.getData() != null) {
             String dataString = data.getDataString();
             if (dataString != null) {
-                return new Uri[]{Uri.parse(dataString)};
+                return new Uri[] { Uri.parse(dataString) };
             }
         }
         // we have multiple files selected
@@ -136,13 +136,13 @@ class WebviewManager {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
                     switch (keyCode) {
-                        case KeyEvent.KEYCODE_BACK:
-                            if (webView.canGoBack()) {
-                                webView.goBack();
-                            } else {
-                                FlutterWebviewPlugin.channel.invokeMethod("onBack", null);
-                            }
-                            return true;
+                    case KeyEvent.KEYCODE_BACK:
+                        if (webView.canGoBack()) {
+                            webView.goBack();
+                        } else {
+                            FlutterWebviewPlugin.channel.invokeMethod("onBack", null);
+                        }
+                        return true;
                     }
                 }
 
@@ -163,8 +163,8 @@ class WebviewManager {
 
         webView.setWebViewClient(webViewClient);
         webView.setWebChromeClient(new WebChromeClient() {
-            //The undocumented magic method override
-            //Eclipse will swear at you if you try to put @Override here
+            // The undocumented magic method override
+            // Eclipse will swear at you if you try to put @Override here
             // For Android 3.0+
             public void openFileChooser(ValueCallback<Uri> uploadMsg) {
 
@@ -182,12 +182,10 @@ class WebviewManager {
                 Intent i = new Intent(Intent.ACTION_GET_CONTENT);
                 i.addCategory(Intent.CATEGORY_OPENABLE);
                 i.setType("*/*");
-                activity.startActivityForResult(
-                        Intent.createChooser(i, "File Browser"),
-                        FILECHOOSER_RESULTCODE);
+                activity.startActivityForResult(Intent.createChooser(i, "File Browser"), FILECHOOSER_RESULTCODE);
             }
 
-            //For Android 4.1
+            // For Android 4.1
             public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
                 mUploadMessage = uploadMsg;
                 Intent i = new Intent(Intent.ACTION_GET_CONTENT);
@@ -197,9 +195,8 @@ class WebviewManager {
 
             }
 
-            //For Android 5.0+
-            public boolean onShowFileChooser(
-                    WebView webView, ValueCallback<Uri[]> filePathCallback,
+            // For Android 5.0+
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback,
                     FileChooserParams fileChooserParams) {
                 if (mUploadMessageArray != null) {
                     mUploadMessageArray.onReceiveValue(null);
@@ -321,52 +318,19 @@ class WebviewManager {
         return EMPTY;
     }
 
-    private void clearCookies() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CookieManager.getInstance().removeAllCookies(new ValueCallback<Boolean>() {
-                @Override
-                public void onReceiveValue(Boolean aBoolean) {
-
-                }
-            });
-        } else {
-            CookieManager.getInstance().removeAllCookie();
-        }
-    }
-
-    private void clearCache() {
-        webView.clearCache(true);
-        webView.clearFormData();
-    }
-
     private void registerJavaScriptChannelNames(List<String> channelNames) {
         for (String channelName : channelNames) {
             webView.addJavascriptInterface(
-                    new JavaScriptChannel(FlutterWebviewPlugin.channel, channelName, platformThreadHandler), channelName);
+                    new JavaScriptChannel(FlutterWebviewPlugin.channel, channelName, platformThreadHandler),
+                    channelName);
         }
     }
 
-    void openUrl(
-            boolean withJavascript,
-            boolean clearCache,
-            boolean hidden,
-            boolean clearCookies,
-            String userAgent,
-            String url,
-            Map<String, String> headers,
-            boolean withZoom,
-            boolean displayZoomControls,
-            boolean withLocalStorage,
-            boolean withOverviewMode,
-            boolean scrollBar,
-            boolean supportMultipleWindows,
-            boolean appCacheEnabled,
-            boolean allowFileURLs,
-            boolean useWideViewPort,
-            String invalidUrlRegex,
-            boolean geolocationEnabled,
-            boolean debuggingEnabled
-    ) {
+    void openUrl(boolean withJavascript, boolean clearCache, boolean hidden, boolean clearCookies, String userAgent,
+            String url, Map<String, String> headers, boolean withZoom, boolean displayZoomControls,
+            boolean withLocalStorage, boolean withOverviewMode, boolean scrollBar, boolean supportMultipleWindows,
+            boolean appCacheEnabled, boolean allowFileURLs, boolean useWideViewPort, String invalidUrlRegex,
+            boolean geolocationEnabled, boolean debuggingEnabled) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
@@ -526,4 +490,23 @@ class WebviewManager {
             webView.stopLoading();
         }
     }
+
+    void clearCache() {
+        webView.clearCache(true);
+        webView.clearFormData();
+    }
+
+    void clearCookies() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            CookieManager.getInstance().removeAllCookies(new ValueCallback<Boolean>() {
+                @Override
+                public void onReceiveValue(Boolean aBoolean) {
+
+                }
+            });
+        } else {
+            CookieManager.getInstance().removeAllCookie();
+        }
+    }
+
 }

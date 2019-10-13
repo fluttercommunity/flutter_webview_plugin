@@ -1,6 +1,5 @@
 package com.flutter_webview_plugin;
 
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -46,49 +45,52 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     @Override
     public void onMethodCall(MethodCall call, MethodChannel.Result result) {
         switch (call.method) {
-            case "launch":
-                openUrl(call, result);
-                break;
-            case "close":
-                close(call, result);
-                break;
-            case "eval":
-                eval(call, result);
-                break;
-            case "resize":
-                resize(call, result);
-                break;
-            case "reload":
-                reload(call, result);
-                break;
-            case "back":
-                back(call, result);
-                break;
-            case "forward":
-                forward(call, result);
-                break;
-            case "hide":
-                hide(call, result);
-                break;
-            case "show":
-                show(call, result);
-                break;
-            case "reloadUrl":
-                reloadUrl(call, result);
-                break;
-            case "stopLoading":
-                stopLoading(call, result);
-                break;
-            case "cleanCookies":
-                cleanCookies(call, result);
-                break;
-            default:
-                result.notImplemented();
-                break;
+        case "launch":
+            openUrl(call, result);
+            break;
+        case "close":
+            close(call, result);
+            break;
+        case "eval":
+            eval(call, result);
+            break;
+        case "resize":
+            resize(call, result);
+            break;
+        case "reload":
+            reload(call, result);
+            break;
+        case "back":
+            back(call, result);
+            break;
+        case "forward":
+            forward(call, result);
+            break;
+        case "hide":
+            hide(call, result);
+            break;
+        case "show":
+            show(call, result);
+            break;
+        case "reloadUrl":
+            reloadUrl(call, result);
+            break;
+        case "stopLoading":
+            stopLoading(call, result);
+            break;
+        case "clearCache":
+            clearCache(call, result);
+            break;
+        case "cleanCookies":
+            cleanCookies(call, result);
+            break;
+        default:
+            result.notImplemented();
+            break;
         }
     }
 
-     void openUrl(MethodCall call, MethodChannel.Result result) {
+    void openUrl(MethodCall call, MethodChannel.Result result) {
         boolean hidden = call.argument("hidden");
         String url = call.argument("url");
         String userAgent = call.argument("userAgent");
@@ -122,26 +124,9 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
 
         activity.addContentView(webViewManager.webView, params);
 
-        webViewManager.openUrl(withJavascript,
-                clearCache,
-                hidden,
-                clearCookies,
-                userAgent,
-                url,
-                headers,
-                withZoom,
-                displayZoomControls,
-                withLocalStorage,
-                withOverviewMode,
-                scrollBar,
-                supportMultipleWindows,
-                appCacheEnabled,
-                allowFileURLs,
-                useWideViewPort,
-                invalidUrlRegex,
-                geolocationEnabled,
-                debuggingEnabled
-        );
+        webViewManager.openUrl(withJavascript, clearCache, hidden, clearCookies, userAgent, url, headers, withZoom,
+                displayZoomControls, withLocalStorage, withOverviewMode, scrollBar, supportMultipleWindows,
+                appCacheEnabled, allowFileURLs, useWideViewPort, invalidUrlRegex, geolocationEnabled, debuggingEnabled);
         result.success(null);
     }
 
@@ -149,10 +134,10 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         Map<String, Number> rc = call.argument("rect");
         FrameLayout.LayoutParams params;
         if (rc != null) {
-            params = new FrameLayout.LayoutParams(
-                    dp2px(activity, rc.get("width").intValue()), dp2px(activity, rc.get("height").intValue()));
-            params.setMargins(dp2px(activity, rc.get("left").intValue()), dp2px(activity, rc.get("top").intValue()),
-                    0, 0);
+            params = new FrameLayout.LayoutParams(dp2px(activity, rc.get("width").intValue()),
+                    dp2px(activity, rc.get("height").intValue()));
+            params.setMargins(dp2px(activity, rc.get("left").intValue()), dp2px(activity, rc.get("top").intValue()), 0,
+                    0);
         } else {
             Display display = activity.getWindowManager().getDefaultDisplay();
             Point size = new Point();
@@ -251,16 +236,16 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         result.success(null);
     }
 
-    private void cleanCookies(MethodCall call, final MethodChannel.Result result) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CookieManager.getInstance().removeAllCookies(new ValueCallback<Boolean>() {
-                @Override
-                public void onReceiveValue(Boolean aBoolean) {
+    private void clearCache(MethodCall call, final MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.clearCache();
+        }
+        result.success(null);
+    }
 
-                }
-            });
-        } else {
-            CookieManager.getInstance().removeAllCookie();
+    private void cleanCookies(MethodCall call, final MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.clearCookies();
         }
         result.success(null);
     }
