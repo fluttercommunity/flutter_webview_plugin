@@ -32,10 +32,12 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
 
     public static void registerWith(PluginRegistry.Registrar registrar) {
-        channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-        final FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity(), registrar.activeContext());
-        registrar.addActivityResultListener(instance);
-        channel.setMethodCallHandler(instance);
+        if (registrar.activity() != null) {
+            channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
+            final FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity(), registrar.activeContext());
+            registrar.addActivityResultListener(instance);
+            channel.setMethodCallHandler(instance);
+        }
     }
 
     FlutterWebviewPlugin(Activity activity, Context context) {
