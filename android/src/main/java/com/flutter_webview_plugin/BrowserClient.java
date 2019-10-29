@@ -3,6 +3,7 @@ package com.flutter_webview_plugin;
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -59,6 +60,8 @@ public class BrowserClient extends WebViewClient {
         data.put("type", "finishLoad");
         FlutterWebviewPlugin.channel.invokeMethod("onState", data);
 
+        data.put("realCookie", CookieManager.getInstance().getCookie(url));
+		FlutterWebviewPlugin.channel.invokeMethod("onCookieUpdate", data);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
