@@ -190,7 +190,7 @@ class FlutterWebviewPlugin {
       'geolocationEnabled': geolocationEnabled ?? false,
       'withOverviewMode': withOverviewMode ?? false,
       'debuggingEnabled': debuggingEnabled ?? false,
-      'ignoreSSLErrors': ignoreSSLErrors ?? true,
+      'ignoreSSLErrors': ignoreSSLErrors ?? false,
     };
 
     if (headers != null) {

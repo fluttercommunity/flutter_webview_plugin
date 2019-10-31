@@ -9,6 +9,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     BOOL _enableZoom;
     NSString* _invalidUrlRegex;
     NSMutableSet* _javaScriptChannelNames;
+    NSNumber*  _ignoreSSLErrors;
 }
 @end
 
@@ -88,7 +89,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     NSNumber *scrollBar = call.arguments[@"scrollBar"];
     NSNumber *withJavascript = call.arguments[@"withJavascript"];
     _invalidUrlRegex = call.arguments[@"invalidUrlRegex"];
-    
+    _ignoreSSLErrors = call.arguments[@"ignoreSSLErrors"];
     _javaScriptChannelNames = [[NSMutableSet alloc] init];
     
     WKUserContentController* userContentController = [[WKUserContentController alloc] init];
@@ -154,6 +155,23 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     [currentViewController.view addSubview:self.webview];
 
     [self navigate:call];
+}
+
+- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
+    if ([_ignoreSSLErrors boolValue]){
+        NSLog(@"Allow invalid certificates");
+        SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
+        CFDataRef exceptions = SecTrustCopyExceptions(serverTrust);
+        SecTrustSetExceptions(serverTrust, exceptions);
+        CFRelease(exceptions);
+        completionHandler(NSURLSessionAuthChallengeUseCredential,
+                          [NSURLCredential credentialForTrust:serverTrust]);
+    }
+    else {
+        NSLog(@"Block invalid certificates");
+        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling,nil);
+    }
+    
 }
 
 - (CGRect)parseRect:(NSDictionary *)rect {
