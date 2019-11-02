@@ -159,7 +159,6 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
 - (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
     if ([_ignoreSSLErrors boolValue]){
-        NSLog(@"Allow invalid certificates");
         SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
         CFDataRef exceptions = SecTrustCopyExceptions(serverTrust);
         SecTrustSetExceptions(serverTrust, exceptions);
@@ -168,7 +167,6 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                           [NSURLCredential credentialForTrust:serverTrust]);
     }
     else {
-        NSLog(@"Block invalid certificates");
         completionHandler(NSURLSessionAuthChallengePerformDefaultHandling,nil);
     }
     
