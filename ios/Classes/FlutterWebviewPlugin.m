@@ -62,9 +62,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         [self stopLoading];
         result(nil);
     } else if ([@"cleanCookies" isEqualToString:call.method]) {
-        [[NSURLSession sharedSession] resetWithCompletionHandler:^{
-            result(nil);
-        }];
+        [self cleanCookies];
+        result(nil);
     } else if ([@"back" isEqualToString:call.method]) {
         [self back];
         result(nil);
@@ -105,17 +104,10 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     }
 
     if (clearCookies != (id)[NSNull null] && [clearCookies boolValue]) {
-        if (@available(iOS 9.0, *)) {
-            NSSet *websiteDataTypes
-            = [NSSet setWithArray:@[
-                                    WKWebsiteDataTypeCookies,
-                                    ]];
-            NSDate *dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
-            
-            [[WKWebsiteDataStore defaultDataStore] removeDataOfTypes:websiteDataTypes modifiedSince:dateFrom completionHandler:^{
-            }];
-        } else {
-            // Fallback on earlier versions
+        NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        for (NSHTTPCookie *cookie in [storage cookies])
+        {
+            [storage deleteCookie:cookie];
         }
     }
 
@@ -259,6 +251,17 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         [self.webview loadRequest:request];
     }
 }
+
+- (void)cleanCookies {
+    if(self.webview != nil) {
+        NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        for (NSHTTPCookie *cookie in [storage cookies])
+        {
+            [storage deleteCookie:cookie];
+        }
+    }
+}
+
 - (void)show {
     if (self.webview != nil) {
         self.webview.hidden = false;
