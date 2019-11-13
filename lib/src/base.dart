@@ -258,8 +258,11 @@ class FlutterWebviewPlugin {
   }
 
   // Clean cookies on WebView
-  Future<Null> cleanCookies() async =>
-      await _channel.invokeMethod('cleanCookies');
+  Future<Null> cleanCookies() async {
+    // one liner to clear javascript cookies
+    await evalJavascript('document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });');
+    return await _channel.invokeMethod('cleanCookies');
+  }
 
   // Stops current loading process
   Future<Null> stopLoading() async =>
