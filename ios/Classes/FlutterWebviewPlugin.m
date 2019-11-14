@@ -73,6 +73,10 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else if ([@"reload" isEqualToString:call.method]) {
         [self reload];
         result(nil);
+    } else if ([@"canGoBack" isEqualToString:call.method]) {
+        [self onCanGoBack:call result:result];
+    } else if ([@"canGoForward" isEqualToString:call.method]) {
+        [self onCanGoForward:call result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -283,6 +287,17 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         [self.webview goBack];
     }
 }
+
+- (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
+  BOOL canGoBack = [self.webview canGoBack];
+  result([NSNumber numberWithBool:canGoBack]);
+}
+
+- (void)onCanGoForward:(FlutterMethodCall*)call result:(FlutterResult)result {
+  BOOL canGoForward = [self.webview canGoForward];
+  result([NSNumber numberWithBool:canGoForward]);
+}
+
 - (void)forward {
     if (self.webview != nil) {
         [self.webview goForward];
