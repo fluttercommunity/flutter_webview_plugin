@@ -254,6 +254,9 @@ class FlutterWebviewPlugin {
   // Shows the webview
   Future<Null> show() async => await _channel.invokeMethod('show');
 
+  // Clears browser cache
+  Future<Null> clearCache() async => await _channel.invokeMethod('cleanCache');
+
   // Reload webview with a url
   Future<Null> reloadUrl(String url, {Map<String, String> headers}) async {
     final args = <String, dynamic>{'url': url};
