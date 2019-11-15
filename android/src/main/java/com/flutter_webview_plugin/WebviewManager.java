@@ -509,6 +509,13 @@ class WebviewManager {
         return webView.canGoForward();
     }
 
+    /**
+     * Clears cache
+     */
+    void cleanCache(){
+        webView.clearCache(true);
+    }
+
     void hide(MethodCall call, MethodChannel.Result result) {
         if (webView != null) {
             webView.setVisibility(View.GONE);
