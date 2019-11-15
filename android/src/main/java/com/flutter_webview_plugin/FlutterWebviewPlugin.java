@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.view.Display;
+import android.webkit.WebStorage;
 import android.widget.FrameLayout;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
@@ -90,10 +91,19 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             case "canGoForward":
                 canGoForward(result);
                 break;
+            case "cleanCache":
+                cleanCache(result);
+                break;
             default:
                 result.notImplemented();
                 break;
         }
+    }
+
+    private void cleanCache(MethodChannel.Result result) {
+        webViewManager.cleanCache();
+        WebStorage.getInstance().deleteAllData();
+        result.success(null);
     }
 
     void openUrl(MethodCall call, MethodChannel.Result result) {
