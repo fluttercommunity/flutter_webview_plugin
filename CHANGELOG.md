@@ -1,3 +1,7 @@
+# 0.3.9+1
+
+- Fixed error methods on iOS
+
 # 0.3.9
 
 - Fixed error methods on iOS
