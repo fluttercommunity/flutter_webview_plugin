@@ -74,6 +74,22 @@ class MyApp extends StatelessWidget {
             ),
           );
         },
+        '/rect': (_) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Rect Webview'),
+            ),
+            body: Center(
+              child: Container(
+                height: 400,
+                width: 300,
+                child: WebviewRect(
+                  url: selectedUrl,
+                ),
+              ),
+            ),
+          );
+        }
       },
     );
   }
@@ -252,6 +268,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.of(context).pushNamed('/widget');
               },
               child: const Text('Open widget webview'),
+            ),
+            RaisedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/rect');
+              },
+              child: const Text('Open Rect webview'),
             ),
             Container(
               padding: const EdgeInsets.all(24.0),
