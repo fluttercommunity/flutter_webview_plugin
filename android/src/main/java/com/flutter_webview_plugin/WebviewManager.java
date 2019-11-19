@@ -24,8 +24,8 @@ import androidx.core.content.FileProvider;
 import android.database.Cursor;
 import android.provider.OpenableColumns;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.File;
@@ -334,6 +334,12 @@ class WebviewManager {
         }
     }
 
+    private void setCookies(String url, ArrayList<String> cookies) {
+        for (String cookie : cookies) {
+            CookieManager.getInstance().setCookie(url, cookie);
+        }
+    }
+
     private void clearCache() {
         webView.clearCache(true);
         webView.clearFormData();
@@ -351,6 +357,7 @@ class WebviewManager {
             boolean clearCache,
             boolean hidden,
             boolean clearCookies,
+            ArrayList<String> cookies,
             String userAgent,
             String url,
             Map<String, String> headers,
@@ -409,6 +416,10 @@ class WebviewManager {
 
         if (clearCookies) {
             clearCookies();
+        }
+
+        if (cookies != null && !cookies.isEmpty()) {
+            setCookies(url, cookies);
         }
 
         if (userAgent != null) {
