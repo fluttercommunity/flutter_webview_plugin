@@ -290,6 +290,13 @@ class FlutterWebviewPlugin {
     _instance = null;
   }
 
+  // get all cookies including "http only"
+  // but for ios, it only support ios 11 or above
+  Future<String> getAllCookies(String url) async {
+    final res = await _channel.invokeMethod('getAllCookies', {'url': url});
+    return res;
+  }
+
   Future<Map<String, String>> getCookies() async {
     final cookiesString = await evalJavascript('document.cookie');
     final cookies = <String, String>{};
