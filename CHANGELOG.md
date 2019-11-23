@@ -1,3 +1,15 @@
+# 0.3.9+1
+
+- Fixed error methods on iOS
+
+# 0.3.9
+
+- Fixed error methods on iOS
+- fixed build
+- fixed ios clean cookies
+- 4 Make plugin work in headless mode when extending FlutterApplication
+- added canGoBack and canGoForward methods
+
 # 0.3.8
 
 - Fix iOS local URL support (fixes #114)

@@ -252,3 +252,10 @@ Future<Null> goForward();
 Future<Null> stopLoading();
 ```
 
+```dart
+Future<bool> canGoBack();
+```
+
+```dart
+Future<bool> canGoForward();
+```

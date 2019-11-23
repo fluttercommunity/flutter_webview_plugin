@@ -239,6 +239,12 @@ class FlutterWebviewPlugin {
   /// Navigates back on the Webview.
   Future<Null> goBack() async => await _channel.invokeMethod('back');
 
+  /// Checks if webview can navigate back
+  Future<bool> canGoBack() async => await _channel.invokeMethod('canGoBack');
+
+  /// Checks if webview can navigate back
+  Future<bool> canGoForward() async => await _channel.invokeMethod('canGoForward');
+
   /// Navigates forward on the Webview.
   Future<Null> goForward() async => await _channel.invokeMethod('forward');
 
@@ -247,6 +253,9 @@ class FlutterWebviewPlugin {
 
   // Shows the webview
   Future<Null> show() async => await _channel.invokeMethod('show');
+
+  // Clears browser cache
+  Future<Null> clearCache() async => await _channel.invokeMethod('cleanCache');
 
   // Reload webview with a url
   Future<Null> reloadUrl(String url, {Map<String, String> headers}) async {
@@ -258,8 +267,11 @@ class FlutterWebviewPlugin {
   }
 
   // Clean cookies on WebView
-  Future<Null> cleanCookies() async =>
-      await _channel.invokeMethod('cleanCookies');
+  Future<Null> cleanCookies() async {
+    // one liner to clear javascript cookies
+    await evalJavascript('document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });');
+    return await _channel.invokeMethod('cleanCookies');
+  }
 
   // Stops current loading process
   Future<Null> stopLoading() async =>

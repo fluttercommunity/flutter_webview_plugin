@@ -12,7 +12,6 @@ void main() {
     webview = new FlutterWebviewPlugin.private(methodChannel);
   });
 
-
   group('Method channel invoke', () {
     test('Should invoke close', () async {
       webview.close();
@@ -37,6 +36,14 @@ void main() {
     test('Should invoke show', () async {
       webview.show();
       verify(methodChannel.invokeMethod('show')).called(1);
+    });
+    test('Should invoke canGoBack', () async {
+      webview.canGoBack();
+      verify(methodChannel.invokeMethod('canGoBack')).called(1);
+    });
+    test('Should invoke canGoForward', () async {
+      webview.canGoForward();
+      verify(methodChannel.invokeMethod('canGoForward')).called(1);
     });
   });
 }
