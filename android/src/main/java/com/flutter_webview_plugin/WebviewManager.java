@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -439,8 +438,6 @@ class WebviewManager {
         if (webView != null) {
             ViewGroup vg = (ViewGroup) (webView.getParent());
             vg.removeView(webView);
-            webView.onPause();
-            webView.destroy();;
         }
         webView = null;
         if (result != null) {
