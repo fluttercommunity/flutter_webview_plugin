@@ -95,6 +95,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     NSNumber *withJavascript = call.arguments[@"withJavascript"];
     _invalidUrlRegex = call.arguments[@"invalidUrlRegex"];
     
+    
     _javaScriptChannelNames = [[NSMutableSet alloc] init];
     
     WKUserContentController* userContentController = [[WKUserContentController alloc] init];
@@ -102,6 +103,13 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         NSArray* javaScriptChannelNames = call.arguments[@"javascriptChannelNames"];
         [_javaScriptChannelNames addObjectsFromArray:javaScriptChannelNames];
         [self registerJavaScriptChannels:_javaScriptChannelNames controller:userContentController];
+    }
+	
+    _userScripts = [[NSMutableSet alloc] init];
+    if ([call.arguments[@"userScripts"] isKindOfClass:[NSArray class]]) {
+        NSArray* userScripts = call.arguments[@"userScripts"];
+        [_userScripts addObjectsFromArray:userScripts];
+        [self registerUserScripts:_userScripts controller:userContentController];
     }
 
     if (clearCache != (id)[NSNull null] && [clearCache boolValue]) {
@@ -451,6 +459,18 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
                                injectionTime:WKUserScriptInjectionTimeAtDocumentStart
                             forMainFrameOnly:NO];
         [userContentController addUserScript:wrapperScript];
+    }
+}
+
+- (void)registerUserScripts:(NSSet*)userScripts
+                        controller:(WKUserContentController*)userContentController {
+    for (NSString* userScript in userScripts) {
+               
+        WKUserScript* script =
+        [[WKUserScript alloc] initWithSource:userScript
+                               injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+                            forMainFrameOnly:NO];
+        [userContentController addUserScript:script];
     }
 }
 
