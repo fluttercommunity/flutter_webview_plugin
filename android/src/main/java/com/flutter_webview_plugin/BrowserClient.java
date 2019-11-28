@@ -64,7 +64,7 @@ public class BrowserClient extends WebViewClient {
         
         if (userScripts != null) {
             for (String script : userScripts) {
-                webView.loadUrl("javascript: (function(){ " + script + "})()");
+                view.loadUrl("javascript: (function(){ " + script + "})()");
             }
         }
         
