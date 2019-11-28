@@ -10,6 +10,7 @@ import android.webkit.WebViewClient;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,15 +20,22 @@ import java.util.regex.Pattern;
 
 public class BrowserClient extends WebViewClient {
     private Pattern invalidUrlPattern = null;
+    private Set<String> userScripts = null;
 
     public BrowserClient() {
         this(null);
     }
 
     public BrowserClient(String invalidUrlRegex) {
+        this(invalidUrlRegex, null);
+    }
+    public BrowserClient(String invalidUrlRegex, Set<String> userScripts) {
         super();
         if (invalidUrlRegex != null) {
             invalidUrlPattern = Pattern.compile(invalidUrlRegex);
+        }
+        if (userScripts != null) {
+            this.userScripts = userScripts;
         }
     }
 
@@ -51,6 +59,13 @@ public class BrowserClient extends WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
+        
+        if (userScripts != null) {
+            for (String script : userScripts) {
+                webView.loadUrl("javascript: (function(){ " + script + "})()");
+            }
+        }
+        
         Map<String, Object> data = new HashMap<>();
         data.put("url", url);
 
