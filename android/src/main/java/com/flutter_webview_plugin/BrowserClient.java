@@ -34,9 +34,7 @@ public class BrowserClient extends WebViewClient {
         if (invalidUrlRegex != null) {
             invalidUrlPattern = Pattern.compile(invalidUrlRegex);
         }
-        if (userScripts != null) {
-            this.userScripts = userScripts;
-        }
+        this.userScripts = userScripts;        
     }
 
     public void updateInvalidUrlRegex(String invalidUrlRegex) {
@@ -45,6 +43,10 @@ public class BrowserClient extends WebViewClient {
         } else {
             invalidUrlPattern = null;
         }
+    }
+    
+    public void updateUserScripts(Set<String> userSripts) {
+        this.userScripts = userScripts;
     }
 
     @Override
