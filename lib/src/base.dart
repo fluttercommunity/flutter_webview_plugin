@@ -165,6 +165,7 @@ class FlutterWebviewPlugin {
     String invalidUrlRegex,
     bool geolocationEnabled,
     bool debuggingEnabled,
+    Set<String> userScripts,
   }) async {
     final args = <String, dynamic>{
       'url': url,
@@ -192,6 +193,10 @@ class FlutterWebviewPlugin {
 
     if (headers != null) {
       args['headers'] = headers;
+    }
+    
+    if (userScripts != null) {
+      args['userScripts'] = userScripts;
     }
 
     _assertJavascriptChannelNamesAreUnique(javascriptChannels);
