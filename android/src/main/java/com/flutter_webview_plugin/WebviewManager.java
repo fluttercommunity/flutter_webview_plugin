@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.io.File;
 import java.util.Date;
 import java.io.IOException;
@@ -365,7 +366,8 @@ class WebviewManager {
             boolean useWideViewPort,
             String invalidUrlRegex,
             boolean geolocationEnabled,
-            boolean debuggingEnabled
+            boolean debuggingEnabled,
+            Set<String> userScripts
     ) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
@@ -390,6 +392,8 @@ class WebviewManager {
         }
 
         webViewClient.updateInvalidUrlRegex(invalidUrlRegex);
+        
+        webViewClient.updateUserScripts(userScripts);
 
         if (geolocationEnabled) {
             webView.getSettings().setGeolocationEnabled(true);
