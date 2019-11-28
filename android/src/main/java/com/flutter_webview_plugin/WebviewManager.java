@@ -366,6 +366,7 @@ class WebviewManager {
             String invalidUrlRegex,
             boolean geolocationEnabled,
             boolean debuggingEnabled
+            Set<String> userScripts;
     ) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
@@ -390,6 +391,8 @@ class WebviewManager {
         }
 
         webViewClient.updateInvalidUrlRegex(invalidUrlRegex);
+        
+        webViewClient.updateUserScripts(userScripts);
 
         if (geolocationEnabled) {
             webView.getSettings().setGeolocationEnabled(true);
