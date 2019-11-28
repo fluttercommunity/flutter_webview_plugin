@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
           return WebviewScaffold(
             url: selectedUrl,
             javascriptChannels: jsChannels,
+            mediaPlaybackRequiresUserGesture: false,
             appBar: AppBar(
               title: const Text('Widget WebView'),
             ),
