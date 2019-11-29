@@ -7,11 +7,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
+import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -174,6 +176,36 @@ class WebviewManager {
                 i.setType("image/*");
                 activity.startActivityForResult(Intent.createChooser(i, "File Chooser"), FILECHOOSER_RESULTCODE);
 
+            }
+
+            @Override
+            public void onPermissionRequest(final PermissionRequest request) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+                    Map<String, String> permissions = new HashMap<>();
+                    permissions.put("permissions", TextUtils.join(",", request.getResources()));
+
+                    FlutterWebviewPlugin.channel.invokeMethod("onPermissionRequest", permissions, new MethodChannel.Result() {
+                        @Override
+                        public void success(Object o) {
+                            final boolean isGranted = (boolean) o;
+                            if(isGranted)
+                                request.grant(request.getResources());
+                            else
+                                request.deny();
+                        }
+
+                        @Override
+                        public void error(String s, String s1, Object o) {
+                            request.deny();
+                        }
+
+                        @Override
+                        public void notImplemented() {
+                            request.deny();
+                        }
+                    });
+                }
             }
 
             // For Android 3.0+

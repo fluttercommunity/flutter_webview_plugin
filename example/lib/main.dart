@@ -34,7 +34,12 @@ class MyApp extends StatelessWidget {
         '/': (_) => const MyHomePage(title: 'Flutter WebView Demo'),
         '/widget': (_) {
           return WebviewScaffold(
-            url: selectedUrl,
+            url: "https://talky.io/tester",
+            onPermissionRequest: (resources) async {
+              // request permission here
+              print(resources);
+              return true;
+            },
             javascriptChannels: jsChannels,
             appBar: AppBar(
               title: const Text('Widget WebView'),
