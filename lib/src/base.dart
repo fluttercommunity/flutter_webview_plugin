@@ -43,12 +43,14 @@ class FlutterWebviewPlugin {
   final _onHttpError = StreamController<WebViewHttpError>.broadcast();
   final _onPostMessage = StreamController<JavascriptMessage>.broadcast();
 
+  Future<bool> Function(List) _onPermissionRequest;
+
   final Map<String, JavascriptChannel> _javascriptChannels =
       // ignoring warning as min SDK version doesn't support collection literals yet
       // ignore: prefer_collection_literals
       Map<String, JavascriptChannel>();
 
-  Future<Null> _handleMessages(MethodCall call) async {
+  Future<dynamic> _handleMessages(MethodCall call) async {
     switch (call.method) {
       case 'onBack':
         _onBack.add(null);
@@ -67,6 +69,13 @@ class FlutterWebviewPlugin {
         break;
       case 'onProgressChanged':
         _onProgressChanged.add(call.arguments['progress']);
+        break;
+      case 'onPermissionRequest':
+        if(_onPermissionRequest != null){
+          final List<String> permissions = call.arguments['permissions'].toString().split(',');
+          return await _onPermissionRequest(permissions);
+        } else 
+          return false;
         break;
       case 'onState':
         _onStateChanged.add(
@@ -152,6 +161,7 @@ class FlutterWebviewPlugin {
     Rect rect,
     String userAgent,
     bool withZoom,
+    Future<bool> Function(List) onPermissionRequest,
     bool displayZoomControls,
     bool withLocalStorage,
     bool withLocalUrl,
@@ -189,6 +199,8 @@ class FlutterWebviewPlugin {
       'withOverviewMode': withOverviewMode ?? false,
       'debuggingEnabled': debuggingEnabled ?? false,
     };
+
+    _onPermissionRequest = onPermissionRequest;
 
     if (headers != null) {
       args['headers'] = headers;

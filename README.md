@@ -113,6 +113,34 @@ flutterWebviewPlugin.onScrollXChanged.listen((double offsetX) { // latest offset
 Note: Do note there is a slight difference is scroll distance between ios and android. Android scroll value difference tends to be larger than ios devices.
 
 
+#### Listen for permission request
+
+```dart
+WebviewScaffold(
+  url: selectedUrl,
+  appBar: new AppBar(
+    title: const Text('Widget webview with access media'),
+  ),
+  withZoom: true,
+  withLocalStorage: true,
+  withJavascript: true,
+  allowFileURLs: true,
+  hidden: true,
+  onPermissionRequest: (resources) async {
+    // request permission here
+    print(resources);
+    return true;
+  },
+  initialChild: Container(
+    color: Colors.redAccent,
+    child: const Center(
+      child: Text('Waiting.....'),
+    ),
+  ),
+)
+
+````
+
 #### Hidden WebView
 
 ```dart
@@ -191,6 +219,7 @@ Future<Null> launch(String url, {
    Rect rect: null,
    String userAgent: null,
    bool withZoom: false,
+   Future<bool> Function(List) onPermissionRequest
    bool withLocalStorage: true,
    bool withLocalUrl: true,
    String localUrlScope: null,

@@ -23,6 +23,7 @@ class WebviewScaffold extends StatefulWidget {
     this.persistentFooterButtons,
     this.bottomNavigationBar,
     this.withZoom,
+    this.onPermissionRequest,
     this.displayZoomControls,
     this.withLocalStorage,
     this.withLocalUrl,
@@ -54,6 +55,7 @@ class WebviewScaffold extends StatefulWidget {
   final List<Widget> persistentFooterButtons;
   final Widget bottomNavigationBar;
   final bool withZoom;
+  final Future<bool> Function(List) onPermissionRequest;
   final bool displayZoomControls;
   final bool withLocalStorage;
   final bool withLocalUrl;
@@ -161,6 +163,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
               userAgent: widget.userAgent,
               rect: _rect,
               withZoom: widget.withZoom,
+              onPermissionRequest: widget.onPermissionRequest,
               displayZoomControls: widget.displayZoomControls,
               withLocalStorage: widget.withLocalStorage,
               withLocalUrl: widget.withLocalUrl,
