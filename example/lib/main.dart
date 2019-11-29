@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/': (_) => const MyHomePage(title: 'Flutter WebView Demo'),
-        '/widget': (_) {
+        '/permissionweb': (_){
           return WebviewScaffold(
             url: "https://talky.io/tester",
             onPermissionRequest: (resources) async {
@@ -40,6 +40,50 @@ class MyApp extends StatelessWidget {
               print(resources);
               return true;
             },
+            javascriptChannels: jsChannels,
+            appBar: AppBar(
+              title: const Text('Widget WebView'),
+            ),
+            withZoom: true,
+            withLocalStorage: true,
+            withJavascript: true,
+            allowFileURLs: true,
+            hidden: true,
+            initialChild: Container(
+              color: Colors.redAccent,
+              child: const Center(
+                child: Text('Waiting.....'),
+              ),
+            ),
+            bottomNavigationBar: BottomAppBar(
+              child: Row(
+                children: <Widget>[
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios),
+                    onPressed: () {
+                      flutterWebViewPlugin.goBack();
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_forward_ios),
+                    onPressed: () {
+                      flutterWebViewPlugin.goForward();
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.autorenew),
+                    onPressed: () {
+                      flutterWebViewPlugin.reload();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+        '/widget': (_) {
+          return WebviewScaffold(
+            url: selectedUrl,
             javascriptChannels: jsChannels,
             appBar: AppBar(
               title: const Text('Widget WebView'),
@@ -251,6 +295,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 flutterWebViewPlugin.launch(selectedUrl);
               },
               child: const Text('Open Fullscreen Webview'),
+            ),
+            RaisedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/permissionweb');
+              },
+              child: const Text('Open webview with permission request'),
             ),
             RaisedButton(
               onPressed: () {
