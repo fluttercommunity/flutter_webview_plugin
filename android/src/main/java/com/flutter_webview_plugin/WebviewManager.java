@@ -274,7 +274,7 @@ class WebviewManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return FileProvider.getUriForFile(context, packageName + ".fileprovider", capturedFile);
+        return FileProvider.getUriForFile(context, packageName + ".fileProvider", capturedFile);
     }
 
     private File createCapturedFile(String prefix, String suffix) throws IOException {
