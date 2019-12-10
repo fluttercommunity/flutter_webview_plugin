@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.net.http.SslError;
 import android.os.Build;
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
+import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -123,6 +125,7 @@ class WebviewManager {
     BrowserClient webViewClient;
     ResultHandler resultHandler;
     Context context;
+    private boolean ignoreSSLErrors = false;
 
     WebviewManager(final Activity activity, final Context context, final List<String> channelNames) {
         this.webView = new ObservableWebView(activity);
@@ -130,7 +133,16 @@ class WebviewManager {
         this.context = context;
         this.resultHandler = new ResultHandler();
         this.platformThreadHandler = new Handler(context.getMainLooper());
-        webViewClient = new BrowserClient();
+        webViewClient = new BrowserClient() {
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                if (ignoreSSLErrors){
+                    handler.proceed();
+                }else {
+                    super.onReceivedSslError(view, handler, error);
+                }
+            }
+        };
         webView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -240,6 +252,7 @@ class WebviewManager {
                 activity.startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
                 return true;
             }
+
 
             @Override
             public void onProgressChanged(WebView view, int progress) {
@@ -365,7 +378,8 @@ class WebviewManager {
             boolean useWideViewPort,
             String invalidUrlRegex,
             boolean geolocationEnabled,
-            boolean debuggingEnabled
+            boolean debuggingEnabled,
+            boolean ignoreSSLErrors
     ) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
@@ -388,6 +402,8 @@ class WebviewManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             webView.setWebContentsDebuggingEnabled(debuggingEnabled);
         }
+        //ignore SSL errors
+        this.ignoreSSLErrors = ignoreSSLErrors;
 
         webViewClient.updateInvalidUrlRegex(invalidUrlRegex);
 
