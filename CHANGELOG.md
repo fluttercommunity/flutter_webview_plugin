@@ -1,3 +1,8 @@
+# 0.3.10
+
+- add mediaPlaybackRequiresUserGesture parameter
+- Add ignore ssl error parameter
+
 # 0.3.9+1
 
 - Fixed error methods on iOS

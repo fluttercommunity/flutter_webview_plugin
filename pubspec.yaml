@@ -7,7 +7,7 @@ authors:
 - Simon Lightfoot <simon@devangels.london>
 - Rafal Wachol <gorudonu@gmail.com>
 homepage: https://github.com/dart-flitter/flutter_webview_plugin
-version: 0.3.9+1
+version: 0.3.10
 maintainer: Rafal Wachol (@RafalWachol) 
 
 environment:
