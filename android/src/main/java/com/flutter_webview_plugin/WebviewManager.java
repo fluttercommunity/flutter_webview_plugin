@@ -8,6 +8,7 @@ import android.content.Context;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -125,20 +126,22 @@ class WebviewManager {
     BrowserClient webViewClient;
     ResultHandler resultHandler;
     Context context;
+    private String providerName;
     private boolean ignoreSSLErrors = false;
 
-    WebviewManager(final Activity activity, final Context context, final List<String> channelNames) {
+    WebviewManager(final Activity activity, final Context context, final List<String> channelNames, String providerName) {
         this.webView = new ObservableWebView(activity);
         this.activity = activity;
         this.context = context;
         this.resultHandler = new ResultHandler();
         this.platformThreadHandler = new Handler(context.getMainLooper());
+        this.providerName = providerName;
         webViewClient = new BrowserClient() {
             @Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                if (ignoreSSLErrors){
+                if (ignoreSSLErrors) {
                     handler.proceed();
-                }else {
+                } else {
                     super.onReceivedSslError(view, handler, error);
                 }
             }
@@ -287,7 +290,10 @@ class WebviewManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return FileProvider.getUriForFile(context, packageName + ".fileprovider", capturedFile);
+        if (TextUtils.isEmpty(providerName)) {
+            providerName = "fileprovider";
+        }
+        return FileProvider.getUriForFile(context, packageName + "." + providerName, capturedFile);
     }
 
     private File createCapturedFile(String prefix, String suffix) throws IOException {
@@ -360,6 +366,7 @@ class WebviewManager {
     }
 
     void openUrl(
+            Integer initialScale,
             boolean withJavascript,
             boolean clearCache,
             boolean hidden,
@@ -382,6 +389,8 @@ class WebviewManager {
             boolean debuggingEnabled,
             boolean ignoreSSLErrors
     ) {
+        if (initialScale != null)
+            webView.setInitialScale(initialScale);
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
@@ -533,7 +542,7 @@ class WebviewManager {
     /**
      * Clears cache
      */
-    void cleanCache(){
+    void cleanCache() {
         webView.clearCache(true);
     }
 
