@@ -364,6 +364,7 @@ class WebviewManager {
             boolean clearCache,
             boolean hidden,
             boolean clearCookies,
+            boolean mediaPlaybackRequiresUserGesture,
             String userAgent,
             String url,
             Map<String, String> headers,
@@ -397,6 +398,10 @@ class WebviewManager {
         webView.getSettings().setAllowUniversalAccessFromFileURLs(allowFileURLs);
 
         webView.getSettings().setUseWideViewPort(useWideViewPort);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            webView.getSettings().setMediaPlaybackRequiresUserGesture(mediaPlaybackRequiresUserGesture);
+        }
 
         // Handle debugging
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
