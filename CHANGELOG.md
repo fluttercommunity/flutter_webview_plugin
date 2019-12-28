@@ -1,5 +1,7 @@
-# 0.3.10
+# 0.3.10+1
+- fixed android build
 
+# 0.3.10
 - add mediaPlaybackRequiresUserGesture parameter
 - Add ignore ssl error parameter
 
