@@ -125,10 +125,8 @@ class WebviewManager {
     Context context;
 
     WebviewManager(final Activity activity, final Context context, final List<String> channelNames) {
-        this.activity = activity;
-        AndroidBug5497Workaround.assistActivity(activity);
-
         this.webView = new ObservableWebView(activity);
+        this.activity = activity;
         this.context = context;
         this.resultHandler = new ResultHandler();
         this.platformThreadHandler = new Handler(context.getMainLooper());
