@@ -172,7 +172,7 @@ Set the `ignoreSSLErrors` option to true to display content from servers with ce
 
 **_Warning:_** Don't use this in production. 
 
-Note that on iOS you you need to add new key to `ios/Runner/Info.plist`
+Note that on iOS, you need to add new key to `ios/Runner/Info.plist`
 
 ```xml
 <key>NSAppTransportSecurity</key>
@@ -187,7 +187,7 @@ Note that on iOS you you need to add new key to `ios/Runner/Info.plist`
 `NSAllowsArbitraryLoadsInWebContent` is for iOS 10+ and `NSAllowsArbitraryLoads` for iOS 9.
 Otherwise you'll still not be able to display content from pages with untrusted certificates.
 
-You can test your ignorance of ssl certificates is working e.g. through https://self-signed.badssl.com/ 
+You can test your ignorance if ssl certificates is working e.g. through https://self-signed.badssl.com/ 
 
 
 
