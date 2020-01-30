@@ -14,6 +14,8 @@ class WebviewScaffold extends StatefulWidget {
     @required this.url,
     this.headers,
     this.javascriptChannels,
+    this.initialScale,
+    this.providerName,
     this.withJavascript,
     this.clearCache,
     this.clearCookies,
@@ -47,6 +49,8 @@ class WebviewScaffold extends StatefulWidget {
   final String url;
   final Map<String, String> headers;
   final Set<JavascriptChannel> javascriptChannels;
+  final int initialScale;
+  final String providerName;
   final bool withJavascript;
   final bool clearCache;
   final bool clearCookies;
@@ -157,10 +161,13 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
               widget.url,
               headers: widget.headers,
               javascriptChannels: widget.javascriptChannels,
+              initialScale: widget.initialScale,
+              providerName: widget.providerName,
               withJavascript: widget.withJavascript,
               clearCache: widget.clearCache,
               clearCookies: widget.clearCookies,
-              mediaPlaybackRequiresUserGesture: widget.mediaPlaybackRequiresUserGesture,
+              mediaPlaybackRequiresUserGesture:
+                  widget.mediaPlaybackRequiresUserGesture,
               hidden: widget.hidden,
               enableAppScheme: widget.enableAppScheme,
               userAgent: widget.userAgent,
