@@ -1,13 +1,21 @@
 package com.flutter_webview_plugin;
 
-import android.content.Intent;
-import android.net.Uri;
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Handler;
+import android.provider.MediaStore;
+import android.provider.OpenableColumns;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,21 +27,21 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
-import android.provider.MediaStore;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import android.database.Cursor;
-import android.provider.OpenableColumns;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.io.File;
-import java.util.Date;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -48,7 +56,9 @@ class WebviewManager {
 
     private ValueCallback<Uri> mUploadMessage;
     private ValueCallback<Uri[]> mUploadMessageArray;
+    private Intent chooserIntent;
     private final static int FILECHOOSER_RESULTCODE = 1;
+    private final static int PERMISSIONS_FILECHOOSER = 2;
     private Uri fileUri;
     private Uri videoUri;
 
@@ -95,6 +105,37 @@ class WebviewManager {
                 }
             }
             return handled;
+        }
+
+        public boolean handlePermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+            if (requestCode == PERMISSIONS_FILECHOOSER) {
+                boolean permissionsGranted = grantResults.length > 0;
+                if (permissionsGranted) {
+                    for (int result : grantResults) {
+                        if (result == PackageManager.PERMISSION_DENIED) {
+                            permissionsGranted = false;
+                            break;
+                        }
+                    }
+                    if (permissionsGranted && chooserIntent != null) {
+                        activity.startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
+                        chooserIntent = null;
+                    } else if (!permissionsGranted) {
+                        if (mUploadMessageArray != null) {
+                            mUploadMessageArray.onReceiveValue(null);
+                            mUploadMessageArray = null;
+                        }
+                    }
+                    return permissionsGranted;
+                } else {
+                    if (mUploadMessageArray != null) {
+                        mUploadMessageArray.onReceiveValue(null);
+                        mUploadMessageArray = null;
+                    }
+                    return false;
+                }
+            }
+            return false;
         }
     }
 
@@ -210,29 +251,32 @@ class WebviewManager {
             }
 
             //For Android 5.0+
-            public boolean onShowFileChooser(
-                    WebView webView, ValueCallback<Uri[]> filePathCallback,
-                    FileChooserParams fileChooserParams) {
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
                 if (mUploadMessageArray != null) {
                     mUploadMessageArray.onReceiveValue(null);
                 }
                 mUploadMessageArray = filePathCallback;
 
                 final String[] acceptTypes = getSafeAcceptedTypes(fileChooserParams);
-                List<Intent> intentList = new ArrayList<Intent>();
+                List<Intent> intentList = new ArrayList<>();
+
+
                 fileUri = null;
                 videoUri = null;
+                boolean cameraPermissionNeeded = false;
                 if (acceptsImages(acceptTypes)) {
                     Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     fileUri = getOutputFilename(MediaStore.ACTION_IMAGE_CAPTURE);
                     takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                     intentList.add(takePhotoIntent);
+                    cameraPermissionNeeded = true;
                 }
                 if (acceptsVideo(acceptTypes)) {
                     Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
                     videoUri = getOutputFilename(MediaStore.ACTION_VIDEO_CAPTURE);
                     takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
                     intentList.add(takeVideoIntent);
+                    cameraPermissionNeeded = true;
                 }
                 Intent contentSelectionIntent;
                 if (Build.VERSION.SDK_INT >= 21) {
@@ -246,13 +290,45 @@ class WebviewManager {
                 }
                 Intent[] intentArray = intentList.toArray(new Intent[intentList.size()]);
 
-                Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
+                if (cameraPermissionNeeded && ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                    cameraPermissionNeeded = false;
+                }
+
+
+                chooserIntent = new Intent(Intent.ACTION_CHOOSER);
                 chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
                 chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
-                activity.startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
-                return true;
-            }
 
+                if (cameraPermissionNeeded) {
+                    if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.CAMERA)) {
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity, R.style.Theme_AppCompat_Dialog_Alert);
+                        alertDialogBuilder.setTitle(activity.getString(R.string.camera_permission_dialog_title));
+                        alertDialogBuilder
+                                .setMessage(activity.getString(R.string.camera_permission_dialog_content))
+                                .setPositiveButton(activity.getString(R.string.settings), new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                        Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
+                                        intent.setData(uri);
+                                        activity.startActivityForResult(intent, 1000);
+                                    }
+                                });
+
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+                        alertDialog.show();
+                        mUploadMessageArray = null;
+                        return false;
+                    } else {
+                        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSIONS_FILECHOOSER);
+                        return true;
+                    }
+
+                } else {
+                    activity.startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
+                    chooserIntent = null;
+                    return true;
+                }
+            }
 
             @Override
             public void onProgressChanged(WebView view, int progress) {
