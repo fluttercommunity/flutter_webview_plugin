@@ -4,7 +4,7 @@
 
     <application>
         <provider
-            android:name="androidx.core.content.FileProvider"
+            android:name="com.flutter_webview_plugin.FlutterWebviewPluginFileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true"
