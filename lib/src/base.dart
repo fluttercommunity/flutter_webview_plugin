@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_webview_plugin/src/javascript_channel.dart';
 
+import 'dart:convert';
 import 'javascript_message.dart';
 
 const _kChannel = 'flutter_webview_plugin';
@@ -307,6 +308,11 @@ class FlutterWebviewPlugin {
     }
 
     return cookies;
+  }
+
+ Future <String> getSource() async {
+    final Source=jsonDecode(await evalJavascript('document.documentElement.outerHTML'));
+    return Source;
   }
 
   /// resize webview
