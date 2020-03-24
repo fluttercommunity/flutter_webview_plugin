@@ -554,4 +554,11 @@ class WebviewManager {
             webView.stopLoading();
         }
     }
+
+    double getContentHeight(){
+        double height = Math.floor(webView.getContentHeight() * webView.getScale());
+        double webViewHeight = webView.getHeight();
+        double cutoff = height - webViewHeight;
+        return cutoff;
+    }
 }

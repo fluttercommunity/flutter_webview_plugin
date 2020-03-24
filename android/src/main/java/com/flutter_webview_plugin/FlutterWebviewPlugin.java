@@ -91,6 +91,9 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             case "canGoForward":
                 canGoForward(result);
                 break;
+            case "getContentHeight":
+                getContentHeight(result);
+                break;    
             case "cleanCache":
                 cleanCache(result);
                 break;
@@ -231,6 +234,17 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     private void canGoForward(MethodChannel.Result result) {
         if (webViewManager != null) {
             result.success(webViewManager.canGoForward());
+        } else {
+            result.error("Webview is null", null, null);
+        }
+    }
+
+    /**
+     * Get webview height
+     */
+    private void getContentHeight(MethodChannel.Result result) {
+        if (webViewManager != null) {
+            result.success(webViewManager.getContentHeight());
         } else {
             result.error("Webview is null", null, null);
         }

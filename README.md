@@ -297,3 +297,7 @@ Future<bool> canGoBack();
 ```dart
 Future<bool> canGoForward();
 ```
+
+```dart
+Future<double> getContentHeight();
+```
