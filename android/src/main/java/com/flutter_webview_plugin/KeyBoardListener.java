@@ -15,7 +15,7 @@ public class KeyBoardListener {
     private int usableHeightPrevious;
     private int statusHeight = 0;
     private FrameLayout.LayoutParams frameLayoutParams;
-    private ViewTreeObserver.OnGlobalLayoutListener  layoutListener;
+    private ViewTreeObserver.OnGlobalLayoutListener layoutListener;
 
     private static KeyBoardListener keyBoardListener;
 
@@ -51,7 +51,10 @@ public class KeyBoardListener {
     }
 
     public void uninstall() {
-        mChildOfContent.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
+        if (layoutListener != null) {
+            mChildOfContent.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
+        }
+
     }
 
 
