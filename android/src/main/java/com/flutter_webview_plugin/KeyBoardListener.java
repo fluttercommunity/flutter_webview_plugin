@@ -15,12 +15,13 @@ public class KeyBoardListener {
     private int usableHeightPrevious;
     private int statusHeight = 0;
     private FrameLayout.LayoutParams frameLayoutParams;
+    private ViewTreeObserver.OnGlobalLayoutListener  layoutListener;
 
     private static KeyBoardListener keyBoardListener;
 
 
     public static KeyBoardListener getInstance(Activity activity) {
-        keyBoardListener=new KeyBoardListener(activity);
+        keyBoardListener = new KeyBoardListener(activity);
         return keyBoardListener;
     }
 
@@ -37,16 +38,20 @@ public class KeyBoardListener {
         FrameLayout content = (FrameLayout) activity
                 .findViewById(android.R.id.content);
         mChildOfContent = content.getChildAt(0);
-        mChildOfContent.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    public void onGlobalLayout() {
-                        possiblyResizeChildOfContent();
-                    }
-                });
+        layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+            public void onGlobalLayout() {
+                possiblyResizeChildOfContent();
+            }
+        };
+        mChildOfContent.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
         frameLayoutParams = (FrameLayout.LayoutParams) mChildOfContent
                 .getLayoutParams();
 
 
+    }
+
+    public void uninstall() {
+        mChildOfContent.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
     }
 
 
@@ -58,7 +63,7 @@ public class KeyBoardListener {
                     .getHeight();
 
             int heightDifference = usableHeightSansKeyboard - usableHeightNow;
-            if(statusHeight == 0){
+            if (statusHeight == 0) {
                 statusHeight = heightDifference + 1; // the first heightDifference is statusHeight， add 1 solve spacing webview with keyboard
             }
             if (heightDifference > (usableHeightSansKeyboard / 4)) {

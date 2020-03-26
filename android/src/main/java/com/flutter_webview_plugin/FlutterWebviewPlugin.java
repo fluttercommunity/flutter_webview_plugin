@@ -197,6 +197,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     }
 
     void close(MethodCall call, MethodChannel.Result result) {
+        KeyBoardListener.getInstance(activity).uninstall(); // uninstall the keyboard listener
         if (webViewManager != null) {
             webViewManager.close(call, result);
             webViewManager = null;
