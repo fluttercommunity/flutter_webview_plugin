@@ -118,7 +118,7 @@ class FlutterWebviewPlugin {
   /// - [clearCookies] clear all cookies of the Webview
   /// - [hidden] not show
   /// - [rect]: show in rect, fullscreen if null
-  /// - [enableAppScheme]: false will enable all schemes, true only for httt/https/about
+  /// - [enableAppScheme]: false will enable all schemes, true only for http/https/about
   ///     android: Not implemented yet
   /// - [userAgent]: set the User-Agent of WebView
   /// - [withZoom]: enable zoom on webview
