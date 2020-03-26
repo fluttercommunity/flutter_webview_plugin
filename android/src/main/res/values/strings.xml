@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="camera_permission_dialog_title">Change Permissions in Settings</string>
+    <string name="camera_permission_dialog_content">Click SETTINGS to manually set Permissions to upload photo from camera</string>
+    <string name="settings">SETTINGS</string>
+</resources>
