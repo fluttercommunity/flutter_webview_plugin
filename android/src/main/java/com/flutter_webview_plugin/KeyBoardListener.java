@@ -21,7 +21,9 @@ public class KeyBoardListener {
 
 
     public static KeyBoardListener getInstance(Activity activity) {
-        keyBoardListener = new KeyBoardListener(activity);
+        if(keyBoardListener == null) {
+            keyBoardListener = new KeyBoardListener(activity);
+        }
         return keyBoardListener;
     }
 
