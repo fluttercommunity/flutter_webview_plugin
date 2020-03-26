@@ -36,6 +36,7 @@ class FlutterWebviewPlugin {
   final _onBack = StreamController<Null>.broadcast();
   final _onDestroy = StreamController<Null>.broadcast();
   final _onUrlChanged = StreamController<String>.broadcast();
+  final _onCookieChanged = StreamController<String>.broadcast();
   final _onStateChanged = StreamController<WebViewStateChanged>.broadcast();
   final _onScrollXChanged = StreamController<double>.broadcast();
   final _onScrollYChanged = StreamController<double>.broadcast();
@@ -83,6 +84,9 @@ class FlutterWebviewPlugin {
         _handleJavascriptChannelMessage(
             call.arguments['channel'], call.arguments['message']);
         break;
+      case 'onCookieUpdate':
+        _onCookieChanged.add(call.arguments['realCookie']);
+        break;
     }
   }
 
@@ -94,6 +98,9 @@ class FlutterWebviewPlugin {
 
   /// Listening url changed
   Stream<String> get onUrlChanged => _onUrlChanged.stream;
+
+  /// Listening web view cookie changed
+  Stream<String> get onCookieChanged => _onCookieChanged.stream;
 
   /// Listening the onState Event for iOS WebView and Android
   /// content is Map for type: {shouldStart(iOS)|startLoad|finishLoad}
