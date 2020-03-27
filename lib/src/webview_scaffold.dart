@@ -132,6 +132,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
 
   @override
   void dispose() {
+    webviewReference.reloadUrl('about:blank');
     super.dispose();
     _onBack?.cancel();
     _resizeTimer?.cancel();
