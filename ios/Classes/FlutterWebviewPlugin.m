@@ -279,45 +279,45 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 }
 
 - (void)cleanCookies:(FlutterResult)result {
-    if(self.webview != nil) {
-        [[NSURLSession sharedSession] resetWithCompletionHandler:^{
-        }];
-        if (@available(iOS 9.0, *)) {
-          NSSet<NSString *> *websiteDataTypes = [NSSet setWithObject:WKWebsiteDataTypeCookies];
-          WKWebsiteDataStore *dataStore = [WKWebsiteDataStore defaultDataStore];
+    
+    [[NSURLSession sharedSession] resetWithCompletionHandler:^{
+    }];
+    if (@available(iOS 9.0, *)) {
+        NSSet<NSString *> *websiteDataTypes = [NSSet setWithObject:WKWebsiteDataTypeCookies];
+        WKWebsiteDataStore *dataStore = [WKWebsiteDataStore defaultDataStore];
 
-          void (^deleteAndNotify)(NSArray<WKWebsiteDataRecord *> *) =
-              ^(NSArray<WKWebsiteDataRecord *> *cookies) {
-                [dataStore removeDataOfTypes:websiteDataTypes
-                              forDataRecords:cookies
-                           completionHandler:^{
-                            result(nil);
-                           }];
-              };
+        void (^deleteAndNotify)(NSArray<WKWebsiteDataRecord *> *) =
+            ^(NSArray<WKWebsiteDataRecord *> *cookies) {
+            [dataStore removeDataOfTypes:websiteDataTypes
+                            forDataRecords:cookies
+                        completionHandler:^{
+                        result(nil);
+                        }];
+            };
 
-          [dataStore fetchDataRecordsOfTypes:websiteDataTypes completionHandler:deleteAndNotify];
-        } else {
-          // support for iOS8 tracked in https://github.com/flutter/flutter/issues/27624.
-          NSLog(@"Clearing cookies is not supported for Flutter WebViews prior to iOS 9.");
-        }
+        [dataStore fetchDataRecordsOfTypes:websiteDataTypes completionHandler:deleteAndNotify];
+    } else {
+        // support for iOS8 tracked in https://github.com/flutter/flutter/issues/27624.
+        NSLog(@"Clearing cookies is not supported for Flutter WebViews prior to iOS 9.");
+        result(nil);
     }
+    
 }
 
 - (void)cleanCache:(FlutterResult)result {
-    if (self.webview != nil) {
-       if (@available(iOS 9.0, *)) {
-          NSSet* cacheDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
-          WKWebsiteDataStore* dataStore = [WKWebsiteDataStore defaultDataStore];
-          NSDate* dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
-          [dataStore removeDataOfTypes:cacheDataTypes
-                         modifiedSince:dateFrom
-                     completionHandler:^{
-              result(nil);
-                     }];
-        } else {
-          // support for iOS8 tracked in https://github.com/flutter/flutter/issues/27624.
-          NSLog(@"Clearing cache is not supported for Flutter WebViews prior to iOS 9.");
-        }
+    if (@available(iOS 9.0, *)) {
+        NSSet* cacheDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
+        WKWebsiteDataStore* dataStore = [WKWebsiteDataStore defaultDataStore];
+        NSDate* dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+        [dataStore removeDataOfTypes:cacheDataTypes
+                        modifiedSince:dateFrom
+                    completionHandler:^{
+            result(nil);
+                    }];
+    } else {
+        // support for iOS8 tracked in https://github.com/flutter/flutter/issues/27624.
+        NSLog(@"Clearing cache is not supported for Flutter WebViews prior to iOS 9.");
+        result(nil);
     }
 }
 
