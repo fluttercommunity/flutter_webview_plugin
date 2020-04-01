@@ -96,6 +96,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     NSNumber *withJavascript = call.arguments[@"withJavascript"];
     _invalidUrlRegex = call.arguments[@"invalidUrlRegex"];
     _ignoreSSLErrors = call.arguments[@"ignoreSSLErrors"];
+    double alpha = [call.arguments[@"setAlpha"] doubleValue];
     _javaScriptChannelNames = [[NSMutableSet alloc] init];
     
     WKUserContentController* userContentController = [[WKUserContentController alloc] init];
@@ -142,7 +143,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     self.webview.hidden = [hidden boolValue];
     self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
     self.webview.scrollView.showsVerticalScrollIndicator = [scrollBar boolValue];
-    
+    //because less that 0.02 is considered as invisible and Apple's engineers decided that invisible controls should not be clickable.
+    self.webview.alpha = alpha == 0? 0.02: alpha;
     [self.webview addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:NULL];
 
     WKPreferences* preferences = [[self.webview configuration] preferences];
