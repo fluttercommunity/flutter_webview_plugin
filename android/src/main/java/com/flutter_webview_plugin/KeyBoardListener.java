@@ -52,8 +52,16 @@ public class KeyBoardListener {
 
     }
 
+    /**
+     * 销毁
+     */
     public void uninstall() {
         if (layoutListener != null) {
+            // 移除之前先将高度恢复
+            int usableHeightSansKeyboard = mChildOfContent.getRootView()
+                    .getHeight();
+            frameLayoutParams.height = usableHeightSansKeyboard;
+            // 移除监听事件
             mChildOfContent.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
         }
 
