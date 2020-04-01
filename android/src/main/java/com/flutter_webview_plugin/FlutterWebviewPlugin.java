@@ -1,6 +1,5 @@
 package com.flutter_webview_plugin;
 
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,11 +10,16 @@ import android.widget.FrameLayout;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
 import android.os.Build;
+import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -24,26 +28,69 @@ import io.flutter.plugin.common.PluginRegistry;
 /**
  * FlutterWebviewPlugin
  */
-public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener {
+public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener, FlutterPlugin, ActivityAware {
     private Activity activity;
+    private ActivityPluginBinding binding;
     private WebviewManager webViewManager;
-    private Context context;
     static MethodChannel channel;
     private static final String CHANNEL_NAME = "flutter_webview_plugin";
     private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
 
     public static void registerWith(PluginRegistry.Registrar registrar) {
         if (registrar.activity() != null) {
-            channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-            final FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity(), registrar.activeContext());
+            final FlutterWebviewPlugin instance = new FlutterWebviewPlugin();
+            this.activity = registrar.activity();
             registrar.addActivityResultListener(instance);
             channel.setMethodCallHandler(instance);
         }
     }
 
-    FlutterWebviewPlugin(Activity activity, Context context) {
-        this.activity = activity;
-        this.context = context;
+    private void initInstance(BinaryMessenger messenger) {
+      channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
+      channel.setMethodCallHandler(this);
+    }
+
+    @Override
+    public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+      initInstance(binding.getBinaryMessenger());
+    }
+  
+    @Override
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+      channel.setMethodCallHandler(null);
+      channel = null;
+    }
+
+    private void attachToActivity(ActivityPluginBinding binding) {
+      activity = binding.getActivity();
+      this.binding = binding;
+      binding.addActivityResultListener(this);
+    }
+
+    private void disposeActivity() {
+      binding.removeActivityResultListener(this);
+      binding = null;
+      activity = null;
+    }
+
+    @Override
+    public void onAttachedToActivity(ActivityPluginBinding activityPluginBinding) {
+      attachToActivity(activityPluginBinding);
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+      disposeActivity();
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(ActivityPluginBinding activityPluginBinding) {
+      attachToActivity(activityPluginBinding);
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+      disposeActivity();
     }
 
     @Override
@@ -135,7 +182,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             if (arguments.containsKey(JS_CHANNEL_NAMES_FIELD)) {
                 channelNames = (List<String>) arguments.get(JS_CHANNEL_NAMES_FIELD);
             }
-            webViewManager = new WebviewManager(activity, context, channelNames);
+            webViewManager = new WebviewManager(activity, activity, channelNames);
         }
 
         FrameLayout.LayoutParams params = buildLayoutParams(call);

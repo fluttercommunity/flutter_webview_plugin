@@ -1,7 +1,13 @@
+# 0.4.0
+
+- Migrate to Android v2 embedding.
+
 # 0.3.10+1
+
 - fixed android build
 
 # 0.3.10
+
 - add mediaPlaybackRequiresUserGesture parameter
 - Add ignore ssl error parameter
 
