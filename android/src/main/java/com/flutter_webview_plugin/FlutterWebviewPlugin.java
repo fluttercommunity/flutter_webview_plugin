@@ -39,9 +39,9 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     public static void registerWith(PluginRegistry.Registrar registrar) {
         if (registrar.activity() != null) {
             final FlutterWebviewPlugin instance = new FlutterWebviewPlugin();
-            this.activity = registrar.activity();
+            instance.activity = registrar.activity();
             registrar.addActivityResultListener(instance);
-            channel.setMethodCallHandler(instance);
+            instance.initInstance(registrar.messenger());
         }
     }
 
