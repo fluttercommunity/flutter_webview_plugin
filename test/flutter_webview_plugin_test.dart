@@ -45,6 +45,10 @@ void main() {
       webview.canGoForward();
       verify(methodChannel.invokeMethod('canGoForward')).called(1);
     });
+    test('Should invoke getContentHeight', () async {
+      webview.getContentHeight();
+      verify(methodChannel.invokeMethod('getContentHeight')).called(1);
+    });
   });
 }
 

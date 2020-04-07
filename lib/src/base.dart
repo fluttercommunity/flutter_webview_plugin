@@ -262,6 +262,9 @@ class FlutterWebviewPlugin {
   // Clears browser cache
   Future<Null> clearCache() async => await _channel.invokeMethod('cleanCache');
 
+  // Gets webview content height 
+  Future<double> getContentHeight() async => await _channel.invokeMethod('getContentHeight');
+
   // Reload webview with a url
   Future<Null> reloadUrl(String url, {Map<String, String> headers}) async {
     final args = <String, dynamic>{'url': url};
