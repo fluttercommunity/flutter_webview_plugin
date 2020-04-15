@@ -94,6 +94,7 @@ public class BrowserClient extends WebViewClient {
     @Override
     public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
         super.onReceivedHttpError(view, request, errorResponse);
+        plugin.setRefreshingToFalse();
         Map<String, Object> data = new HashMap<>();
         data.put("url", request.getUrl().toString());
         data.put("code", Integer.toString(errorResponse.getStatusCode()));
@@ -103,6 +104,7 @@ public class BrowserClient extends WebViewClient {
     @Override
     public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
         super.onReceivedError(view, errorCode, description, failingUrl);
+        plugin.setRefreshingToFalse();
         Map<String, Object> data = new HashMap<>();
         data.put("url", failingUrl);
         data.put("code", Integer.toString(errorCode));
