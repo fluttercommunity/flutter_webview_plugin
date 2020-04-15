@@ -273,6 +273,10 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         // manually trigger onDestroy
         [channel invokeMethod:@"onDestroy" arguments:nil];
     }
+    if(self.refController !=nil){
+        [self.refController removeFromSuperview];
+        self.webview = nil;
+    }
 }
 
 - (void)reloadUrl:(FlutterMethodCall*)call {
