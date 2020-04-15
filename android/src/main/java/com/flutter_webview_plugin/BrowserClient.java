@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 
 public class BrowserClient extends WebViewClient {
     private Pattern invalidUrlPattern = null;
+    public FlutterWebviewPlugin plugin;
 
     public BrowserClient() {
         this(null);
@@ -53,7 +54,7 @@ public class BrowserClient extends WebViewClient {
         super.onPageFinished(view, url);
         Map<String, Object> data = new HashMap<>();
         data.put("url", url);
-
+        plugin.setRefreshingToFalse();
         FlutterWebviewPlugin.channel.invokeMethod("onUrlChanged", data);
 
         data.put("type", "finishLoad");

@@ -6,11 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.view.Display;
+import android.view.ViewGroup;
 import android.webkit.WebStorage;
 import android.widget.FrameLayout;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
 import android.os.Build;
+
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +34,12 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     static MethodChannel channel;
     private static final String CHANNEL_NAME = "flutter_webview_plugin";
     private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
+    private SwipeRefreshLayout swipeRefresh;
+
+    public void setRefreshingToFalse() {
+        if (swipeRefresh != null && swipeRefresh.isRefreshing())
+            swipeRefresh.setRefreshing(false);
+    }
 
     public static void registerWith(PluginRegistry.Registrar registrar) {
         if (registrar.activity() != null) {
@@ -106,7 +115,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         result.success(null);
     }
 
-    void openUrl(MethodCall call, MethodChannel.Result result) {
+    void openUrl(final MethodCall call, final MethodChannel.Result result) {
         boolean hidden = call.argument("hidden");
         String url = call.argument("url");
         String userAgent = call.argument("userAgent");
@@ -128,6 +137,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         boolean geolocationEnabled = call.argument("geolocationEnabled");
         boolean debuggingEnabled = call.argument("debuggingEnabled");
         boolean ignoreSSLErrors = call.argument("ignoreSSLErrors");
+        boolean pullToRefresh = call.argument("pullToRefresh");
 
         if (webViewManager == null || webViewManager.closed == true) {
             Map<String, Object> arguments = (Map<String, Object>) call.arguments;
@@ -136,12 +146,25 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
                 channelNames = (List<String>) arguments.get(JS_CHANNEL_NAMES_FIELD);
             }
             webViewManager = new WebviewManager(activity, context, channelNames);
+            webViewManager.setFlutterWebviewPlugin(this);
         }
 
         FrameLayout.LayoutParams params = buildLayoutParams(call);
 
-        activity.addContentView(webViewManager.webView, params);
-
+        if (pullToRefresh) {
+            swipeRefresh = new SwipeRefreshLayout(context);
+            swipeRefresh.setLayoutParams(params);
+            swipeRefresh.addView(webViewManager.webView);
+            swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    webViewManager.reload(call, result);
+                }
+            });
+            activity.addContentView(swipeRefresh, params);
+        } else {
+            activity.addContentView(webViewManager.webView, params);
+        }
         webViewManager.openUrl(withJavascript,
                 clearCache,
                 hidden,
@@ -226,6 +249,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
 
     /**
      * Checks if can navigate forward
+     *
      * @param result
      */
     private void canGoForward(MethodChannel.Result result) {

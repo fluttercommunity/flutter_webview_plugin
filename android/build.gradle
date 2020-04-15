@@ -31,6 +31,17 @@ allprojects {
     }
 }
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader -> localProperties.load(reader) }
+}
+
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+}
+
 apply plugin: 'com.android.library'
 
 android {
@@ -54,8 +65,9 @@ android {
 }
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 
-	testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
     testImplementation 'androidx.test:core:1.2.0'
 
 //    When running unit tests for project, gradle needs to have flutter.jar in path
@@ -63,9 +75,11 @@ dependencies {
 //    ./gradlew test -DflutterPath=/Users/rafal.wachol/Utils/flutter
 //
 //    while develop you can set path to this jar explicitly so IDE won't complain
-    if(System.getProperty('flutterPath')) {
+    if (System.getProperty('flutterPath')) {
         testImplementation files(System.getProperty('flutterPath') + '/bin/cache/artifacts/engine/android-x64/flutter.jar')
     }
 
     testImplementation 'org.mockito:mockito-inline:2.28.2'
+
+//    implementation files("${flutterRoot}/bin/cache/artifacts/engine/android-arm/flutter.jar")
 }
