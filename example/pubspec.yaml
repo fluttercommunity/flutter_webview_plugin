@@ -4,6 +4,7 @@ description: Demonstrates how to use the flutter_webview_plugin plugin.
 dependencies:
   flutter:
     sdk: flutter
+  animated_widgets: ^1.0.3
   flutter_webview_plugin:
     path: ../
 
