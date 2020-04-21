@@ -7,6 +7,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 @interface FlutterWebviewPlugin() <WKNavigationDelegate, UIScrollViewDelegate, WKUIDelegate> {
     BOOL _enableAppScheme;
     BOOL _enableZoom;
+    BOOL _disableWebViewScroll;
     NSString* _invalidUrlRegex;
     NSMutableSet* _javaScriptChannelNames;
     NSNumber*  _ignoreSSLErrors;
@@ -21,7 +22,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
     UIViewController *viewController = [UIApplication sharedApplication].delegate.window.rootViewController;
     FlutterWebviewPlugin* instance = [[FlutterWebviewPlugin alloc] initWithViewController:viewController];
-    
+
     [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -96,8 +97,9 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     NSNumber *withJavascript = call.arguments[@"withJavascript"];
     _invalidUrlRegex = call.arguments[@"invalidUrlRegex"];
     _ignoreSSLErrors = call.arguments[@"ignoreSSLErrors"];
+    _disableWebViewScroll = [call.arguments[@"disableWebViewScroll"] boolValue];
     _javaScriptChannelNames = [[NSMutableSet alloc] init];
-    
+
     WKUserContentController* userContentController = [[WKUserContentController alloc] init];
     if ([call.arguments[@"javascriptChannelNames"] isKindOfClass:[NSArray class]]) {
         NSArray* javaScriptChannelNames = call.arguments[@"javascriptChannelNames"];
@@ -142,7 +144,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     self.webview.hidden = [hidden boolValue];
     self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
     self.webview.scrollView.showsVerticalScrollIndicator = [scrollBar boolValue];
-    
+
     [self.webview addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:NULL];
 
     WKPreferences* preferences = [[self.webview configuration] preferences];
@@ -173,7 +175,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     else {
         completionHandler(NSURLSessionAuthChallengePerformDefaultHandling,nil);
     }
-    
+
 }
 
 - (CGRect)parseRect:(NSDictionary *)rect {
@@ -189,6 +191,10 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
     id yDirection = @{@"yDirection": @(scrollView.contentOffset.y) };
     [channel invokeMethod:@"onScrollYChanged" arguments:yDirection];
+
+    if (_disableWebViewScroll) {
+        scrollView.contentOffset = CGPointMake(0, 0);
+    }
 }
 
 - (void)navigate:(FlutterMethodCall*)call {
