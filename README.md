@@ -196,7 +196,9 @@ Otherwise you'll still not be able to display content from pages with untrusted 
 
 You can test your ignorance if ssl certificates is working e.g. through https://self-signed.badssl.com/ 
 
+### Set cache mode
 
+Set the `cacheMode` option to override the way the cache is used on Android Webview. It could be `LOAD_CACHE_ONLY`, `LOAD_CACHE_ELSE_NETWORK`, `LOAD_NO_CACHE` or `LOAD_DEFAULT`. The default value is affected by another option `appCacheEnabled`. If `appCacheEnabled` is  true, `cacheMode` is decided by what user set. If `appCacheEnabled` is false, `cacheMode` becomes `LOAD_NO_CACHE`.
 
 
 ### Webview Events
@@ -239,6 +241,7 @@ Future<Null> launch(String url, {
     bool geolocationEnabled: false,
     bool debuggingEnabled: false,
     bool ignoreSSLErrors: false,
+    String cacheMode: null,
 });
 ```
 

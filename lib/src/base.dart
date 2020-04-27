@@ -141,6 +141,7 @@ class FlutterWebviewPlugin {
   /// - [withOverviewMode]: enable overview mode for Android webview ( setLoadWithOverviewMode )
   /// - [useWideViewPort]: use wide viewport for Android webview ( setUseWideViewPort )
   /// - [ignoreSSLErrors]: use to bypass Android/iOS SSL checks e.g. for self-signed certificates
+  /// - [cacheMode]: use to set cache mode for Android webview
   Future<Null> launch(
     String url, {
     Map<String, String> headers,
@@ -168,6 +169,7 @@ class FlutterWebviewPlugin {
     bool geolocationEnabled,
     bool debuggingEnabled,
     bool ignoreSSLErrors,
+    String cacheMode,
   }) async {
     final args = <String, dynamic>{
       'url': url,
@@ -193,6 +195,7 @@ class FlutterWebviewPlugin {
       'withOverviewMode': withOverviewMode ?? false,
       'debuggingEnabled': debuggingEnabled ?? false,
       'ignoreSSLErrors': ignoreSSLErrors ?? false,
+      'cacheMode': cacheMode,
     };
 
     if (headers != null) {
