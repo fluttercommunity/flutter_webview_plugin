@@ -97,7 +97,8 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     _invalidUrlRegex = call.arguments[@"invalidUrlRegex"];
     _ignoreSSLErrors = call.arguments[@"ignoreSSLErrors"];
     _javaScriptChannelNames = [[NSMutableSet alloc] init];
-    
+    NSNumber *allowsInlineMediaPlayback = call.arguments[@"allowsInlineMediaPlayback"];
+
     WKUserContentController* userContentController = [[WKUserContentController alloc] init];
     if ([call.arguments[@"javascriptChannelNames"] isKindOfClass:[NSArray class]]) {
         NSArray* javaScriptChannelNames = call.arguments[@"javascriptChannelNames"];
@@ -135,6 +136,11 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
     configuration.userContentController = userContentController;
+
+    if (allowsInlineMediaPlayback != (id)[NSNull null]) {
+      configuration.allowsInlineMediaPlayback = [allowsInlineMediaPlayback boolValue];
+    }
+
     self.webview = [[WKWebView alloc] initWithFrame:rc configuration:configuration];
     self.webview.UIDelegate = self;
     self.webview.navigationDelegate = self;

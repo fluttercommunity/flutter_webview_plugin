@@ -239,6 +239,7 @@ Future<Null> launch(String url, {
     bool geolocationEnabled: false,
     bool debuggingEnabled: false,
     bool ignoreSSLErrors: false,
+    bool allowsInlineMediaPlayback: null,
 });
 ```
 
