@@ -347,6 +347,13 @@ class WebviewManager {
         }
     }
 
+    void getAllCookies(MethodCall call, final MethodChannel.Result result){
+        String url = call.argument("url");
+        CookieManager cookieManager = CookieManager.getInstance();
+        String cookieStr = cookieManager.getCookie(url);
+        result.success(cookieStr);
+    }
+
     private void clearCache() {
         webView.clearCache(true);
         webView.clearFormData();

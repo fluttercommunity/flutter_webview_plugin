@@ -94,9 +94,18 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             case "cleanCache":
                 cleanCache(result);
                 break;
+            case "getAllCookies":
+                getAllCookies(call, result);
+                break;
             default:
                 result.notImplemented();
                 break;
+        }
+    }
+
+    private void getAllCookies(MethodCall call, final MethodChannel.Result result){
+        if (webViewManager != null){
+            webViewManager.getAllCookies(call,result);
         }
     }
 
