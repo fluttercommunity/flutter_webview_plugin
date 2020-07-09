@@ -2,7 +2,6 @@ package com.flutter_webview_plugin;
 
 import android.app.Activity;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -60,13 +59,12 @@ public class KeyBoardListener {
             // 移除之前先将高度恢复
             int usableHeightSansKeyboard = mChildOfContent.getRootView()
                     .getHeight();
-            frameLayoutParams.height = usableHeightSansKeyboard;
+            frameLayoutParams.height = usableHeightSansKeyboard - Utils.getNavigationBarHeightIfRoom(activity);
             // 移除监听事件
             mChildOfContent.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
         }
 
     }
-
 
     private void possiblyResizeChildOfContent() {
         int usableHeightNow = computeUsableHeight();
