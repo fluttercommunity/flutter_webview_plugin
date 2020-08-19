@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
+import 'page_transition_demo.dart';
+
 const kAndroidUserAgent =
     'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36';
 
@@ -213,6 +215,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -303,10 +306,20 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('Cookies'),
             ),
-            Text(_history.join('\n'))
+            Text(_history.join('\n')),
+            SizedBox(width: size.width,height: 20,),
+            Divider(height: 2,color: Colors.blue,indent: 20,endIndent: 20,),
+            RaisedButton(
+              onPressed: (){
+                Navigator.of(context).push(DemoPageRouteBuilder(PageTransitionDemo()));
+              },
+              child: const Text('page transition demo'),
+            ),
           ],
         ),
       ),
     );
   }
 }
+
+

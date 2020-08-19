@@ -41,7 +41,15 @@ class WebviewScaffold extends StatefulWidget {
     this.geolocationEnabled,
     this.debuggingEnabled = false,
     this.ignoreSSLErrors = false,
-  }) : super(key: key);
+    this.transitionType = TransitionType.Non
+  }) :
+        assert(transitionType != null,'TransitionType must not null !'),
+        super(key: key);
+  /// in Debug mode,the first init webview page at slide/scale transition,will display misalignment
+  /// after that will be display properly.
+  ///
+  /// in Profile/Release mode, will always display properly.
+  final TransitionType transitionType;
 
   final PreferredSizeWidget appBar;
   final String url;
@@ -91,6 +99,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   void initState() {
     super.initState();
     webviewReference.close();
+    perceptionPageTransition();
 
     _onBack = webviewReference.onBack.listen((_) async {
       if (!mounted) {
@@ -119,6 +128,45 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
       });
     }
   }
+
+  /// coordinate the webview rect whit page's transition
+  void perceptionPageTransition(){
+    if(widget.transitionType != TransitionType.Non){
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        //avoid to concurrent modification exception
+        WidgetsBinding.instance.addPersistentFrameCallback((timeStamp) {
+          if(context != null){
+            driveWebView();
+          }
+        });
+      });
+    }
+  }
+
+  void driveWebView(){
+    final RenderBox box = context.findRenderObject();
+    final Offset offset = box.localToGlobal(Offset.zero);
+    final Size size = box.size;
+    final Rect rect = box.paintBounds;
+    if(offset.dx == rect.left)return;
+
+    final double value = offset.dx/size.width;
+
+    switch(widget.transitionType){
+      case TransitionType.Slide:
+        webviewReference.resize(_rect.shift(offset));
+        break;
+      case TransitionType.Scale:
+        final double www = box.size.width*(value*2);
+        final double hhh = box.size.height*(value*2);
+        webviewReference.resize(Rect.fromLTWH(offset.dx,offset.dy,size.width-www , size.height-hhh));
+        break;
+      case TransitionType.Non:
+        // TODO: Handle this case.
+        break;
+    }
+  }
+
 
   /// Equivalent to [Navigator.of(context)._history.last].
   Route<dynamic> get _topMostRoute {
