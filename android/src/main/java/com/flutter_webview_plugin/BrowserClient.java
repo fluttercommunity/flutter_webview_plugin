@@ -76,6 +76,7 @@ public class BrowserClient extends WebViewClient {
         return isInvalid;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         // returning true causes the current WebView to abort loading the URL,
