@@ -380,7 +380,8 @@ class WebviewManager {
             String invalidUrlRegex,
             boolean geolocationEnabled,
             boolean debuggingEnabled,
-            boolean ignoreSSLErrors
+            boolean ignoreSSLErrors,
+            boolean thirdPartyCookiesEnabled
     ) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
@@ -444,6 +445,10 @@ class WebviewManager {
             webView.loadUrl(url, headers);
         } else {
             webView.loadUrl(url);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          CookieManager.getInstance().setAcceptThirdPartyCookies(webView, thirdPartyCookiesEnabled);
         }
     }
 

@@ -196,7 +196,8 @@ Otherwise you'll still not be able to display content from pages with untrusted 
 
 You can test your ignorance if ssl certificates is working e.g. through https://self-signed.badssl.com/ 
 
-
+### Enabling third party cookies
+Set the `thirdPartyCookiesEnabled` option to true in the launch function or in the Webview scaffold to enable third party cookies in the WebView. This option is ignored on iOS.
 
 
 ### Webview Events
@@ -239,6 +240,7 @@ Future<Null> launch(String url, {
     bool geolocationEnabled: false,
     bool debuggingEnabled: false,
     bool ignoreSSLErrors: false,
+    bool thirdPartyCookiesEnabled: false,
 });
 ```
 
