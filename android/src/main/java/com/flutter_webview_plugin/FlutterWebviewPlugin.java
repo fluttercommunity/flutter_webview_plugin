@@ -128,6 +128,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         boolean geolocationEnabled = call.argument("geolocationEnabled");
         boolean debuggingEnabled = call.argument("debuggingEnabled");
         boolean ignoreSSLErrors = call.argument("ignoreSSLErrors");
+        String cacheMode = call.argument("cacheMode");
 
         if (webViewManager == null || webViewManager.closed == true) {
             Map<String, Object> arguments = (Map<String, Object>) call.arguments;
@@ -162,7 +163,8 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
                 invalidUrlRegex,
                 geolocationEnabled,
                 debuggingEnabled,
-                ignoreSSLErrors
+                ignoreSSLErrors,
+                cacheMode
         );
         result.success(null);
     }
