@@ -167,7 +167,7 @@ class FlutterWebviewPlugin {
     String invalidUrlRegex,
     bool geolocationEnabled,
     bool debuggingEnabled,
-    bool ignoreSSLErrors,
+    bool ignoreSSLErrors, bool pullToRefresh,
   }) async {
     final args = <String, dynamic>{
       'url': url,
@@ -193,6 +193,7 @@ class FlutterWebviewPlugin {
       'withOverviewMode': withOverviewMode ?? false,
       'debuggingEnabled': debuggingEnabled ?? false,
       'ignoreSSLErrors': ignoreSSLErrors ?? false,
+      'pullToRefresh': pullToRefresh ?? false,
     };
 
     if (headers != null) {
