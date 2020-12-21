@@ -97,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final flutterWebViewPlugin = FlutterWebviewPlugin();
 
   // On destroy stream
-  StreamSubscription _onDestroy;
+  StreamSubscription<void> _onDestroy;
 
   // On urlChanged stream
   StreamSubscription<String> _onUrlChanged;
