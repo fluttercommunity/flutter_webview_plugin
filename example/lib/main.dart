@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:animated_widgets/animated_widgets.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
@@ -36,49 +37,53 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (_) => const MyHomePage(title: 'Flutter WebView Demo'),
         '/widget': (_) {
-          return WebviewScaffold(
-            url: selectedUrl,
-            javascriptChannels: jsChannels,
-            mediaPlaybackRequiresUserGesture: false,
-            appBar: AppBar(
-              title: const Text('Widget WebView'),
-            ),
-            withZoom: true,
-            withLocalStorage: true,
-            hidden: true,
-            initialChild: Container(
-              color: Colors.redAccent,
-              child: const Center(
-                child: Text('Waiting.....'),
-              ),
-            ),
-            bottomNavigationBar: BottomAppBar(
-              child: Row(
-                children: <Widget>[
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios),
-                    onPressed: () {
-                      flutterWebViewPlugin.goBack();
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.arrow_forward_ios),
-                    onPressed: () {
-                      flutterWebViewPlugin.goForward();
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.autorenew),
-                    onPressed: () {
-                      flutterWebViewPlugin.reload();
-                    },
-                  ),
-                ],
-              ),
-            ),
-          );
+          return renderWebView();
         },
       },
+    );
+  }
+
+  Widget renderWebView() {
+    return WebviewScaffold(
+      url: selectedUrl,
+      javascriptChannels: jsChannels,
+      mediaPlaybackRequiresUserGesture: false,
+      appBar: AppBar(
+        title: const Text('Widget WebView'),
+      ),
+      withZoom: true,
+      withLocalStorage: true,
+      hidden: true,
+      initialChild: Container(
+        color: Colors.redAccent,
+        child: const Center(
+          child: Text('Waiting.....'),
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          children: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.arrow_back_ios),
+              onPressed: () {
+                flutterWebViewPlugin.goBack();
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.arrow_forward_ios),
+              onPressed: () {
+                flutterWebViewPlugin.goForward();
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.autorenew),
+              onPressed: () {
+                flutterWebViewPlugin.reload();
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -121,6 +126,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final _history = [];
 
+  var showWebView = false;
+
   @override
   void initState() {
     super.initState();
@@ -135,8 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _onDestroy = flutterWebViewPlugin.onDestroy.listen((_) {
       if (mounted) {
         // Actions like show a info toast.
-        _scaffoldKey.currentState.showSnackBar(
-            const SnackBar(content: const Text('Webview Destroyed')));
+        _scaffoldKey.currentState.showSnackBar(const SnackBar(content: const Text('Webview Destroyed')));
       }
     });
 
@@ -149,8 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    _onProgressChanged =
-        flutterWebViewPlugin.onProgressChanged.listen((double progress) {
+    _onProgressChanged = flutterWebViewPlugin.onProgressChanged.listen((double progress) {
       if (mounted) {
         setState(() {
           _history.add('onProgressChanged: $progress');
@@ -158,8 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    _onScrollYChanged =
-        flutterWebViewPlugin.onScrollYChanged.listen((double y) {
+    _onScrollYChanged = flutterWebViewPlugin.onScrollYChanged.listen((double y) {
       if (mounted) {
         setState(() {
           _history.add('Scroll in Y Direction: $y');
@@ -167,8 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    _onScrollXChanged =
-        flutterWebViewPlugin.onScrollXChanged.listen((double x) {
+    _onScrollXChanged = flutterWebViewPlugin.onScrollXChanged.listen((double x) {
       if (mounted) {
         setState(() {
           _history.add('Scroll in X Direction: $x');
@@ -176,8 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    _onStateChanged =
-        flutterWebViewPlugin.onStateChanged.listen((WebViewStateChanged state) {
+    _onStateChanged = flutterWebViewPlugin.onStateChanged.listen((WebViewStateChanged state) {
       if (mounted) {
         setState(() {
           _history.add('onStateChanged: ${state.type} ${state.url}');
@@ -185,8 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    _onHttpError =
-        flutterWebViewPlugin.onHttpError.listen((WebViewHttpError error) {
+    _onHttpError = flutterWebViewPlugin.onHttpError.listen((WebViewHttpError error) {
       if (mounted) {
         setState(() {
           _history.add('onHttpError: ${error.code} ${error.url}');
@@ -218,94 +219,147 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24.0),
-              child: TextField(controller: _urlCtrl),
-            ),
-            RaisedButton(
-              onPressed: () {
-                flutterWebViewPlugin.launch(
-                  selectedUrl,
-                  rect: Rect.fromLTWH(
-                      0.0, 0.0, MediaQuery.of(context).size.width, 300.0),
-                  userAgent: kAndroidUserAgent,
-                  invalidUrlRegex:
-                      r'^(https).+(twitter)', // prevent redirecting to twitter when user click on its icon in flutter website
-                );
-              },
-              child: const Text('Open Webview (rect)'),
-            ),
-            RaisedButton(
-              onPressed: () {
-                flutterWebViewPlugin.launch(selectedUrl, hidden: true);
-              },
-              child: const Text('Open "hidden" Webview'),
-            ),
-            RaisedButton(
-              onPressed: () {
-                flutterWebViewPlugin.launch(selectedUrl);
-              },
-              child: const Text('Open Fullscreen Webview'),
-            ),
-            RaisedButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed('/widget');
-              },
-              child: const Text('Open widget webview'),
-            ),
-            Container(
-              padding: const EdgeInsets.all(24.0),
-              child: TextField(controller: _codeCtrl),
-            ),
-            RaisedButton(
-              onPressed: () {
-                final future =
-                    flutterWebViewPlugin.evalJavascript(_codeCtrl.text);
-                future.then((String result) {
-                  setState(() {
-                    _history.add('eval: $result');
-                  });
-                });
-              },
-              child: const Text('Eval some javascript'),
-            ),
-            RaisedButton(
-              onPressed: () {
-                final future = flutterWebViewPlugin.evalJavascript('alert("Hello World");');
-                future.then((String result) {
-                  setState(() {
-                    _history.add('eval: $result');
-                  });
-                });
-              },
-              child: const Text('Eval javascript alert()'),
-            ),
-            RaisedButton(
-              onPressed: () {
-                setState(() {
-                  _history.clear();
-                });
-                flutterWebViewPlugin.close();
-              },
-              child: const Text('Close'),
-            ),
-            RaisedButton(
-              onPressed: () {
-                flutterWebViewPlugin.getCookies().then((m) {
-                  setState(() {
-                    _history.add('cookies: $m');
-                  });
-                });
-              },
-              child: const Text('Cookies'),
-            ),
-            Text(_history.join('\n'))
+      body: WillPopScope(
+        onWillPop: () async {
+          if (showWebView) {
+            setState(() {
+              showWebView = !showWebView;
+            });
+            return false;
+          }
+
+          Navigator.pop(context);
+          return true;
+        },
+        child: Stack(
+          children: <Widget>[
+            renderContent(),
+            renderWebViewOverlay(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget renderWebViewOverlay() {
+    final screenHeight = MediaQuery.of(context).size.height;
+    return Positioned(
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: TranslationAnimatedWidget(
+        enabled: showWebView,
+        values: [
+          Offset(0, screenHeight), // disabled value value
+          Offset(0, screenHeight / 2), //intermediate value
+          const Offset(0, 0) //enabled value
+        ],
+        curve: Curves.easeInOut,
+        duration: const Duration(milliseconds: 250),
+        child: WebviewScaffold(
+          url: selectedUrl,
+          javascriptChannels: jsChannels,
+          hidden: false,
+          canAnimate: true,
+        ),
+      ),
+    );
+  }
+
+  Widget renderContent() {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24.0),
+            child: TextField(controller: _urlCtrl),
+          ),
+          RaisedButton(
+            onPressed: () {
+              flutterWebViewPlugin.launch(
+                selectedUrl,
+                rect: Rect.fromLTWH(0.0, 0.0, MediaQuery.of(context).size.width, 300.0),
+                userAgent: kAndroidUserAgent,
+                invalidUrlRegex: r'^(https).+(twitter)', // prevent redirecting to twitter when user click on its icon in flutter website
+              );
+            },
+            child: const Text('Open Webview (rect)'),
+          ),
+          RaisedButton(
+            onPressed: () {
+              flutterWebViewPlugin.launch(selectedUrl, hidden: true);
+            },
+            child: const Text('Open "hidden" Webview'),
+          ),
+          RaisedButton(
+            onPressed: () {
+              flutterWebViewPlugin.launch(selectedUrl);
+            },
+            child: const Text('Open Fullscreen Webview'),
+          ),
+          RaisedButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed('/widget');
+            },
+            child: const Text('Open widget webview'),
+          ),
+          RaisedButton(
+            onPressed: () {
+              setState(() {
+                showWebView = !showWebView;
+              });
+            },
+            child: const Text('Open widget animated webview'),
+          ),
+          Container(
+            padding: const EdgeInsets.all(24.0),
+            child: TextField(controller: _codeCtrl, autofocus: false),
+          ),
+          RaisedButton(
+            onPressed: () {
+              final future = flutterWebViewPlugin.evalJavascript(_codeCtrl.text);
+              future.then((String result) {
+                setState(() {
+                  _history.add('eval: $result');
+                });
+              });
+            },
+            child: const Text('Eval some javascript'),
+          ),
+          RaisedButton(
+            onPressed: () {
+              final future = flutterWebViewPlugin.evalJavascript('alert("Hello World");');
+              future.then((String result) {
+                setState(() {
+                  _history.add('eval: $result');
+                });
+              });
+            },
+            child: const Text('Eval javascript alert()'),
+          ),
+          RaisedButton(
+            onPressed: () {
+              setState(() {
+                _history.clear();
+              });
+              flutterWebViewPlugin.close();
+            },
+            child: const Text('Close'),
+          ),
+          RaisedButton(
+            onPressed: () {
+              flutterWebViewPlugin.getCookies().then((m) {
+                setState(() {
+                  _history.add('cookies: $m');
+                });
+              });
+            },
+            child: const Text('Cookies'),
+          ),
+          Text(_history.join('\n'))
+        ],
       ),
     );
   }

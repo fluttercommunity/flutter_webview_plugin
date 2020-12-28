@@ -24,6 +24,7 @@ class WebviewScaffold extends StatefulWidget {
     this.persistentFooterButtons,
     this.bottomNavigationBar,
     this.withZoom,
+    this.disableWebViewScroll,
     this.displayZoomControls,
     this.withLocalStorage,
     this.withLocalUrl,
@@ -38,6 +39,7 @@ class WebviewScaffold extends StatefulWidget {
     this.allowFileURLs,
     this.resizeToAvoidBottomInset = false,
     this.invalidUrlRegex,
+    this.canAnimate = false,
     this.geolocationEnabled,
     this.debuggingEnabled = false,
     this.ignoreSSLErrors = false,
@@ -64,11 +66,13 @@ class WebviewScaffold extends StatefulWidget {
   final bool scrollBar;
   final bool supportMultipleWindows;
   final bool appCacheEnabled;
+  final bool disableWebViewScroll;
   final bool hidden;
   final Widget initialChild;
   final bool allowFileURLs;
   final bool resizeToAvoidBottomInset;
   final String invalidUrlRegex;
+  final bool canAnimate;
   final bool geolocationEnabled;
   final bool withOverviewMode;
   final bool useWideViewPort;
@@ -111,8 +115,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     });
 
     if (widget.hidden) {
-      _onStateChanged =
-          webviewReference.onStateChanged.listen((WebViewStateChanged state) {
+      _onStateChanged = webviewReference.onStateChanged.listen((WebViewStateChanged state) {
         if (state.type == WebViewState.finishLoad) {
           webviewReference.show();
         }
@@ -169,6 +172,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
               displayZoomControls: widget.displayZoomControls,
               withLocalStorage: widget.withLocalStorage,
               withLocalUrl: widget.withLocalUrl,
+              disableWebViewScroll: widget.disableWebViewScroll,
               localUrlScope: widget.localUrlScope,
               withOverviewMode: widget.withOverviewMode,
               useWideViewPort: widget.useWideViewPort,
@@ -184,6 +188,17 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
           } else {
             if (_rect != value) {
               _rect = value;
+
+              if (widget.canAnimate) {
+                webviewReference.resize(_rect);
+              } else {
+                _resizeTimer?.cancel();
+                _resizeTimer = Timer(const Duration(milliseconds: 250), () {
+                  // avoid resizing to fast when build is called multiple time
+                  webviewReference.resize(_rect);
+                });
+              }
+
               _resizeTimer?.cancel();
               _resizeTimer = Timer(const Duration(milliseconds: 250), () {
                 // avoid resizing to fast when build is called multiple time
@@ -216,17 +231,14 @@ class _WebviewPlaceholder extends SingleChildRenderObjectWidget {
   }
 
   @override
-  void updateRenderObject(
-      BuildContext context, _WebviewPlaceholderRender renderObject) {
+  void updateRenderObject(BuildContext context, _WebviewPlaceholderRender renderObject) {
     renderObject..onRectChanged = onRectChanged;
   }
 }
 
 class _WebviewPlaceholderRender extends RenderProxyBox {
-  _WebviewPlaceholderRender({
-    RenderBox child,
-    ValueChanged<Rect> onRectChanged,
-  })  : _callback = onRectChanged,
+  _WebviewPlaceholderRender({RenderBox child, ValueChanged<Rect> onRectChanged})
+      : _callback = onRectChanged,
         super(child);
 
   ValueChanged<Rect> _callback;
