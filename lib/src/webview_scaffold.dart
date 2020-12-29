@@ -34,6 +34,7 @@ class WebviewScaffold extends StatefulWidget {
     this.supportMultipleWindows,
     this.appCacheEnabled,
     this.hidden = false,
+    this.hiddenUntilFinishLoad = true,
     this.initialChild,
     this.allowFileURLs,
     this.resizeToAvoidBottomInset = false,
@@ -65,6 +66,7 @@ class WebviewScaffold extends StatefulWidget {
   final bool supportMultipleWindows;
   final bool appCacheEnabled;
   final bool hidden;
+  final bool hiddenUntilFinishLoad;
   final Widget initialChild;
   final bool allowFileURLs;
   final bool resizeToAvoidBottomInset;
@@ -110,7 +112,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
       }
     });
 
-    if (widget.hidden) {
+    if (widget.hidden && widget.hiddenUntilFinishLoad) {
       _onStateChanged =
           webviewReference.onStateChanged.listen((WebViewStateChanged state) {
         if (state.type == WebViewState.finishLoad) {
@@ -136,9 +138,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     _onBack?.cancel();
     _resizeTimer?.cancel();
     webviewReference.close();
-    if (widget.hidden) {
-      _onStateChanged.cancel();
-    }
+    _onStateChanged?.cancel();
     webviewReference.dispose();
   }
 

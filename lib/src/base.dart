@@ -117,6 +117,7 @@ class FlutterWebviewPlugin {
   /// - [clearCache] clear the cache of the Webview
   /// - [clearCookies] clear all cookies of the Webview
   /// - [hidden] not show
+  /// - [hiddenUntilFinishLoad] stay hidden until finishLoad event
   /// - [rect]: show in rect, fullscreen if null
   /// - [enableAppScheme]: false will enable all schemes, true only for httt/https/about
   ///     android: Not implemented yet
@@ -150,6 +151,7 @@ class FlutterWebviewPlugin {
     bool clearCookies,
     bool mediaPlaybackRequiresUserGesture,
     bool hidden,
+    bool hiddenUntilFinishLoad,
     bool enableAppScheme,
     Rect rect,
     String userAgent,
@@ -174,6 +176,7 @@ class FlutterWebviewPlugin {
       'withJavascript': withJavascript ?? true,
       'clearCache': clearCache ?? false,
       'hidden': hidden ?? false,
+      'hiddenUntilFinishLoad': hiddenUntilFinishLoad ?? true,
       'clearCookies': clearCookies ?? false,
       'mediaPlaybackRequiresUserGesture': mediaPlaybackRequiresUserGesture ?? true,
       'enableAppScheme': enableAppScheme ?? true,
