@@ -4,8 +4,8 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:mockito/mockito.dart';
 
 void main() {
-  MockMethodChannel methodChannel;
-  FlutterWebviewPlugin webview;
+  late MockMethodChannel methodChannel;
+  late FlutterWebviewPlugin webview;
 
   setUp(() {
     methodChannel = MockMethodChannel();
