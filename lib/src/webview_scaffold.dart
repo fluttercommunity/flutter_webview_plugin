@@ -85,6 +85,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   Timer? _resizeTimer;
   late StreamSubscription<WebViewStateChanged> _onStateChanged;
 
+  // ignore: prefer_typing_uninitialized_variables
   var _onBack;
 
   @override
@@ -122,6 +123,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
 
   /// Equivalent to [Navigator.of(context)._history.last].
   Route<dynamic>? get _topMostRoute {
+    // ignore: prefer_typing_uninitialized_variables
     var topMost;
     Navigator.popUntil(context, (route) {
       topMost = route;
