@@ -150,7 +150,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
       persistentFooterButtons: widget.persistentFooterButtons,
       bottomNavigationBar: widget.bottomNavigationBar,
       body: _WebviewPlaceholder(
-        onRectChanged: (Rect value) {
+        onRectChanged: (Rect? value) {
           if (_rect == null) {
             _rect = value;
             webviewReference.launch(
