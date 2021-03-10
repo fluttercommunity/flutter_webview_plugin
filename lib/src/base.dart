@@ -87,10 +87,10 @@ class FlutterWebviewPlugin {
   }
 
   /// Listening the OnDestroy LifeCycle Event for Android
-  Stream<Null> get onDestroy => _onDestroy.stream;
+  Stream<Null?> get onDestroy => _onDestroy.stream;
 
   /// Listening the back key press Event for Android
-  Stream<Null> get onBack => _onBack.stream;
+  Stream<Null?> get onBack => _onBack.stream;
 
   /// Listening url changed
   Stream<String?> get onUrlChanged => _onUrlChanged.stream;

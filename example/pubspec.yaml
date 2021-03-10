@@ -1,8 +1,8 @@
 name: flutter_webview_plugin_example
 description: Demonstrates how to use the flutter_webview_plugin plugin.
 environment:
-  sdk: ">=2.10.0 <3.0.0"
-  flutter: ^0.1.2
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ^2.0.1
 
 dependencies:
   flutter:
