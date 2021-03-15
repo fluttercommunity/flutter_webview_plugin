@@ -168,6 +168,7 @@ class FlutterWebviewPlugin {
     bool geolocationEnabled,
     bool debuggingEnabled,
     bool ignoreSSLErrors,
+    bool allowsInlineMediaPlayback,
   }) async {
     final args = <String, dynamic>{
       'url': url,
@@ -193,6 +194,7 @@ class FlutterWebviewPlugin {
       'withOverviewMode': withOverviewMode ?? false,
       'debuggingEnabled': debuggingEnabled ?? false,
       'ignoreSSLErrors': ignoreSSLErrors ?? false,
+      'allowsInlineMediaPlayback': allowsInlineMediaPlayback,
     };
 
     if (headers != null) {

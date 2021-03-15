@@ -41,6 +41,7 @@ class WebviewScaffold extends StatefulWidget {
     this.geolocationEnabled,
     this.debuggingEnabled = false,
     this.ignoreSSLErrors = false,
+    this.allowsInlineMediaPlayback,
   }) : super(key: key);
 
   final PreferredSizeWidget appBar;
@@ -74,6 +75,7 @@ class WebviewScaffold extends StatefulWidget {
   final bool useWideViewPort;
   final bool debuggingEnabled;
   final bool ignoreSSLErrors;
+  final bool allowsInlineMediaPlayback;
 
   @override
   _WebviewScaffoldState createState() => _WebviewScaffoldState();
@@ -180,6 +182,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
               geolocationEnabled: widget.geolocationEnabled,
               debuggingEnabled: widget.debuggingEnabled,
               ignoreSSLErrors: widget.ignoreSSLErrors,
+              allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
             );
           } else {
             if (_rect != value) {
