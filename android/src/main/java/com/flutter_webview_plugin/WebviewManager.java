@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
+import android.webkit.PermissionRequest;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -259,6 +260,13 @@ class WebviewManager {
                 Map<String, Object> args = new HashMap<>();
                 args.put("progress", progress / 100.0);
                 FlutterWebviewPlugin.channel.invokeMethod("onProgressChanged", args);
+            }
+
+            @Override
+            public void onPermissionRequest(PermissionRequest request) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    request.grant(request.getResources());
+                }
             }
 
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
