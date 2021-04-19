@@ -199,15 +199,9 @@ class FlutterWebviewPlugin {
 
     _assertJavascriptChannelNamesAreUnique(javascriptChannels);
 
-    if (javascriptChannels != null) {
-      javascriptChannels.forEach((channel) {
-        _javascriptChannels[channel.name] = channel;
-      });
-    } else {
-      if (_javascriptChannels.isNotEmpty) {
-        _javascriptChannels.clear();
-      }
-    }
+    javascriptChannels.forEach((channel) {
+      _javascriptChannels[channel.name] = channel;
+    });
 
     args['javascriptChannelNames'] =
         _extractJavascriptChannelNames(javascriptChannels).toList();

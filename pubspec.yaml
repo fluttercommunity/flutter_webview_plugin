@@ -23,6 +23,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  mocktail: ^0.1.1
+  mockito: ^5.0.4
+  build_runner: any
   flutter_test:
     sdk: flutter

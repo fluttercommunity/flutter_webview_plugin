@@ -1,8 +1,14 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 
+import 'flutter_webview_plugin_test.mocks.dart';
+
+@GenerateMocks([], customMocks: [
+  MockSpec<MethodChannel>(returnNullOnMissingStub: true),
+])
 void main() {
   late MockMethodChannel methodChannel;
   late FlutterWebviewPlugin webview;
@@ -47,5 +53,3 @@ void main() {
     });
   });
 }
-
-class MockMethodChannel extends Mock implements MethodChannel {}
