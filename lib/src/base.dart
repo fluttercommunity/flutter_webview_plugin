@@ -139,7 +139,7 @@ class FlutterWebviewPlugin {
   /// - [withOverviewMode]: enable overview mode for Android webview ( setLoadWithOverviewMode )
   /// - [useWideViewPort]: use wide viewport for Android webview ( setUseWideViewPort )
   /// - [ignoreSSLErrors]: use to bypass Android/iOS SSL checks e.g. for self-signed certificates
-  Future<Null> launch(
+  Future<void> launch(
     String url, {
     Map<String, String>? headers,
     Set<JavascriptChannel> javascriptChannels = const <JavascriptChannel>{},
@@ -225,16 +225,16 @@ class FlutterWebviewPlugin {
 
   /// Close the Webview
   /// Will trigger the [onDestroy] event
-  Future<Null> close() async {
+  Future<void> close() async {
     _javascriptChannels.clear();
     await _channel.invokeMethod('close');
   }
 
   /// Reloads the WebView.
-  Future<Null> reload() async => await _channel.invokeMethod('reload');
+  Future<void> reload() async => await _channel.invokeMethod('reload');
 
   /// Navigates back on the Webview.
-  Future<Null> goBack() async => await _channel.invokeMethod('back');
+  Future<void> goBack() async => await _channel.invokeMethod('back');
 
   /// Checks if webview can navigate back
   Future<bool> canGoBack() async => await _channel.invokeMethod('canGoBack');
@@ -244,19 +244,19 @@ class FlutterWebviewPlugin {
       await _channel.invokeMethod('canGoForward');
 
   /// Navigates forward on the Webview.
-  Future<Null> goForward() async => await _channel.invokeMethod('forward');
+  Future<void> goForward() async => await _channel.invokeMethod('forward');
 
   // Hides the webview
-  Future<Null> hide() async => await _channel.invokeMethod('hide');
+  Future<void> hide() async => await _channel.invokeMethod('hide');
 
   // Shows the webview
-  Future<Null> show() async => await _channel.invokeMethod('show');
+  Future<void> show() async => await _channel.invokeMethod('show');
 
   // Clears browser cache
-  Future<Null> clearCache() async => await _channel.invokeMethod('cleanCache');
+  Future<void> clearCache() async => await _channel.invokeMethod('cleanCache');
 
   // Reload webview with a url
-  Future<Null> reloadUrl(String url, {Map<String, String>? headers}) async {
+  Future<void> reloadUrl(String url, {Map<String, String>? headers}) async {
     final args = <String, dynamic>{'url': url};
     if (headers != null) {
       args['headers'] = headers;
@@ -265,7 +265,7 @@ class FlutterWebviewPlugin {
   }
 
   // Clean cookies on WebView
-  Future<Null> cleanCookies() async {
+  Future<void> cleanCookies() async {
     // one liner to clear javascript cookies
     await evalJavascript(
         'document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });');
@@ -273,7 +273,7 @@ class FlutterWebviewPlugin {
   }
 
   // Stops current loading process
-  Future<Null> stopLoading() async =>
+  Future<void> stopLoading() async =>
       await _channel.invokeMethod('stopLoading');
 
   /// Close all Streams
@@ -304,7 +304,7 @@ class FlutterWebviewPlugin {
   }
 
   /// resize webview
-  Future<Null> resize(Rect rect) async {
+  Future<void> resize(Rect rect) async {
     final args = {};
     args['rect'] = {
       'left': rect.left,
