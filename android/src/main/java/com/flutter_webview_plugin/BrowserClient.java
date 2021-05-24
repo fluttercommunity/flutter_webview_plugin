@@ -7,6 +7,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebResourceError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,6 +100,14 @@ public class BrowserClient extends WebViewClient {
         FlutterWebviewPlugin.channel.invokeMethod("onHttpError", data);
     }
 
+    @TargetApi(android.os.Build.VERSION_CODES.M)
+    @Override
+    public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError rerr) {
+        // Redirect to deprecated method, so you can use it in all SDK versions
+        onReceivedError(view, rerr.getErrorCode(), rerr.getDescription().toString(), req.getUrl().toString());
+    }
+
+    @SuppressWarnings("deprecation")
     @Override
     public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
         super.onReceivedError(view, errorCode, description, failingUrl);
