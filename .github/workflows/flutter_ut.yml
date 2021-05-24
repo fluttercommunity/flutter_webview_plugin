@@ -14,7 +14,7 @@ jobs:
           java-version: '12.x'
       - uses: subosito/flutter-action@v1
         with:
-          flutter-version: '1.7.8+hotfix.4'
+          flutter-version: '2.0.4'
       - run: flutter doctor
       - run: flutter pub get
       - run: flutter test
