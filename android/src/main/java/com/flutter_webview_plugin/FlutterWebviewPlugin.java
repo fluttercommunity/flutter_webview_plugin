@@ -131,7 +131,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
 
         if (webViewManager == null || webViewManager.closed == true) {
             Map<String, Object> arguments = (Map<String, Object>) call.arguments;
-            List<String> channelNames = new ArrayList();
+            List<String> channelNames = new ArrayList<String>();
             if (arguments.containsKey(JS_CHANNEL_NAMES_FIELD)) {
                 channelNames = (List<String>) arguments.get(JS_CHANNEL_NAMES_FIELD);
             }
