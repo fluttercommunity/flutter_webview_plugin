@@ -12,6 +12,11 @@ const _kChannel = 'flutter_webview_plugin';
 // TODO: more general state for iOS/android
 enum WebViewState { shouldStart, startLoad, finishLoad, abortLoad }
 
+/// the transition animation type of page on/off screen
+enum TransitionType{
+  Non,Slide,Scale
+}
+
 // TODO: use an id by webview to be able to manage multiple webview
 
 /// Singleton class that communicate with a Webview Instance
