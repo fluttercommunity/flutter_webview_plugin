@@ -12,6 +12,12 @@ const _kChannel = 'flutter_webview_plugin';
 // TODO: more general state for iOS/android
 enum WebViewState { shouldStart, startLoad, finishLoad, abortLoad }
 
+/// the transition animation type of page on/off screen
+enum TransitionType{
+  Non,Slide,Scale
+}
+
+
 // TODO: use an id by webview to be able to manage multiple webview
 
 /// Singleton class that communicate with a Webview Instance
@@ -44,7 +50,7 @@ class FlutterWebviewPlugin {
   final _onPostMessage = StreamController<JavascriptMessage>.broadcast();
 
   final Map<String, JavascriptChannel> _javascriptChannels =
-      <String, JavascriptChannel>{};
+  <String, JavascriptChannel>{};
 
   Future<Null> _handleMessages(MethodCall call) async {
     switch (call.method) {
@@ -140,33 +146,33 @@ class FlutterWebviewPlugin {
   /// - [useWideViewPort]: use wide viewport for Android webview ( setUseWideViewPort )
   /// - [ignoreSSLErrors]: use to bypass Android/iOS SSL checks e.g. for self-signed certificates
   Future<void> launch(
-    String url, {
-    Map<String, String>? headers,
-    Set<JavascriptChannel> javascriptChannels = const <JavascriptChannel>{},
-    bool withJavascript = true,
-    bool clearCache = false,
-    bool clearCookies = false,
-    bool mediaPlaybackRequiresUserGesture = true,
-    bool hidden = false,
-    bool enableAppScheme = true,
-    Rect? rect,
-    String? userAgent,
-    bool withZoom = false,
-    bool displayZoomControls = false,
-    bool withLocalStorage = true,
-    bool withLocalUrl = false,
-    String? localUrlScope,
-    bool withOverviewMode = false,
-    bool scrollBar = true,
-    bool supportMultipleWindows = false,
-    bool appCacheEnabled = false,
-    bool allowFileURLs = false,
-    bool useWideViewPort = false,
-    String? invalidUrlRegex,
-    bool geolocationEnabled = false,
-    bool debuggingEnabled = false,
-    bool ignoreSSLErrors = false,
-  }) async {
+      String url, {
+        Map<String, String>? headers,
+        Set<JavascriptChannel> javascriptChannels = const <JavascriptChannel>{},
+        bool withJavascript = true,
+        bool clearCache = false,
+        bool clearCookies = false,
+        bool mediaPlaybackRequiresUserGesture = true,
+        bool hidden = false,
+        bool enableAppScheme = true,
+        Rect? rect,
+        String? userAgent,
+        bool withZoom = false,
+        bool displayZoomControls = false,
+        bool withLocalStorage = true,
+        bool withLocalUrl = false,
+        String? localUrlScope,
+        bool withOverviewMode = false,
+        bool scrollBar = true,
+        bool supportMultipleWindows = false,
+        bool appCacheEnabled = false,
+        bool allowFileURLs = false,
+        bool useWideViewPort = false,
+        String? invalidUrlRegex,
+        bool geolocationEnabled = false,
+        bool debuggingEnabled = false,
+        bool ignoreSSLErrors = false,
+      }) async {
     final args = <String, dynamic>{
       'url': url,
       'withJavascript': withJavascript,
@@ -317,7 +323,7 @@ class FlutterWebviewPlugin {
 
   Set<String> _extractJavascriptChannelNames(Set<JavascriptChannel> channels) {
     final Set<String> channelNames =
-        channels.map((JavascriptChannel channel) => channel.name).toSet();
+    channels.map((JavascriptChannel channel) => channel.name).toSet();
     return channelNames;
   }
 
