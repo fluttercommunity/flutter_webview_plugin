@@ -198,7 +198,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
             if ( [withLocalUrl boolValue]) {
                 if (@available(iOS 9.0, *)) {
                     NSURL *scopeUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
-                    NSURL *fileUrl = [NSURL fileURLWithPaht:[[NSBundle mainBundle] pathForResource:url ofType:nil]];
+                    NSURL *fileUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:url ofType:nil]];
                     [self.webview loadFileURL:fileUrl allowingReadAccessToURL:scopeUrl];
                 } else {
                     @throw @"not available on version earlier than ios 9.0";
