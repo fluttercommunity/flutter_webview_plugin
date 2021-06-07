@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -154,23 +155,11 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   }
 
   void driveWebView() {
-    final RenderBox box = widget.rrok.currentContext?.findRenderObject()! as RenderBox;
-    final Offset offset = box.localToGlobal(Offset.zero) - Offset(widget.margin.left != null ? widget.margin.left : 0.0, widget.margin.top != null ? widget.margin.top : 0.0);
-    final Size size = box.size;
-    final Rect rect = box.paintBounds;
-
-    final double value = offset.dx / size.width;
-
-    // print('value=$value , offset=$offset , rect=$rect , size=$size , margin=${widget.margin.left}/${widget.margin.top}/${widget.margin.right}/${widget.margin.bottom}');
-
     switch (widget.transitionType) {
       case TransitionType.Slide:
+        final RenderBox box = widget.rrok.currentContext?.findRenderObject()! as RenderBox;
+        final Offset offset = box.localToGlobal(Offset.zero) - Offset(widget.margin.left != null ? widget.margin.left : 0.0, widget.margin.top != null ? widget.margin.top : 0.0);
         webviewReference.resize(_rect!.shift(offset));
-        break;
-      case TransitionType.Scale:
-        final double www = size.width * (value * 2);
-        final double hhh = size.height * (value * 2);
-        webviewReference.resize(Rect.fromLTWH(offset.dx, offset.dy, size.width - www, size.height - hhh));
         break;
       case TransitionType.Non:
       // TODO: Handle this case.
