@@ -380,7 +380,8 @@ class WebviewManager {
             String invalidUrlRegex,
             boolean geolocationEnabled,
             boolean debuggingEnabled,
-            boolean ignoreSSLErrors
+            boolean ignoreSSLErrors,
+            boolean softwareRender
     ) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
@@ -438,6 +439,10 @@ class WebviewManager {
 
         if (!scrollBar) {
             webView.setVerticalScrollBarEnabled(false);
+        }
+
+        if (softwareRender) {
+            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
 
         if (headers != null) {
