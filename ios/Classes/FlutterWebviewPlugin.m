@@ -79,6 +79,10 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         [self onCanGoForward:call result:result];
     } else if ([@"cleanCache" isEqualToString:call.method]) {
         [self cleanCache:result];
+    } else if ([@"getAllCookies" isEqualToString:call.method]) {
+        [self getAllCookies:call completionHandler:^(NSString *cookies) {
+            result(cookies);
+        }];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -300,6 +304,26 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
           // support for iOS8 tracked in https://github.com/flutter/flutter/issues/27624.
           NSLog(@"Clearing cookies is not supported for Flutter WebViews prior to iOS 9.");
         }
+    }
+}
+
+- (void)getAllCookies:(FlutterMethodCall*)call
+     completionHandler:(void (^_Nullable)(NSString * cookies))completionHandler {
+    if (self.webview != nil) {
+        NSString *url = call.arguments[@"url"];
+        WKHTTPCookieStore *cookieStore = self.webview.configuration.websiteDataStore.httpCookieStore;
+        [cookieStore getAllCookies:^(NSArray<NSHTTPCookie *> * _Nonnull cookies) {
+            NSString *allCookies = @"";
+            NSEnumerator *cookie_enum = [cookies objectEnumerator];
+            NSHTTPCookie *temp_cookie;
+            while (temp_cookie = [cookie_enum nextObject]) {
+                NSString *temp = [NSString stringWithFormat:@"%@=%@;",[temp_cookie name],[temp_cookie value]];
+                allCookies = [allCookies stringByAppendingString:temp];
+            }
+            completionHandler([NSString stringWithFormat:@"%@", allCookies]);
+        }];
+    } else {
+        completionHandler(nil);
     }
 }
 
