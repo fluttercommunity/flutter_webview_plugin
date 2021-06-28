@@ -158,7 +158,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     switch (widget.transitionType) {
       case TransitionType.Slide:
         final RenderBox box = widget.rrok.currentContext?.findRenderObject()! as RenderBox;
-        final Offset offset = box.localToGlobal(Offset.zero) - Offset(widget.margin.left != null ? widget.margin.left : 0.0, widget.margin.top != null ? widget.margin.top : 0.0);
+        final Offset offset = box.localToGlobal(Offset.zero) + Offset(widget.margin.left != null ? widget.margin.left : 0.0, widget.margin.top != null ? widget.margin.top : 0.0);
         webviewReference.resize(_rect!.shift(offset));
         break;
       case TransitionType.Non:
