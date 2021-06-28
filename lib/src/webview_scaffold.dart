@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,8 @@ import 'base.dart';
 class WebviewScaffold extends StatefulWidget {
   const WebviewScaffold({
     Key? key,
+    required this.rrok,
+    required this.margin,
     this.appBar,
     required this.url,
     this.headers,
@@ -41,7 +44,22 @@ class WebviewScaffold extends StatefulWidget {
     this.geolocationEnabled = false,
     this.debuggingEnabled = false,
     this.ignoreSSLErrors = false,
-  }) : super(key: key);
+    this.transitionType = TransitionType.Non
+  })
+      :
+        assert(transitionType != null, 'TransitionType must not null !'),
+        super(key: key);
+
+  // The global key of the referenced render object
+  final GlobalKey rrok;
+
+  final EdgeInsets margin;
+
+  /// in Debug mode,the first init webview page at slide/scale transition,will display misalignment
+  /// after that will be display properly.
+  ///
+  /// in Profile/Release mode, will always display properly.
+  final TransitionType transitionType;
 
   final PreferredSizeWidget? appBar;
   final String url;
@@ -92,6 +110,8 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     super.initState();
     webviewReference.close();
 
+    perceptionPageTransition();
+
     _onBack = webviewReference.onBack.listen((_) async {
       if (!mounted) {
         return;
@@ -113,10 +133,37 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     if (widget.hidden) {
       _onStateChanged =
           webviewReference.onStateChanged.listen((WebViewStateChanged state) {
-        if (state.type == WebViewState.finishLoad) {
-          webviewReference.show();
-        }
+            if (state.type == WebViewState.finishLoad) {
+              webviewReference.show();
+            }
+          });
+    }
+  }
+
+  /// coordinate the webview rect whit page's transition
+  void perceptionPageTransition() {
+    if (widget.transitionType != TransitionType.Non) {
+      WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+        //avoid to concurrent modification exception
+        WidgetsBinding.instance?.addPersistentFrameCallback((timeStamp) {
+          if (mounted) {
+            driveWebView();
+          }
+        });
       });
+    }
+  }
+
+  void driveWebView() {
+    switch (widget.transitionType) {
+      case TransitionType.Slide:
+        final RenderBox box = widget.rrok.currentContext?.findRenderObject()! as RenderBox;
+        final Offset offset = box.localToGlobal(Offset.zero) + Offset(widget.margin.left != null ? widget.margin.left : 0.0, widget.margin.top != null ? widget.margin.top : 0.0);
+        webviewReference.resize(_rect!.shift(offset));
+        break;
+      case TransitionType.Non:
+      // TODO: Handle this case.
+        break;
     }
   }
 
@@ -161,7 +208,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
               clearCache: widget.clearCache,
               clearCookies: widget.clearCookies,
               mediaPlaybackRequiresUserGesture:
-                  widget.mediaPlaybackRequiresUserGesture,
+              widget.mediaPlaybackRequiresUserGesture,
               hidden: widget.hidden,
               enableAppScheme: widget.enableAppScheme,
               userAgent: widget.userAgent,
@@ -217,8 +264,7 @@ class _WebviewPlaceholder extends SingleChildRenderObjectWidget {
   }
 
   @override
-  void updateRenderObject(
-      BuildContext context, _WebviewPlaceholderRender renderObject) {
+  void updateRenderObject(BuildContext context, _WebviewPlaceholderRender renderObject) {
     renderObject..onRectChanged = onRectChanged;
   }
 }
@@ -227,7 +273,8 @@ class _WebviewPlaceholderRender extends RenderProxyBox {
   _WebviewPlaceholderRender({
     RenderBox? child,
     ValueChanged<Rect>? onRectChanged,
-  })  : _callback = onRectChanged,
+  })
+      : _callback = onRectChanged,
         super(child);
 
   ValueChanged<Rect>? _callback;

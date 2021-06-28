@@ -12,6 +12,13 @@ const _kChannel = 'flutter_webview_plugin';
 // TODO: more general state for iOS/android
 enum WebViewState { shouldStart, startLoad, finishLoad, abortLoad }
 
+/// the transition animation type of page on/off screen
+enum TransitionType {
+  Non,
+  Slide
+}
+
+
 // TODO: use an id by webview to be able to manage multiple webview
 
 /// Singleton class that communicate with a Webview Instance
@@ -44,7 +51,7 @@ class FlutterWebviewPlugin {
   final _onPostMessage = StreamController<JavascriptMessage>.broadcast();
 
   final Map<String, JavascriptChannel> _javascriptChannels =
-      <String, JavascriptChannel>{};
+  <String, JavascriptChannel>{};
 
   Future<Null> _handleMessages(MethodCall call) async {
     switch (call.method) {
@@ -139,8 +146,7 @@ class FlutterWebviewPlugin {
   /// - [withOverviewMode]: enable overview mode for Android webview ( setLoadWithOverviewMode )
   /// - [useWideViewPort]: use wide viewport for Android webview ( setUseWideViewPort )
   /// - [ignoreSSLErrors]: use to bypass Android/iOS SSL checks e.g. for self-signed certificates
-  Future<void> launch(
-    String url, {
+  Future<void> launch(String url, {
     Map<String, String>? headers,
     Set<JavascriptChannel> javascriptChannels = const <JavascriptChannel>{},
     bool withJavascript = true,
@@ -317,12 +323,11 @@ class FlutterWebviewPlugin {
 
   Set<String> _extractJavascriptChannelNames(Set<JavascriptChannel> channels) {
     final Set<String> channelNames =
-        channels.map((JavascriptChannel channel) => channel.name).toSet();
+    channels.map((JavascriptChannel channel) => channel.name).toSet();
     return channelNames;
   }
 
-  void _handleJavascriptChannelMessage(
-      final String channelName, final String message) {
+  void _handleJavascriptChannelMessage(final String channelName, final String message) {
     if (_javascriptChannels.containsKey(channelName))
       _javascriptChannels[channelName]!
           .onMessageReceived(JavascriptMessage(message));
@@ -330,8 +335,7 @@ class FlutterWebviewPlugin {
       print('Channel "$channelName" is not exstis');
   }
 
-  void _assertJavascriptChannelNamesAreUnique(
-      final Set<JavascriptChannel>? channels) {
+  void _assertJavascriptChannelNamesAreUnique(final Set<JavascriptChannel>? channels) {
     if (channels == null || channels.isEmpty) {
       return;
     }
