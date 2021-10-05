@@ -396,6 +396,7 @@ class WebviewManager {
 
         webView.getSettings().setAllowFileAccessFromFileURLs(allowFileURLs);
         webView.getSettings().setAllowUniversalAccessFromFileURLs(allowFileURLs);
+		webView.getSettings().setAllowFileAccess(allowFileURLs);
 
         webView.getSettings().setUseWideViewPort(useWideViewPort);
 
