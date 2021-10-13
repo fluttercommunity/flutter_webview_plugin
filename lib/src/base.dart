@@ -367,7 +367,7 @@ class WebViewStateChanged {
 
   final WebViewState type;
   final String url;
-  final int navigationType;
+  final int? navigationType;
 }
 
 class WebViewHttpError {
