@@ -6,23 +6,29 @@ authors:
 - Pedia <kpedia@163.com>
 - Simon Lightfoot <simon@devangels.london>
 - Rafal Wachol <gorudonu@gmail.com>
+- Misir Jafarov <misir@fonibo.com>
 homepage: https://github.com/dart-flitter/flutter_webview_plugin
-version: 0.3.10+1
-maintainer: Rafal Wachol (@RafalWachol) 
+version: 0.4.0 
+
 
 environment:
-  sdk: ">=2.0.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
+  flutter: ">=2.0.0"
 
 flutter:
   plugin:
-    androidPackage: com.flutter_webview_plugin
-    pluginClass: FlutterWebviewPlugin
+    platforms:
+      android:
+        package: com.flutter_webview_plugin
+        pluginClass: FlutterWebviewPlugin
+      ios:
+        pluginClass: FlutterWebviewPlugin
 
 dependencies:
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  mockito: ^4.1.0
+  mocktail: ^0.1.1
   flutter_test:
     sdk: flutter
