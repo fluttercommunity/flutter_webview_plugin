@@ -480,55 +480,41 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 #pragma mark -- WKUIDelegate
 - (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler
 {
-  UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                 message:message
-                                                          preferredStyle:UIAlertControllerStyleAlert];
-
-  [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-    completionHandler();
-  }]];
-
-  [self.viewController presentViewController:alert animated:YES completion:nil];
+    [channel invokeMethod:@"onJsAlert" arguments:@{@"url": webView.URL.absoluteString, @"message": message} result:^(id  _Nullable result) {
+        completionHandler();
+    }];
 }
 
 - (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL result))completionHandler
 {
-  UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                 message:message
-                                                          preferredStyle:UIAlertControllerStyleAlert];
-
-  [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-    completionHandler(NO);
-  }]];
-
-  [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    completionHandler(YES);
-  }]];
-
-  [self.viewController presentViewController:alert animated:YES completion:nil];
+    [channel invokeMethod:@"onJsConfirm" arguments:@{@"url": webView.URL.absoluteString, @"message": message} result:^(id  _Nullable result) {
+        if ([result isKindOfClass:[NSNumber class]]) {
+            NSNumber* b = result;
+            completionHandler([b boolValue]);
+            return;
+        } else if ([result isKindOfClass:[FlutterError class]]) {
+            FlutterError* flutterError = result;
+            NSLog(@"Error code: %@ message: %@ details: %@",
+                  flutterError.code, flutterError.message, flutterError.details);
+        }
+        completionHandler(NO);
+    }];
 }
 
 - (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString *result))completionHandler
 {
-  UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                 message:prompt
-                                                          preferredStyle:UIAlertControllerStyleAlert];
-
-  [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-    textField.placeholder = prompt;
-    textField.secureTextEntry = NO;
-    textField.text = defaultText;
-  }];
-
-  [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-    completionHandler(nil);
-  }]];
-
-  [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    completionHandler([alert.textFields.firstObject text]);
-  }]];
-
-  [self.viewController presentViewController:alert animated:YES completion:nil];
+    [channel invokeMethod:@"onJsPrompt" arguments:@{@"url": webView.URL.absoluteString, @"message": prompt, @"defaultText": defaultText} result:^(id  _Nullable result) {
+        if ([result isKindOfClass: [NSString class]]) {
+            NSString *str = result;
+            completionHandler(str);
+            return;
+        } else if ([result isKindOfClass:[FlutterError class]]) {
+            FlutterError* flutterError = result;
+            NSLog(@"Error code: %@ message: %@ details: %@",
+                  flutterError.code, flutterError.message, flutterError.details);
+        }
+        completionHandler(@"");
+    }];
 }
 
 @end

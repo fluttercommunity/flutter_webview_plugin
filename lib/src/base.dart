@@ -46,7 +46,7 @@ class FlutterWebviewPlugin {
   final Map<String, JavascriptChannel> _javascriptChannels =
       <String, JavascriptChannel>{};
 
-  Future<Null> _handleMessages(MethodCall call) async {
+  Future<dynamic> _handleMessages(MethodCall call) async {
     switch (call.method) {
       case 'onBack':
         _onBack.add(null);
@@ -63,6 +63,28 @@ class FlutterWebviewPlugin {
       case 'onScrollYChanged':
         _onScrollYChanged.add(call.arguments['yDirection']);
         break;
+      case 'onJsAlert':
+        if (onJSAlert != null) {
+          await onJSAlert(WebViewJSAlert(
+              url: call.arguments['url'], message: call.arguments['message']));
+        }
+        return null;
+      case 'onJsConfirm':
+        if (onJSConfirm != null) {
+          final result = await onJSConfirm(WebViewJSConfirm(
+              url: call.arguments['url'], message: call.arguments['message']));
+          return result;
+        }
+        return false;
+      case 'onJsPrompt':
+        if (onJSPrompt != null) {
+          final result = await onJSPrompt(WebViewJSPrompt(
+              url: call.arguments['url'],
+              message: call.arguments['message'],
+              defaultText: call.arguments['defaultText']));
+          return result;
+        }
+        return '';
       case 'onProgressChanged':
         _onProgressChanged.add(call.arguments['progress']);
         break;
@@ -83,6 +105,12 @@ class FlutterWebviewPlugin {
         break;
     }
   }
+
+  Future<Null> Function(WebViewJSAlert alert) onJSAlert;
+
+  Future<bool> Function(WebViewJSConfirm confirm) onJSConfirm;
+
+  Future<String> Function(WebViewJSPrompt prompt) onJSPrompt;
 
   /// Listening the OnDestroy LifeCycle Event for Android
   Stream<Null> get onDestroy => _onDestroy.stream;
@@ -375,4 +403,26 @@ class WebViewHttpError {
 
   final String url;
   final String code;
+}
+
+class WebViewJSAlert {
+  WebViewJSAlert({this.url, this.message});
+
+  final String url;
+  final String message;
+}
+
+class WebViewJSConfirm {
+  WebViewJSConfirm({this.url, this.message});
+
+  final String url;
+  final String message;
+}
+
+class WebViewJSPrompt {
+  WebViewJSPrompt({this.url, this.message, this.defaultText});
+
+  final String url;
+  final String message;
+  final String defaultText;
 }
