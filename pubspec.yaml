@@ -29,6 +29,6 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  mocktail: ^0.1.1
+  mocktail: ^0.2.0
   flutter_test:
     sdk: flutter
