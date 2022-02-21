@@ -16,6 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -24,7 +29,7 @@ import io.flutter.plugin.common.PluginRegistry;
 /**
  * FlutterWebviewPlugin
  */
-public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener {
+public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener, FlutterPlugin, ActivityAware {
     private Activity activity;
     private WebviewManager webViewManager;
     private Context context;
@@ -32,18 +37,22 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     private static final String CHANNEL_NAME = "flutter_webview_plugin";
     private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
 
-    public static void registerWith(PluginRegistry.Registrar registrar) {
-        if (registrar.activity() != null) {
-            channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-            final FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity(), registrar.activeContext());
-            registrar.addActivityResultListener(instance);
-            channel.setMethodCallHandler(instance);
-        }
+    @Override
+    public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+        setupChannel(binding.getApplicationContext(), binding.getBinaryMessenger());
     }
 
-    FlutterWebviewPlugin(Activity activity, Context context) {
-        this.activity = activity;
-        this.context = context;
+    private void setupChannel(Context applicationContext, BinaryMessenger messenger) {
+        this.context = applicationContext;
+        channel = new MethodChannel(messenger, CHANNEL_NAME);
+        channel.setMethodCallHandler(this);
+    }
+
+    @Override
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        context = null;
+        channel.setMethodCallHandler(null);
+        channel = null;
     }
 
     @Override
@@ -337,5 +346,26 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             return webViewManager.resultHandler.handleResult(i, i1, intent);
         }
         return false;
+    }
+
+    // **************** ActivityAware events ****************
+    @Override
+    public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+        this.activity = binding.getActivity();
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+
     }
 }

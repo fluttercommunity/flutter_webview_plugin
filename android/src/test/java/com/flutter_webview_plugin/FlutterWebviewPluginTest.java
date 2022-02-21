@@ -17,13 +17,11 @@ import static org.mockito.Mockito.verify;
 public class FlutterWebviewPluginTest {
 
     @Mock
-    Activity mockActivity;
-
     MethodCall mockMethodCall;
     MethodChannel.Result mockResult;
 
     @Spy
-    FlutterWebviewPlugin flutterWebviewPlugin = new FlutterWebviewPlugin(mockActivity, mockActivity);
+    FlutterWebviewPlugin flutterWebviewPlugin = new FlutterWebviewPlugin();
 
     @Before
     public void setUp() {
