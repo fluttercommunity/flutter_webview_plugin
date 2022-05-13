@@ -17,9 +17,6 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 android {
     compileSdkVersion 31
 
-    lintOptions {
-        disable 'InvalidPackage'
-    }
 
     defaultConfig {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -35,6 +32,10 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    lint {
+        disable 'InvalidPackage'
+    }
+    namespace 'com.yourcompany.flutter_webview_plugin_example'
 }
 
 flutter {
