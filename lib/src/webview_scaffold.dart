@@ -13,6 +13,7 @@ class WebviewScaffold extends StatefulWidget {
     this.appBar,
     required this.url,
     this.headers,
+    this.backgroundColor,
     this.javascriptChannels = const <JavascriptChannel>{},
     this.withJavascript = true,
     this.clearCache = false,
@@ -46,6 +47,7 @@ class WebviewScaffold extends StatefulWidget {
   final PreferredSizeWidget? appBar;
   final String url;
   final Map<String, String>? headers;
+  final Color? backgroundColor;
   final Set<JavascriptChannel> javascriptChannels;
   final bool withJavascript;
   final bool clearCache;
@@ -146,6 +148,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widget.appBar,
+      backgroundColor: widget.backgroundColor,
       resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
       persistentFooterButtons: widget.persistentFooterButtons,
       bottomNavigationBar: widget.bottomNavigationBar,
