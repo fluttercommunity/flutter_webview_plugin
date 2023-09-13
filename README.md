@@ -17,20 +17,19 @@
 
 ![68747470733a2f2f666c7574746572636f6d6d756e6974792e6465762f5f6769746875622f6865616465722f666c75747465725f776562766965775f706c7567696e](https://github.com/hardy716/flutter_webview_plugin/assets/101140679/2aadbd48-f378-4341-bbdf-8cbf056953e7)
 
-
 ## 🧑🏻‍💻 Android V1 embedding에서 V2로 마이그레이션을 진행한 계기와 과정
 [👉🏻 블로그 보러가기 - [Error] The plugin flutter_webview_plugin uses a deprecated version of the Android embedding. 👈🏻](https://hardy716.github.io/blog/trouble-shooting/2023-04-19-troubleshooting-3/)
 
 <br></br>
 
-## 📱 실제로 마이그레이션한 플러그인을 사용한 웹뷰 에시
+## 📱 실제로 마이그레이션한 플러그인을 사용한 웹뷰 예시
 <p align="start">
+  <img src="https://github.com/hardy716/flutter_webview_plugin/assets/101140679/6e1a215a-5bd2-4391-9e8c-01cf989757de" width="200" height="400" hspace="30">
   <img src="https://github.com/hardy716/flutter_webview_plugin/assets/101140679/5c6efa10-fef7-40fb-b631-a0caf90ea43e" width="200" height="400" hspace="30"> 
   <img src="https://github.com/hardy716/flutter_webview_plugin/assets/101140679/0f257245-3425-4ae6-944f-c0501cec1fc9" width="200" height="400" hspace="30">
 </p>
 
 <br></br>
-
 
 ## 🌟 오픈 소스에 기여
 
