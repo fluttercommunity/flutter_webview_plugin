@@ -13,13 +13,13 @@
 <br></br>
 
 ## 📍 flutter_webview_plugin
-[👉🏻 flutter_webview_plugin README.md 보러가기 👈🏻](https://github.com/fluttercommunity/flutter_webview_plugin#readme)
+[👉🏻 flutter_webview_plugin 공식 README.md 보러가기 👈🏻](https://github.com/fluttercommunity/flutter_webview_plugin#readme)
 
 ![68747470733a2f2f666c7574746572636f6d6d756e6974792e6465762f5f6769746875622f6865616465722f666c75747465725f776562766965775f706c7567696e](https://github.com/hardy716/flutter_webview_plugin/assets/101140679/2aadbd48-f378-4341-bbdf-8cbf056953e7)
 
 
 ## 🧑🏻‍💻 Android V1 embedding에서 V2로 마이그레이션을 진행한 계기와 과정
-[👉🏻 블로그 보러가기 👈🏻](https://hardy716.github.io/blog/trouble-shooting/2023-04-19-troubleshooting-3/)
+[👉🏻 블로그 보러가기 - [Error] The plugin flutter_webview_plugin uses a deprecated version of the Android embedding. 👈🏻](https://hardy716.github.io/blog/trouble-shooting/2023-04-19-troubleshooting-3/)
 
 <br></br>
 
