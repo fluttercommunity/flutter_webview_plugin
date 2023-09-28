@@ -143,6 +143,12 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
     self.webview.scrollView.showsVerticalScrollIndicator = [scrollBar boolValue];
     
+    if (@available(iOS 9.0, *)) {
+        if (userAgent != (id)[NSNull null]) {
+            self.webview.customUserAgent = userAgent;
+        }
+    }
+
     [self.webview addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:NULL];
 
     WKPreferences* preferences = [[self.webview configuration] preferences];
