@@ -34,13 +34,15 @@ allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    // compileSdkVersion 28
+    compileSdkVersion 30
 
     defaultConfig {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // NOTE(jeffmikels): When targetSdkVersion or minSdkVersion is not set or < 4, gradle adds 
         // additional scary permissions such as WRITE_EXTERNAL_STORAGE and READ_PHONE_STATE.
         minSdkVersion 16
+        targetSdkVersion 30
     }
     lintOptions {
         disable 'InvalidPackage'
