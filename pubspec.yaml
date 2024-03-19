@@ -11,7 +11,7 @@ version: 0.3.10
 maintainer: Rafal Wachol (@RafalWachol) 
 
 environment:
-  sdk: ">=2.0.0 <3.0.0"
+  sdk: '>=3.1.2 <4.0.0'
 
 flutter:
   plugin:
@@ -23,6 +23,6 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  mockito: ^4.1.0
+  mockito: ^5.4.4
   flutter_test:
     sdk: flutter

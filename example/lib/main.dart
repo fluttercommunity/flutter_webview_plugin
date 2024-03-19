@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       routes: {
-        '/': (_) => const MyHomePage(title: 'Flutter WebView Demo'),
+        '/': (_) => MyHomePage(title: 'Flutter WebView Demo'),
         '/widget': (_) {
           return WebviewScaffold(
             url: selectedUrl,
@@ -81,9 +81,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key key, this.title}) : super(key: key);
+  const MyHomePage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -94,21 +94,21 @@ class _MyHomePageState extends State<MyHomePage> {
   final flutterWebViewPlugin = FlutterWebviewPlugin();
 
   // On destroy stream
-  StreamSubscription _onDestroy;
+  late StreamSubscription _onDestroy;
 
   // On urlChanged stream
-  StreamSubscription<String> _onUrlChanged;
+  late StreamSubscription<String> _onUrlChanged;
 
   // On urlChanged stream
-  StreamSubscription<WebViewStateChanged> _onStateChanged;
+  late StreamSubscription<WebViewStateChanged> _onStateChanged;
 
-  StreamSubscription<WebViewHttpError> _onHttpError;
+  late StreamSubscription<WebViewHttpError> _onHttpError;
 
-  StreamSubscription<double> _onProgressChanged;
+  late StreamSubscription<double> _onProgressChanged;
 
-  StreamSubscription<double> _onScrollYChanged;
+  late StreamSubscription<double> _onScrollYChanged;
 
-  StreamSubscription<double> _onScrollXChanged;
+  late StreamSubscription<double> _onScrollXChanged;
 
   final _urlCtrl = TextEditingController(text: selectedUrl);
 
@@ -132,8 +132,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _onDestroy = flutterWebViewPlugin.onDestroy.listen((_) {
       if (mounted) {
         // Actions like show a info toast.
-        _scaffoldKey.currentState.showSnackBar(
-            const SnackBar(content: const Text('Webview Destroyed')));
+        // _scaffoldKey.currentState.showSnackBar(
+        //     const SnackBar(content: const Text('Webview Destroyed')));
       }
     });
 
@@ -223,7 +223,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(24.0),
               child: TextField(controller: _urlCtrl),
             ),
-            RaisedButton(
+            TextButton(
               onPressed: () {
                 flutterWebViewPlugin.launch(
                   selectedUrl,
@@ -236,19 +236,19 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('Open Webview (rect)'),
             ),
-            RaisedButton(
+            TextButton(
               onPressed: () {
                 flutterWebViewPlugin.launch(selectedUrl, hidden: true);
               },
               child: const Text('Open "hidden" Webview'),
             ),
-            RaisedButton(
+            TextButton(
               onPressed: () {
                 flutterWebViewPlugin.launch(selectedUrl);
               },
               child: const Text('Open Fullscreen Webview'),
             ),
-            RaisedButton(
+            TextButton(
               onPressed: () {
                 Navigator.of(context).pushNamed('/widget');
               },
@@ -258,7 +258,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(24.0),
               child: TextField(controller: _codeCtrl),
             ),
-            RaisedButton(
+            TextButton(
               onPressed: () {
                 final future =
                     flutterWebViewPlugin.evalJavascript(_codeCtrl.text);
@@ -270,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('Eval some javascript'),
             ),
-            RaisedButton(
+            TextButton(
               onPressed: () {
                 setState(() {
                   _history.clear();
@@ -279,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('Close'),
             ),
-            RaisedButton(
+            TextButton(
               onPressed: () {
                 flutterWebViewPlugin.getCookies().then((m) {
                   setState(() {
