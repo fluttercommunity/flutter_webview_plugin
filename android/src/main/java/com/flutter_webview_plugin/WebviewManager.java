@@ -68,9 +68,9 @@ class WebviewManager {
                     Uri[] results = null;
                     if (resultCode == Activity.RESULT_OK) {
                         if (fileUri != null && getFileSize(fileUri) > 0) {
-                            results = new Uri[]{fileUri};
+                            results = new Uri[] { fileUri };
                         } else if (videoUri != null && getFileSize(videoUri) > 0) {
-                            results = new Uri[]{videoUri};
+                            results = new Uri[] { videoUri };
                         } else if (intent != null) {
                             results = getSelectedFiles(intent);
                         }
@@ -103,7 +103,7 @@ class WebviewManager {
         if (data.getData() != null) {
             String dataString = data.getDataString();
             if (dataString != null) {
-                return new Uri[]{Uri.parse(dataString)};
+                return new Uri[] { Uri.parse(dataString) };
             }
         }
         // we have multiple files selected
@@ -136,9 +136,9 @@ class WebviewManager {
         webViewClient = new BrowserClient() {
             @Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                if (ignoreSSLErrors){
+                if (ignoreSSLErrors) {
                     handler.proceed();
-                }else {
+                } else {
                     super.onReceivedSslError(view, handler, error);
                 }
             }
@@ -175,8 +175,8 @@ class WebviewManager {
 
         webView.setWebViewClient(webViewClient);
         webView.setWebChromeClient(new WebChromeClient() {
-            //The undocumented magic method override
-            //Eclipse will swear at you if you try to put @Override here
+            // The undocumented magic method override
+            // Eclipse will swear at you if you try to put @Override here
             // For Android 3.0+
             public void openFileChooser(ValueCallback<Uri> uploadMsg) {
 
@@ -199,7 +199,7 @@ class WebviewManager {
                         FILECHOOSER_RESULTCODE);
             }
 
-            //For Android 4.1
+            // For Android 4.1
             public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
                 mUploadMessage = uploadMsg;
                 Intent i = new Intent(Intent.ACTION_GET_CONTENT);
@@ -209,7 +209,7 @@ class WebviewManager {
 
             }
 
-            //For Android 5.0+
+            // For Android 5.0+
             public boolean onShowFileChooser(
                     WebView webView, ValueCallback<Uri[]> filePathCallback,
                     FileChooserParams fileChooserParams) {
@@ -252,7 +252,6 @@ class WebviewManager {
                 activity.startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
                 return true;
             }
-
 
             @Override
             public void onProgressChanged(WebView view, int progress) {
@@ -355,7 +354,8 @@ class WebviewManager {
     private void registerJavaScriptChannelNames(List<String> channelNames) {
         for (String channelName : channelNames) {
             webView.addJavascriptInterface(
-                    new JavaScriptChannel(FlutterWebviewPlugin.channel, channelName, platformThreadHandler), channelName);
+                    new JavaScriptChannel(FlutterWebviewPlugin.channel, channelName, platformThreadHandler),
+                    channelName);
         }
     }
 
@@ -380,8 +380,7 @@ class WebviewManager {
             String invalidUrlRegex,
             boolean geolocationEnabled,
             boolean debuggingEnabled,
-            boolean ignoreSSLErrors
-    ) {
+            boolean ignoreSSLErrors) {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
@@ -392,7 +391,7 @@ class WebviewManager {
 
         webView.getSettings().setSupportMultipleWindows(supportMultipleWindows);
 
-        webView.getSettings().setAppCacheEnabled(appCacheEnabled);
+        webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 
         webView.getSettings().setAllowFileAccessFromFileURLs(allowFileURLs);
         webView.getSettings().setAllowUniversalAccessFromFileURLs(allowFileURLs);
@@ -407,7 +406,7 @@ class WebviewManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             webView.setWebContentsDebuggingEnabled(debuggingEnabled);
         }
-        //ignore SSL errors
+        // ignore SSL errors
         this.ignoreSSLErrors = ignoreSSLErrors;
 
         webViewClient.updateInvalidUrlRegex(invalidUrlRegex);
@@ -533,7 +532,7 @@ class WebviewManager {
     /**
      * Clears cache
      */
-    void cleanCache(){
+    void cleanCache() {
         webView.clearCache(true);
     }
 

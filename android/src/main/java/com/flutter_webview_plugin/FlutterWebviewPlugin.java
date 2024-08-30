@@ -20,11 +20,36 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BinaryMessenger;
 
 /**
  * FlutterWebviewPlugin
  */
-public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener {
+public class FlutterWebviewPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware, PluginRegistry.ActivityResultListener {
+    // private Activity activity;
+    // private WebviewManager webViewManager;
+    // private Context context;
+    // static MethodChannel channel;
+    // private static final String CHANNEL_NAME = "flutter_webview_plugin";
+    // private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
+
+    // public static void registerWith(PluginRegistry.Registrar registrar) {
+    //     if (registrar.activity() != null) {
+    //         channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
+    //         final FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity(), registrar.activeContext());
+    //         registrar.addActivityResultListener(instance);
+    //         channel.setMethodCallHandler(instance);
+    //     }
+    // }
+
+    // FlutterWebviewPlugin(Activity activity, Context context) {
+    //     this.activity = activity;
+    //     this.context = context;
+    // }
+
     private Activity activity;
     private WebviewManager webViewManager;
     private Context context;
@@ -32,18 +57,49 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     private static final String CHANNEL_NAME = "flutter_webview_plugin";
     private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
 
-    public static void registerWith(PluginRegistry.Registrar registrar) {
-        if (registrar.activity() != null) {
-            channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-            final FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity(), registrar.activeContext());
-            registrar.addActivityResultListener(instance);
-            channel.setMethodCallHandler(instance);
+    @Override
+    public void onAttachedToEngine(FlutterPluginBinding binding) {
+        BinaryMessenger messenger = binding.getBinaryMessenger();
+        channel = new MethodChannel(messenger, CHANNEL_NAME);
+        channel.setMethodCallHandler(this);
+    }
+
+    @Override
+    public void onDetachedFromEngine(FlutterPluginBinding binding) {
+        if (channel != null) {
+            channel.setMethodCallHandler(null);
+            channel = null;
         }
     }
 
-    FlutterWebviewPlugin(Activity activity, Context context) {
-        this.activity = activity;
-        this.context = context;
+    @Override
+    public void onAttachedToActivity(ActivityPluginBinding binding) {
+        activity = binding.getActivity();
+        context = activity.getApplicationContext();
+        binding.addActivityResultListener(this);
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+        if (activity != null) {
+            activity = null;
+            context = null;
+        }
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+        activity = binding.getActivity();
+        context = activity.getApplicationContext();
+        binding.addActivityResultListener(this);
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+        if (activity != null) {
+            activity = null;
+            context = null;
+        }
     }
 
     @Override
