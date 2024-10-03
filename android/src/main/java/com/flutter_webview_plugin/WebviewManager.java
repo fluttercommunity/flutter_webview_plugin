@@ -392,7 +392,8 @@ class WebviewManager {
 
         webView.getSettings().setSupportMultipleWindows(supportMultipleWindows);
 
-        webView.getSettings().setAppCacheEnabled(appCacheEnabled);
+        // disabled to match flutter 3.24.2
+        // webView.getSettings().setAppCacheEnabled(appCacheEnabled);
 
         webView.getSettings().setAllowFileAccessFromFileURLs(allowFileURLs);
         webView.getSettings().setAllowUniversalAccessFromFileURLs(allowFileURLs);
